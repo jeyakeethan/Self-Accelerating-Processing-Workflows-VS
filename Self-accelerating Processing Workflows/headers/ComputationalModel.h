@@ -8,7 +8,7 @@ class ComputationalModel
         ComputationalModel();
         //virtual ~ComputationalModel();
         void execute(int mode = -1);
-
+        void setProcessor(int p);
     protected:
     private:
         int _id;

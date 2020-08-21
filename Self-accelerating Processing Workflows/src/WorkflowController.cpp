@@ -10,6 +10,8 @@
 #include <iostream>
 using namespace std;
 
+static long tCPU=0, tGPU=0, countCPU=0, countGPU=0, countT = 0;
+
 WorkflowController::WorkflowController() {}
 WorkflowController::~WorkflowController() {}
 
@@ -40,18 +42,34 @@ void WorkflowController::registerModel(int objectId) {
     
 }
 
-void WorkflowController::updateElapsedTime(int objectId, clock_t start, clock_t stop, int processor) {
-    // To a async function
+void WorkflowController::updateCPUTime(ComputationalModel * cModel, clock_t start, clock_t stop) {
     clock_t delay = stop - start;
-    float time = (float)delay / CLOCKS_PER_SEC * 1000000;
-    if (processor == 0) {
-        cout << "CPU Time: " << time << " ns" << endl;
-        clog << "CPU Time: " << time << " ns" << endl;
-    }
-    else {
-        cout << "GPU Time: " << time << " ns" << endl;
-        clog << "GPU Time: " << time << " ns" << endl;
-    }
+    int time = (int)(delay * 100000);
+    cout << "CPU Time: " << time << " ns" << endl;
+    countCPU++;
+    countT++;
+    tCPU += (int)time;
 
-    // cout << tCPU <<","<<tGPU << endl << endl;
+    cout << tCPU <<","<<tGPU << endl << endl;
+
+    if (countT > 9 && tCPU > tGPU) {
+        countT = 0;
+        cModel->setProcessor(1);
+    }
+}
+
+void WorkflowController::updateGPUTime(ComputationalModel * cModel, clock_t start, clock_t stop) {
+    clock_t delay = stop - start;
+    int time = (int)(delay *100000);
+    cout << "GPU Time: " << time << " ns" << endl;
+    countGPU++;
+    countT++;
+    tGPU += (int)time;
+
+    cout << tCPU <<","<<tGPU << endl << endl;
+
+    if (countT > 9 && tCPU<tGPU) {
+        countT = 0;
+        cModel->setProcessor(1);
+    }
 }

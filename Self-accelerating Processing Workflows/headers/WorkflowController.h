@@ -2,6 +2,7 @@
 #define WORKFLOWCONTROLLER_H
 
 #include <time.h>
+#include <ComputationalModel.h>
 
 #define REVISE_PERIOD 10000          //revise period of the benchmarks in seconds
 
@@ -14,7 +15,8 @@ class WorkflowController
         void reviseAllBenchmarks();
         void updateArrayAdditionBenchmark();
         static void registerModel(int objectId);
-        static void updateElapsedTime(int objectId, clock_t start, clock_t stop, int processor);
+        static void updateCPUTime(ComputationalModel * cModel, clock_t start, clock_t stop);
+        static void updateGPUTime(ComputationalModel * cModel, clock_t start, clock_t stop);
 
     protected:
 

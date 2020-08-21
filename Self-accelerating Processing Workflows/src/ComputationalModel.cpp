@@ -18,24 +18,26 @@ ComputationalModel::ComputationalModel(): processor(0), _id((int)&*this) {
 
 // ComputationalModel::~ComputationalModel(){}
 
-
-static long tCPU = 0;
-static long tGPU = 0;
-
 void ComputationalModel::execute(int mode)
 {
     clock_t start, stop;
 
-    start = clock();
     if(processor == 0){
+        start = clock();
         CPUImplementation();
+        async(std::launch::async, [&]() { WorkflowController::updateCPUTime(this, start, stop); });
+        stop = clock();
     }
     else {
+        start = clock();
         GPUImplementation();
+        stop = clock();
+        async(std::launch::async, [&]() { WorkflowController::updateGPUTime(this, start, stop); });
     }
 
-    stop = clock();
-    async(std::launch::async, [&]() { WorkflowController::updateElapsedTime(_id, start, stop, processor); });
     //ComputationalModel::updateResults(start, stop, freq, tCPU, tGPU);
 }
 
+void ComputationalModel::setProcessor(int p) {
+    processor = p;
+}
