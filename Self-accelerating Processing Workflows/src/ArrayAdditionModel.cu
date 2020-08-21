@@ -17,7 +17,7 @@ void ArrayAdditionModel::CPUImplementation(){
     }
 }
 void ArrayAdditionModel::GPUImplementation(){
-    printf("Hello GPU IMPL\n");
+    printf("Hello CPU IMPL\n");
     //Device array
     int *dev_a , *dev_b, *dev_c;
     //Allocate the memory on the GPU

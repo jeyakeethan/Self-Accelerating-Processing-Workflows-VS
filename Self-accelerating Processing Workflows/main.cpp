@@ -27,12 +27,9 @@ int main()
 
         arrayAdditionModel.setData(inputA, inputB, output, N);
         arrayAdditionModel.execute();
-         for(int i=0; i<N; i++)
+        /* for(int i=0; i<N; i++)
             cout << output[i] << ", ";
-        
+        */
     }
-    int enter;
-    cout << "Enter to close ..." << endl;
-    cin >> enter;
     return 0;
 }

@@ -48,7 +48,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\headers;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\src;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\kernels;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\kernels;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\src;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\headers;%(AdditionalDeps);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -90,14 +90,14 @@
       <FileType>Document</FileType>
     </CudaCompile>
     <ClCompile Include="src\ComputationalModel.cpp" />
-    <ClCompile Include="src\WorkflowManager.cpp" />
+    <ClCompile Include="src\WorkflowController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\ArrayAdditionModel.h" />
     <ClInclude Include="headers\ComputationalModel.h" />
     <ClInclude Include="headers\Constants.h" />
     <ClInclude Include="headers\kernels.h" />
-    <ClInclude Include="headers\WorkflowManager.h" />
+    <ClInclude Include="headers\WorkflowController.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

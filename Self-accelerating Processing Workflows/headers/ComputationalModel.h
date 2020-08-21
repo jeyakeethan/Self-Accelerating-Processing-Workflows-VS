@@ -5,15 +5,14 @@
 class ComputationalModel
 {
     public:
-        //ComputationalModel();
+        ComputationalModel();
         //virtual ~ComputationalModel();
-        static void updateResults(clock_t start, clock_t stop, int processor);
         void execute(int mode = -1);
 
     protected:
-
     private:
-        int processor = 0;
+        int _id;
+        int processor;
         virtual void CPUImplementation() = 0;
         virtual void GPUImplementation() = 0;
 };

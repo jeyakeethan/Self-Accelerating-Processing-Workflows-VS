@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ComputationalModel.h>
+#include <WorkflowController.h>
 
 //for time measure
 #include <time.h>
@@ -10,8 +11,10 @@
 #include <future>
 
 using namespace std;
-
-// ComputationalModel::ComputationalModel(){}
+ComputationalModel::ComputationalModel(): processor(0), _id((int)&*this) {
+    WorkflowController::registerModel(_id);
+    cout << _id;
+}
 
 // ComputationalModel::~ComputationalModel(){}
 
@@ -32,19 +35,7 @@ void ComputationalModel::execute(int mode)
     }
 
     stop = clock();
-    async(std::launch::async, [&]() { ComputationalModel::updateResults(start, stop, processor); });
+    async(std::launch::async, [&]() { WorkflowController::updateElapsedTime(_id, start, stop, processor); });
     //ComputationalModel::updateResults(start, stop, freq, tCPU, tGPU);
 }
 
-void ComputationalModel::updateResults(clock_t start, clock_t stop, int processor){
-    // To a async function
-    clock_t delay = stop - start;
-    float time = (float)delay/CLOCKS_PER_SEC*1000000;
-    if(processor==0){
-        cout << "CPU Time: " << time << " ns" << endl;
-    } else {
-        cout << "GPU Time: " << time << " ns" << endl;
-    }
-
-    // cout << tCPU <<","<<tGPU << endl << endl;
-}
