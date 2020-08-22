@@ -1,7 +1,5 @@
 #ifndef WORKFLOWCONTROLLER_H
 #define WORKFLOWCONTROLLER_H
-
-#include <time.h>
 #include <ComputationalModel.h>
 
 #define REVISE_PERIOD 10000          //revise period of the benchmarks in seconds

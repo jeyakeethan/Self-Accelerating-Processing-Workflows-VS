@@ -1,16 +1,22 @@
-#include "WorkflowController.h"
+#include <iostream>
+#include <Constants.h>
+#include <WorkflowController.h>
 
 #include <ComputationalModel.h>
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <functional>
-#include <list> 
+#include <map>
+#include <time.h> 
 
-#include <iostream>
 using namespace std;
 
-static long tCPU=0, tGPU=0, countCPU=0, countGPU=0, countT = 0;
+struct Count { int CPU, GPU; };
+struct Clock { clock_t CPU, GPU; };
+
+static map<int, Clock> clocks;
+static map<int, Count> counts;
 
 WorkflowController::WorkflowController() {}
 WorkflowController::~WorkflowController() {}
@@ -39,37 +45,38 @@ void WorkflowController::updateArrayAdditionBenchmark()
 }
 
 void WorkflowController::registerModel(int objectId) {
-    
+    clocks[objectId] = {0, 0};
+    counts[objectId] = {0, 0};
 }
 
-void WorkflowController::updateCPUTime(ComputationalModel * cModel, clock_t start, clock_t stop) {
+void WorkflowController::updateCPUTime(ComputationalModel* cModel, clock_t start, clock_t stop) {
     clock_t delay = stop - start;
-    int time = (int)(delay * 100000);
-    cout << "CPU Time: " << time << " ns" << endl;
-    countCPU++;
-    countT++;
-    tCPU += (int)time;
+    cout << delay << " clocks" << endl;
+    int _id = int(&cModel);
+    counts[_id].CPU++;
+    clocks[_id].CPU += delay;
 
-    cout << tCPU <<","<<tGPU << endl << endl;
+    cout << clocks[_id].CPU <<","<< clocks[_id].GPU << endl << endl;
 
-    if (countT > 9 && tCPU > tGPU) {
-        countT = 0;
+    if (counts[_id].CPU + counts[_id].GPU > 9 && clocks[_id].CPU > clocks[_id].GPU) {
+        counts[_id].CPU = 0;
+        counts[_id].GPU = 0;
         cModel->setProcessor(1);
     }
 }
 
 void WorkflowController::updateGPUTime(ComputationalModel * cModel, clock_t start, clock_t stop) {
     clock_t delay = stop - start;
-    int time = (int)(delay *100000);
-    cout << "GPU Time: " << time << " ns" << endl;
-    countGPU++;
-    countT++;
-    tGPU += (int)time;
+    cout << delay << " clocks" << endl;
+    int _id = int(&cModel);
+    counts[_id].GPU++;
+    clocks[_id].GPU += delay;
 
-    cout << tCPU <<","<<tGPU << endl << endl;
+    cout << clocks[_id].CPU << "," << clocks[_id].GPU << endl << endl;
 
-    if (countT > 9 && tCPU<tGPU) {
-        countT = 0;
+    if (counts[_id].CPU + counts[_id].GPU > 9 && clocks[_id].GPU > clocks[_id].CPU) {
+        counts[_id].CPU = 0;
+        counts[_id].GPU = 0;
         cModel->setProcessor(1);
     }
 }

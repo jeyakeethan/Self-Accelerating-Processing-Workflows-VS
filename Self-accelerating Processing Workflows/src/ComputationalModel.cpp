@@ -13,7 +13,6 @@
 using namespace std;
 ComputationalModel::ComputationalModel(): processor(0), _id((int)&*this) {
     WorkflowController::registerModel(_id);
-    cout << _id;
 }
 
 // ComputationalModel::~ComputationalModel(){}
@@ -25,8 +24,8 @@ void ComputationalModel::execute(int mode)
     if(processor == 0){
         start = clock();
         CPUImplementation();
-        async(std::launch::async, [&]() { WorkflowController::updateCPUTime(this, start, stop); });
         stop = clock();
+        async(std::launch::async, [&]() { WorkflowController::updateCPUTime(this, start, stop); });
     }
     else {
         start = clock();
