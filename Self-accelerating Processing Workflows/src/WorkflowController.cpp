@@ -5,21 +5,20 @@
 #include <ComputationalModel.h>
 #include <iostream>
 #include <chrono>
+#include <time.h>
 #include <thread>
 #include <functional>
-#include <map>
-#include <time.h> 
+#include <list>
+#include <mutex>
 
 using namespace std;
 
-struct Count { int CPU, GPU; };
-struct Clock { clock_t CPU, GPU; };
-
-static map<int, Clock> clocks;
-static map<int, Count> counts;
+list<ComputationalModel*> registeredModels;
 
 WorkflowController::WorkflowController() {}
 WorkflowController::~WorkflowController() {}
+
+std::mutex mtx;
 
 void WorkflowController::launchBenchmarkUpdater()
 {
@@ -44,39 +43,48 @@ void WorkflowController::updateArrayAdditionBenchmark()
   std::cout << "To do" << std::endl;
 }
 
-void WorkflowController::registerModel(int objectId) {
-    clocks[objectId] = {0, 0};
-    counts[objectId] = {0, 0};
+void WorkflowController::registerModel(ComputationalModel * cModel) {
+    registeredModels.push_back(cModel);
 }
 
 void WorkflowController::updateCPUTime(ComputationalModel* cModel, clock_t start, clock_t stop) {
     clock_t delay = stop - start;
     cout << delay << " clocks" << endl;
-    int _id = int(&cModel);
-    counts[_id].CPU++;
-    clocks[_id].CPU += delay;
+    ;
 
-    cout << clocks[_id].CPU <<","<< clocks[_id].GPU << endl << endl;
+    cout << cModel->clocks.CPU / REVISE_COUNT <<","<< cModel->clocks.GPU / REVISE_COUNT << endl << endl;
 
-    if (counts[_id].CPU + counts[_id].GPU > 9 && clocks[_id].CPU > clocks[_id].GPU) {
-        counts[_id].CPU = 0;
-        counts[_id].GPU = 0;
+    mtx.lock();
+    cModel->clocks.CPU += delay;
+    cModel->counts.CPU++;
+    mtx.unlock();
+
+    if (cModel->counts.CPU - cModel->counts.GPU > REVISE_COUNT && cModel->clocks.CPU / REVISE_COUNT > cModel->clocks.GPU/ REVISE_COUNT) {
+        mtx.lock();
+        // cModel->counts = {0, 0};
+        // cModel->clocks = {0, 0};
         cModel->setProcessor(1);
+        mtx.unlock();
     }
 }
 
 void WorkflowController::updateGPUTime(ComputationalModel * cModel, clock_t start, clock_t stop) {
     clock_t delay = stop - start;
     cout << delay << " clocks" << endl;
-    int _id = int(&cModel);
-    counts[_id].GPU++;
-    clocks[_id].GPU += delay;
+    ;
 
-    cout << clocks[_id].CPU << "," << clocks[_id].GPU << endl << endl;
+    cout << cModel->clocks.CPU << "," << cModel->clocks.GPU << endl << endl;
 
-    if (counts[_id].CPU + counts[_id].GPU > 9 && clocks[_id].GPU > clocks[_id].CPU) {
-        counts[_id].CPU = 0;
-        counts[_id].GPU = 0;
-        cModel->setProcessor(1);
+    mtx.lock();
+    cModel->clocks.GPU += delay;
+    cModel->counts.GPU++;
+    mtx.unlock();
+
+    if (cModel->counts.GPU - cModel->counts.CPU > REVISE_COUNT && cModel->clocks.GPU/ REVISE_COUNT > cModel->clocks.CPU/ REVISE_COUNT) {
+        mtx.lock();
+        // cModel->counts = { 0, 0 };
+        // cModel->clocks = { 0, 0 };
+        cModel->setProcessor(0);
+        mtx.unlock();
     }
 }
