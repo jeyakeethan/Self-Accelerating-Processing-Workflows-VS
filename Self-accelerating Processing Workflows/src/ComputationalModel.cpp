@@ -14,7 +14,7 @@ using namespace std;
 
 ComputationalModel::ComputationalModel(): processor(0){
     WorkflowController::registerModel(this);
-    clocks = { 0, 0, 0.0 };
+    clocks = { 0, 0 };
     counts = { 0, 0 };
 }
 
