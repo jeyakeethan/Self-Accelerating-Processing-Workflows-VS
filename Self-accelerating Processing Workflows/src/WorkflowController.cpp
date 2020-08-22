@@ -48,39 +48,29 @@ void WorkflowController::registerModel(ComputationalModel * cModel) {
 }
 
 void WorkflowController::updateCPUTime(ComputationalModel* cModel, clock_t start, clock_t stop) {
-    clock_t delay = stop - start;
-    cout << delay << " clocks" << endl;
-
-    mtx.lock();
-    cModel->clocks.CPU += delay;
-    cModel->counts++;
-
     if (cModel->counts > REVISE_COUNT) {
+        mtx.lock();
         cModel->clocks.CPUmean = (float)cModel->clocks.CPU / REVISE_COUNT;
+        cModel->clocks.CPU = 0;
         cout << cModel->clocks.CPUmean << "," << cModel->clocks.GPUmean << endl << endl;
         cModel->counts = 0;
         if (cModel->clocks.CPUmean > cModel->clocks.GPUmean) {
             cModel->setProcessor(1);
         }
+        mtx.unlock();
     }
-    mtx.unlock();
 }
 
 void WorkflowController::updateGPUTime(ComputationalModel * cModel, clock_t start, clock_t stop) {
-    clock_t delay = stop - start;
-    cout << delay << " clocks" << endl;
-
-    mtx.lock();
-    cModel->clocks.GPU += delay;
-    cModel->counts++;
-
     if (cModel->counts > REVISE_COUNT) {
+        mtx.lock();
         cModel->clocks.GPUmean = (float)cModel->clocks.GPU / REVISE_COUNT;
+        cModel->clocks.GPU = 0;
         cout << cModel->clocks.CPUmean << "," << cModel->clocks.GPUmean << endl << endl;
         cModel->counts = 0;
         if (cModel->clocks.GPUmean > cModel->clocks.CPUmean) {
             cModel->setProcessor(0);
         }
+        mtx.unlock();
     }
-    mtx.unlock();
 }

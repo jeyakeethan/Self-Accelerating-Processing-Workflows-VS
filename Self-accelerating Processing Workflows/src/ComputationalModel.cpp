@@ -28,14 +28,19 @@ void ComputationalModel::execute(int mode)
         start = clock();
         CPUImplementation();
         stop = clock();
+        clocks.CPU += stop - start;
+        cout << stop - start << " clocks" << endl;
         async(std::launch::async, [&]() { WorkflowController::updateCPUTime(this, start, stop); });
     }
     else {
         start = clock();
         GPUImplementation();
         stop = clock();
+        clocks.GPU += stop - start;
+        cout << stop - start << " clocks" << endl;
         async(std::launch::async, [&]() { WorkflowController::updateGPUTime(this, start, stop); });
     }
+    counts++;
 
     //ComputationalModel::updateResults(start, stop, freq, tCPU, tGPU);
 }
