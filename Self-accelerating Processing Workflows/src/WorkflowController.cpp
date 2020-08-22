@@ -50,41 +50,37 @@ void WorkflowController::registerModel(ComputationalModel * cModel) {
 void WorkflowController::updateCPUTime(ComputationalModel* cModel, clock_t start, clock_t stop) {
     clock_t delay = stop - start;
     cout << delay << " clocks" << endl;
-    ;
-
-    cout << cModel->clocks.CPU / REVISE_COUNT <<","<< cModel->clocks.GPU / REVISE_COUNT << endl << endl;
 
     mtx.lock();
     cModel->clocks.CPU += delay;
-    cModel->counts.CPU++;
-    mtx.unlock();
+    cModel->counts++;
 
-    if (cModel->counts.CPU - cModel->counts.GPU > REVISE_COUNT && cModel->clocks.CPU / REVISE_COUNT > cModel->clocks.GPU/ REVISE_COUNT) {
-        mtx.lock();
-        // cModel->counts = {0, 0};
-        // cModel->clocks = {0, 0};
-        cModel->setProcessor(1);
-        mtx.unlock();
+    if (cModel->counts > REVISE_COUNT) {
+        cModel->clocks.CPUmean = (float)cModel->clocks.CPU / REVISE_COUNT;
+        cout << cModel->clocks.CPUmean << "," << cModel->clocks.GPUmean << endl << endl;
+        cModel->counts = 0;
+        if (cModel->clocks.CPUmean > cModel->clocks.GPUmean) {
+            cModel->setProcessor(1);
+        }
     }
+    mtx.unlock();
 }
 
 void WorkflowController::updateGPUTime(ComputationalModel * cModel, clock_t start, clock_t stop) {
     clock_t delay = stop - start;
     cout << delay << " clocks" << endl;
-    ;
-
-    cout << cModel->clocks.CPU << "," << cModel->clocks.GPU << endl << endl;
 
     mtx.lock();
     cModel->clocks.GPU += delay;
-    cModel->counts.GPU++;
-    mtx.unlock();
+    cModel->counts++;
 
-    if (cModel->counts.GPU - cModel->counts.CPU > REVISE_COUNT && cModel->clocks.GPU/ REVISE_COUNT > cModel->clocks.CPU/ REVISE_COUNT) {
-        mtx.lock();
-        // cModel->counts = { 0, 0 };
-        // cModel->clocks = { 0, 0 };
-        cModel->setProcessor(0);
-        mtx.unlock();
+    if (cModel->counts > REVISE_COUNT) {
+        cModel->clocks.GPUmean = (float)cModel->clocks.GPU / REVISE_COUNT;
+        cout << cModel->clocks.CPUmean << "," << cModel->clocks.GPUmean << endl << endl;
+        cModel->counts = 0;
+        if (cModel->clocks.GPUmean > cModel->clocks.CPUmean) {
+            cModel->setProcessor(0);
+        }
     }
+    mtx.unlock();
 }

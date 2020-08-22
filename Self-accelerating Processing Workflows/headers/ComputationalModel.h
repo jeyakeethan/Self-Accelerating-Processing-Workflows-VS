@@ -2,8 +2,7 @@
 #define COMPUTATIONALMODEL_H
 #include <time.h>
 
-struct Count { int CPU, GPU; };
-struct Clock { clock_t CPU, GPU; };
+struct Clock { clock_t CPU, GPU; float CPUmean, GPUmean; };
 class ComputationalModel
 {
     public:
@@ -11,7 +10,7 @@ class ComputationalModel
         //virtual ~ComputationalModel();
         void execute(int mode = -1);
         void setProcessor(int p);
-        Count counts;
+        int counts;
         Clock clocks;
     protected:
     private:
