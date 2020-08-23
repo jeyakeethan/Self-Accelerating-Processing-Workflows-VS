@@ -11,10 +11,9 @@ class ComputationalModel
         //virtual ~ComputationalModel();
         void execute(int mode = -1);
         void setProcessor(int p);
-        int countS;
-        int countL;
+        int countS, countL, processor, revisePeriod;
         Clock clocks;
-        int processor;
+        int sampleMode;
     protected:
     private:
         int _id;

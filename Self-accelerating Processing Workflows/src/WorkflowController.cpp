@@ -50,13 +50,14 @@ void WorkflowController::registerModel(ComputationalModel * cModel) {
 
 void WorkflowController::updateCPUTime(ComputationalModel* cModel) {
     mtx.lock();
-    cModel->clocks.CPUmean = (float)cModel->clocks.CPU / REVISE_COUNT;
+    float newMean = (float)cModel->clocks.CPU / REVISE_COUNT;
     cModel->clocks.CPU = 0;
-    cout << cModel->clocks.CPUmean << "," << cModel->clocks.GPUmean << endl << endl;
+    cout << newMean << "," << cModel->clocks.GPUmean << endl << endl;
     cModel->countS = 0;
-    if (cModel->clocks.CPUmean > cModel->clocks.GPUmean) {
+    if (newMean > cModel->clocks.GPUmean) {
         cModel->setProcessor(1);
     }
+    cModel->clocks.CPUmean = newMean;
     if (cModel->countL > RESET_COUNT) {
         cModel->clocks = { 0,0,0.0,0.0 };
         cModel->countL = 0;
@@ -67,13 +68,14 @@ void WorkflowController::updateCPUTime(ComputationalModel* cModel) {
 
 void WorkflowController::updateGPUTime(ComputationalModel * cModel) {
     mtx.lock();
-    cModel->clocks.GPUmean = (float)cModel->clocks.GPU / REVISE_COUNT;
+    float newMean = (float)cModel->clocks.GPU / REVISE_COUNT;
     cModel->clocks.GPU = 0;
-    cout << cModel->clocks.CPUmean << "," << cModel->clocks.GPUmean << endl << endl;
+    cout << cModel->clocks.CPUmean << "," << newMean << endl << endl;
     cModel->countS = 0;
-    if (cModel->clocks.GPUmean > cModel->clocks.CPUmean) {
+    if (newMean > cModel->clocks.CPUmean) {
         cModel->setProcessor(0);
     }
+    cModel->clocks.GPUmean = newMean;
     if (cModel->countL > RESET_COUNT) {
         cModel->clocks = { 0,0,0.0,0.0 };
         cModel->countL = 0;
