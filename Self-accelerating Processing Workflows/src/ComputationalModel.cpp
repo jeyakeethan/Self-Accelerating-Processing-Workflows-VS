@@ -1,6 +1,5 @@
 #include <iostream>
 #include <ComputationalModel.h>
-#include <WorkflowController.h>
 #include <Constants.h>
 
 //for time measure
@@ -15,7 +14,6 @@
 using namespace std;
 
 ComputationalModel::ComputationalModel(): processor(-1){
-    WorkflowController::registerModel(this);
     clocks = { 0, 0, 0.0, 0.0};
     countS = 1;
     countL = 1;
@@ -55,7 +53,6 @@ void ComputationalModel::execute(int mode)
                     countS = 1;
                 }
             }
-            //    async(std::launch::async, [&]() { WorkflowController::updateCPUTime(this); });
             break;
         case -2:
             QueryPerformanceCounter(&start);
