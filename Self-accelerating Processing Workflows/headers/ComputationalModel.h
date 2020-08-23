@@ -1,8 +1,9 @@
 #ifndef COMPUTATIONALMODEL_H
 #define COMPUTATIONALMODEL_H
 #include <time.h>
+#include <windows.h>
 
-struct Clock { clock_t CPU, GPU; float CPUmean, GPUmean; };
+struct Clock { LONGLONG CPU, GPU; float CPUmean, GPUmean; };
 class ComputationalModel
 {
     public:
@@ -10,12 +11,13 @@ class ComputationalModel
         //virtual ~ComputationalModel();
         void execute(int mode = -1);
         void setProcessor(int p);
-        int counts;
+        int countS;
+        int countL;
         Clock clocks;
+        int processor;
     protected:
     private:
         int _id;
-        int processor;
         virtual void CPUImplementation() = 0;
         virtual void GPUImplementation() = 0;
 };
