@@ -11,8 +11,7 @@ class WorkflowController
         void reviseAllBenchmarks();
         void updateArrayAdditionBenchmark();
         static void registerModel(ComputationalModel * cModel);
-        static void updateCPUTime(ComputationalModel * cModel);
-        static void updateGPUTime(ComputationalModel * cModel);
+        static void changeProcessor(ComputationalModel * cModel);
 
     protected:
 

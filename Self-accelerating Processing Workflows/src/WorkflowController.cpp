@@ -48,24 +48,7 @@ void WorkflowController::registerModel(ComputationalModel * cModel) {
     registeredModels.push_back(cModel);
 }
 
-void WorkflowController::updateCPUTime(ComputationalModel* cModel) {
-    mtx.lock();
-    cModel->clocks.CPUmean = (float)cModel->clocks.CPU / REVISE_COUNT;
-    cModel->clocks.CPU = 0;
-    cout << cModel->clocks.CPUmean << "," << cModel->clocks.GPUmean << endl << endl;
-    cModel->countS = 0;
-    if (cModel->clocks.CPUmean > cModel->clocks.GPUmean) {
-        cModel->setProcessor(1);
-    }
-    if (cModel->countL > RESET_COUNT) {
-        cModel->clocks = { 0,0,0.0,0.0 };
-        cModel->countL = 0;
-        cModel->countS = 0;
-    }
-    mtx.unlock();
-}
-
-void WorkflowController::updateGPUTime(ComputationalModel * cModel) {
+void WorkflowController::changeProcessor(ComputationalModel * cModel) {
     mtx.lock();
     cModel->clocks.GPUmean = (float)cModel->clocks.GPU / REVISE_COUNT;
     cModel->clocks.GPU = 0;

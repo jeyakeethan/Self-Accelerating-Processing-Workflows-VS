@@ -16,9 +16,9 @@ using namespace std;
 
 ComputationalModel::ComputationalModel(): processor(0){
     WorkflowController::registerModel(this);
-    clocks = { 0, 0, 0.0, 0.0};
-    countS = 0;
-    countL = 0;
+    countCPU = 0;
+    countGPU = 0;
+    count = 0;
 }
 
 // ComputationalModel::~ComputationalModel(){}
@@ -31,24 +31,24 @@ void ComputationalModel::execute(int mode)
         QueryPerformanceCounter(&start);
         CPUImplementation();
         QueryPerformanceCounter(&stop);
-        clocks.CPU += stop.QuadPart - start.QuadPart;
+        CPUclocks[countCPU]= stop.QuadPart - start.QuadPart;
         cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
-        if (countS > REVISE_COUNT)
-            async(std::launch::async, [&]() { WorkflowController::updateCPUTime(this); });
+        // if (countCPU > REVISE_COUNT)
+        //    async(std::launch::async, [&]() { WorkflowController::updateCPUTime(this); });
+        countCPU = countCPU +1%LAST_N_TIME;
     }
     else {
         QueryPerformanceCounter(&start);
         GPUImplementation();
         QueryPerformanceCounter(&stop);
-        clocks.GPU += stop.QuadPart - start.QuadPart;
+        GPUclocks[countGPU] = stop.QuadPart - start.QuadPart;
         cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
-        if (countS > REVISE_COUNT)
-            async(std::launch::async, [&]() { WorkflowController::updateGPUTime(this); });
+        // if (countGPU > REVISE_COUNT)
+        //    async(std::launch::async, [&]() { WorkflowController::updateGPUTime(this); });
+        countGPU = countGPU + 1 % LAST_N_TIME;
     }
-    countS++;
-    countL++;
-
-    //ComputationalModel::updateResults(start, stop, freq, tCPU, tGPU);
+    if (++count > RESET_COUNT)
+        async(std::launch::async, [&]() { WorkflowController::changeProcessor(this); });
 }
 
 void ComputationalModel::setProcessor(int p) {
