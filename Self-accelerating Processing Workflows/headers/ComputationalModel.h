@@ -8,16 +8,16 @@ class ComputationalModel
 {
     public:
         ComputationalModel();
-        //virtual ~ComputationalModel();
-        void execute(int mode = -1);
+        virtual ~ComputationalModel();
+        void execute();
+        void execute(int mode);
         void setProcessor(int p);
-        int countS;
-        int countL;
+        int countS, countL, processor, revisePeriod;
         Clock clocks;
-        int processor;
+        int sampleMode;
+        int id_;
     protected:
     private:
-        int _id;
         virtual void CPUImplementation() = 0;
         virtual void GPUImplementation() = 0;
 };
