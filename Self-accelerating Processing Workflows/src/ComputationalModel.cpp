@@ -20,6 +20,7 @@ ComputationalModel::ComputationalModel(){
     revisePeriod = REVISE_PERIOD;
     sampleMode = 2;
     processor = -1;
+    id_ = int(&*this);
 }
 
 ComputationalModel::~ComputationalModel(){
@@ -41,7 +42,7 @@ void ComputationalModel::execute(int mode)
 }
 
 // Auto mode execution
-void ComputationalModel::execute(int mode)
+void ComputationalModel::execute()
 {
     LARGE_INTEGER start, stop;
     switch(processor){
