@@ -21,17 +21,17 @@ void ArrayAdditionModel::GPUImplementation(){
     //Device array
     int *dev_a , *dev_b, *dev_c;
     //Allocate the memory on the GPU
-    cudaMalloc((void **)&dev_a , N*sizeof(int));
-    cudaMalloc((void **)&dev_b , N*sizeof(int));
-    cudaMalloc((void **)&dev_c , N*sizeof(int));
+    cudaMalloc((void **)&dev_a , localL*sizeof(int));
+    cudaMalloc((void **)&dev_b , localL*sizeof(int));
+    cudaMalloc((void **)&dev_c , localL *sizeof(int));
     //Copy Host array to Device array
-    cudaMemcpy (dev_a , localA , N*sizeof(int) , cudaMemcpyHostToDevice);
-    cudaMemcpy (dev_b , localB , N*sizeof(int) , cudaMemcpyHostToDevice);
+    cudaMemcpy (dev_a , localA , localL *sizeof(int) , cudaMemcpyHostToDevice);
+    cudaMemcpy (dev_b , localB , localL *sizeof(int) , cudaMemcpyHostToDevice);
     // Execute the kernel
 
-    Vector_Addition <<< N / THREATS_PER_BLOCK, THREATS_PER_BLOCK >>> (dev_a, dev_b, dev_c);
+    Vector_Addition <<< localL / THREATS_PER_BLOCK, THREATS_PER_BLOCK >>> (dev_a, dev_b, dev_c);
     //Copy back to Host array from Device array
-    cudaMemcpy(localC , dev_c , N*sizeof(int) , cudaMemcpyDeviceToHost);
+    cudaMemcpy(localC , dev_c , localL *sizeof(int) , cudaMemcpyDeviceToHost);
     //Free the Device array memory
     cudaFree (dev_a);
     cudaFree (dev_b);

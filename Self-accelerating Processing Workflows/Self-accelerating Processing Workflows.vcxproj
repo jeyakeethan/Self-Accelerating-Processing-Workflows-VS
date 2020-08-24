@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{21E4705D-1910-4285-A78F-1AD1B620181D}</ProjectGuid>
     <RootNamespace>Self_accelerating_Processing_Workflows</RootNamespace>
-    <CudaToolkitCustomDir>..\..\..\NVIDIA GPU Computing Toolkit\CUDA\v11.0</CudaToolkitCustomDir>
+    <CudaToolkitCustomDir>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0</CudaToolkitCustomDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -48,7 +48,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\kernels;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\src;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\headers;%(AdditionalDeps);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Downloads\niro\research-paper\projects\Self-Accelerating-Processing-Workflows-VS\Self-accelerating Processing Workflows\src;F:\Downloads\niro\research-paper\projects\Self-Accelerating-Processing-Workflows-VS\Self-accelerating Processing Workflows\kernels;F:\Downloads\niro\research-paper\projects\Self-Accelerating-Processing-Workflows-VS\Self-accelerating Processing Workflows\headers;%(AdditionalDeps);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
