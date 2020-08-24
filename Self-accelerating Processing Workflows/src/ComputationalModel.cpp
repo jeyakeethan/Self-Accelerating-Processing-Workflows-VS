@@ -13,16 +13,34 @@
 
 using namespace std;
 
-ComputationalModel::ComputationalModel(): processor(-1){
+ComputationalModel::ComputationalModel(){
     clocks = { 0, 0, 0.0, 0.0};
     countS = 1;
     countL = 1;
     revisePeriod = REVISE_PERIOD;
     sampleMode = 2;
+    processor = -1;
 }
 
-// ComputationalModel::~ComputationalModel(){}
+ComputationalModel::~ComputationalModel(){
+    //TO DO; log present values for using next boot
+}
 
+// Mannual mode execution
+void ComputationalModel::execute(int mode)
+{
+    LARGE_INTEGER start, stop;
+    switch (mode) {
+    case 1:
+        CPUImplementation();
+        break;
+    case 2:
+        GPUImplementation();
+        break;
+    }
+}
+
+// Auto mode execution
 void ComputationalModel::execute(int mode)
 {
     LARGE_INTEGER start, stop;
@@ -86,8 +104,6 @@ void ComputationalModel::execute(int mode)
             clocks = { 0, 0, 0.0, 0.0 };
             cout << endl;
     }
-
-    //ComputationalModel::updateResults(start, stop, freq, tCPU, tGPU);
 }
 
 void ComputationalModel::setProcessor(int p) {

@@ -9,7 +9,8 @@ class ComputationalModel
     public:
         ComputationalModel();
         //virtual ~ComputationalModel();
-        void execute(int mode = -1);
+        void execute();
+        void execute(int mode);
         void setProcessor(int p);
         int countS, countL, processor, revisePeriod;
         Clock clocks;
