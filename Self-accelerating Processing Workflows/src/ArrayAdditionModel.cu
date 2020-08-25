@@ -1,10 +1,13 @@
-#include <Constants.h>
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include <stdio.h>
-
 #include <ArrayAdditionModel.h>
 #include <kernels.h>
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
+#include <Constants.h>
+#include <stdio.h>
+
+
 
 ArrayAdditionModel::ArrayAdditionModel() {}
 ArrayAdditionModel::ArrayAdditionModel(int *in1, int *in2, int *out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
@@ -29,7 +32,7 @@ void ArrayAdditionModel::GPUImplementation(){
     cudaMemcpy (dev_b , localB , localL *sizeof(int) , cudaMemcpyHostToDevice);
     // Execute the kernel
 
-    Vector_Addition <<< localL / THREATS_PER_BLOCK, THREATS_PER_BLOCK >>> (dev_a, dev_b, dev_c);
+    Vector_Addition <<< localL / THREADS_PER_BLOCK, THREADS_PER_BLOCK >>> (dev_a, dev_b, dev_c);
     //Copy back to Host array from Device array
     cudaMemcpy(localC , dev_c , localL *sizeof(int) , cudaMemcpyDeviceToHost);
     //Free the Device array memory

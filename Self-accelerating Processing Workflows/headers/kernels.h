@@ -2,3 +2,4 @@
 #include "device_launch_parameters.h"
 
 __global__ void Vector_Addition(const int* dev_a, const int* dev_b, int* dev_c);
+__global__ void dot_product(int* a, int* b, int* res);

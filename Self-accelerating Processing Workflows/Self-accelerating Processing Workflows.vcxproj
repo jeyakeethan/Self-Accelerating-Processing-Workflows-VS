@@ -90,7 +90,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="kernels\ArrayAdditionKernel.cu" />
+    <CudaCompile Include="kernels\DotMultiplicationKernel.cu" />
     <CudaCompile Include="main.cpp" />
+    <CudaCompile Include="src\DotMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\ArrayAdditionModel.cu">
@@ -102,7 +104,9 @@
     <ClInclude Include="headers\ArrayAdditionModel.h" />
     <ClInclude Include="headers\ComputationalModel.h" />
     <ClInclude Include="headers\Constants.h" />
+    <ClInclude Include="headers\DotMultiplicationModel.h" />
     <ClInclude Include="headers\kernels.h" />
+    <ClInclude Include="headers\WorkflowController.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
