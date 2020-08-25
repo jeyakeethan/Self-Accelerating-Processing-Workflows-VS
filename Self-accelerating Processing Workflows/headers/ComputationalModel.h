@@ -9,10 +9,11 @@ class ComputationalModel
     public:
         ComputationalModel();
         virtual ~ComputationalModel();
+        void resetFlow();
         void execute();
         void execute(int mode);
         void setProcessor(int p);
-        int countS, countL, processor, revisePeriod;
+        int countS, countL, reviseCount, alignedCount, processor, lastProcessor, revisePeriod;
         Clock clocks;
         int sampleMode;
         int id_;

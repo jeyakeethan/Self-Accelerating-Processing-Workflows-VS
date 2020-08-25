@@ -14,12 +14,19 @@
 using namespace std;
 
 ComputationalModel::ComputationalModel(){
-    clocks = { 0, 0, 0.0, 0.0};
+    resetFlow();
+}
+
+inline void ComputationalModel::resetFlow() {
+    clocks = { 0, 0, 0.0, 0.0 };
     countS = 1;
     countL = 1;
+    alignedCount = -1;
+    reviseCount = REVISE_COUNT_MIN;
     revisePeriod = REVISE_PERIOD;
     sampleMode = 2;
     processor = -1;
+    lastProcessor = -1;
     id_ = int(&*this);
 }
 
@@ -30,7 +37,6 @@ ComputationalModel::~ComputationalModel(){
 // Mannual mode execution
 void ComputationalModel::execute(int mode)
 {
-    LARGE_INTEGER start, stop;
     switch (mode) {
     case 1:
         CPUImplementation();
@@ -62,17 +68,21 @@ void ComputationalModel::execute()
             // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
             if (++countS > SAMPLE_COUNT) {
                 if (--sampleMode == 0) {
-                    if (clocks.CPU > clocks.GPU)
+                    if (clocks.CPU > clocks.GPU) {
                         processor = 2;
-                    else
+                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
+                    } else {
                         processor = 1;
-                    cout << clocks.CPU << "," << clocks.GPU << endl << endl;
+                        reviseCount = REVISE_COUNT_MIN;
+                        alignedCount = 0;
+                    }
+                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
                 } else {
                     processor = -2; // processor = (processor - 1) % 3;
                     countS = 1;
                 }
             }
-            break;
+            return;
         case -2:
             QueryPerformanceCounter(&start);
             GPUImplementation();
@@ -81,23 +91,27 @@ void ComputationalModel::execute()
             // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
             if (++countS > SAMPLE_COUNT) {
                 if (--sampleMode == 0) {
-                    if (clocks.CPU > clocks.GPU)
+                    if (clocks.CPU > clocks.GPU) {
                         processor = 2;
-                    else
+                        reviseCount = REVISE_COUNT_MIN;
+                        alignedCount = 0;
+                    } else {
                         processor = 1;
-                    cout << clocks.CPU << "," << clocks.GPU << endl << endl;
+                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
+                    }
+                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
                 }
                 else {
                     processor = -1; // processor = (processor - 1) % 3;
                     countS = 1;
                 }
             }
-            break;
+            return;
         default:
             sampleMode = 2;
             processor = -1;
     }
-    if (countL > REVISE_COUNT) {
+    if (countL > reviseCount) {
             sampleMode = 2;
             countS = 1;
             countL = 1;
