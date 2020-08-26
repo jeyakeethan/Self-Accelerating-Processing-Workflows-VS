@@ -41,7 +41,7 @@ int main()
     DotMultiplicationModel dotMultiplicationModel;
 
     for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
-        int out = 0;
+        long long out = 0;
         for (int k = 0; k < N; k++) {
             inputA[k] = rand() % RANGE_OF_INT_VALUES;
             inputB[k] = rand() % RANGE_OF_INT_VALUES;
@@ -49,8 +49,8 @@ int main()
 
         dotMultiplicationModel.setData(inputA, inputB, &out, N);
         dotMultiplicationModel.execute(1);
-        printf("%d", out);
+        cout << out << endl;
     }
-    return 0;
     */
+    return 0;
 }

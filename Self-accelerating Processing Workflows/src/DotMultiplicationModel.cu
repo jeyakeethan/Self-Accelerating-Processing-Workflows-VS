@@ -8,17 +8,16 @@
 #include <stdio.h>
 
 DotMultiplicationModel::DotMultiplicationModel() {}
-DotMultiplicationModel::DotMultiplicationModel(int *in1, int *in2, int *out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
+DotMultiplicationModel::DotMultiplicationModel(int * in1, int * in2, long long* out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
 DotMultiplicationModel::~DotMultiplicationModel() {}
 
 void DotMultiplicationModel::CPUImplementation(){
     printf("Hello CPU IMPL \n");
-    long temp = 0;
     for (int i = 0; i < localL; i++)
     {
-        temp += localA[i] * localB[i];
+        //printf("\n%d\n%d\n", localA[i], localB[i]);
+        *localC += localA[i] * localB[i];
     }
-    printf("\n%d\n", temp);
 }
 void DotMultiplicationModel::GPUImplementation(){
     printf("Hello GPU IMPL \n");
