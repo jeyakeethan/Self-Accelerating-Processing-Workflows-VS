@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 DotMultiplicationModel::DotMultiplicationModel() {}
-DotMultiplicationModel::DotMultiplicationModel(int * in1, int * in2, long long* out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
+DotMultiplicationModel::DotMultiplicationModel(int * in1, int * in2, int* out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
 DotMultiplicationModel::~DotMultiplicationModel() {}
 
 void DotMultiplicationModel::CPUImplementation(){
@@ -23,7 +23,8 @@ void DotMultiplicationModel::GPUImplementation(){
     printf("Hello GPU IMPL \n");
 
     // Allocate memory for arrays d_A, d_B, and d_result on device
-    int* d_A, * d_B, * d_result;
+    int* d_A, * d_B;
+    int * d_result;
     size_t bytes = localL * sizeof(int);
 
     cudaMalloc(&d_A, bytes);

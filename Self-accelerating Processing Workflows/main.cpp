@@ -14,7 +14,7 @@
 using namespace std;
 int main()
 {
-
+    /*
     int inputA[N];
     int inputB[N];
     int output[N];
@@ -32,16 +32,16 @@ int main()
         // for(int i=0; i<N; i++)
         //    cout << output[i] << ", ";
         
-    }
+    }*/
 
-    /*
+
     int inputA[N];
     int inputB[N];
 
     DotMultiplicationModel dotMultiplicationModel;
 
     for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
-        long long out = 0;
+        int out = 0;
         for (int k = 0; k < N; k++) {
             inputA[k] = rand() % RANGE_OF_INT_VALUES;
             inputB[k] = rand() % RANGE_OF_INT_VALUES;
@@ -49,8 +49,7 @@ int main()
 
         dotMultiplicationModel.setData(inputA, inputB, &out, N);
         dotMultiplicationModel.execute(1);
-        cout << out << endl;
+        //cout << out << endl;
     }
-    */
     return 0;
 }
