@@ -39,9 +39,11 @@ void ComputationalModel::execute(int mode)
 {
     switch (mode) {
     case 1:
+        // cout << "Hello CPU" << endl;
         CPUImplementation();
         break;
     case 2:
+        // cout << "Hello GPU" << endl;
         GPUImplementation();
         break;
     }
@@ -53,14 +55,17 @@ void ComputationalModel::execute()
     LARGE_INTEGER start, stop;
     switch(processor){
         case 1:
+            //cout << "Hello CPU" << endl;
             CPUImplementation();
             countL++;
             break;
         case 2:
+            //cout << "Hello GPU" << endl;
             GPUImplementation();
             countL++;
             break;
         case -1:
+            // cout << "Hello CPU" << endl;
             QueryPerformanceCounter(&start);
             CPUImplementation();
             QueryPerformanceCounter(&stop);
@@ -76,7 +81,8 @@ void ComputationalModel::execute()
                         reviseCount = REVISE_COUNT_MIN;
                         alignedCount = 0;
                     }
-                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+//                    cout << "REVISE_COUNT: " << reviseCount << endl;
+//                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
                 } else {
                     processor = -2; // processor = (processor - 1) % 3;
                     countS = 1;
@@ -84,6 +90,7 @@ void ComputationalModel::execute()
             }
             return;
         case -2:
+            // cout << "Hello GPU" << endl;
             QueryPerformanceCounter(&start);
             GPUImplementation();
             QueryPerformanceCounter(&stop);
@@ -99,7 +106,8 @@ void ComputationalModel::execute()
                         processor = 1;
                         reviseCount += REVISE_COUNT_STEP * ++alignedCount;
                     }
-                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+//                    cout << "REVISE_COUNT: " << reviseCount << endl;
+//                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
                 }
                 else {
                     processor = -1; // processor = (processor - 1) % 3;
@@ -117,7 +125,7 @@ void ComputationalModel::execute()
             countL = 1;
             processor = -processor;
             clocks = { 0, 0, 0.0, 0.0 };
-            cout << endl;
+//            cout << endl;
     }
 }
 

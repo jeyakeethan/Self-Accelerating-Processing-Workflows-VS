@@ -5,22 +5,22 @@
 #include "device_launch_parameters.h"
 
 #include <Constants.h>
-#include <stdio.h>
+#include <iostream>
 
 
+using namespace std;
 
 ArrayAdditionModel::ArrayAdditionModel() {}
 ArrayAdditionModel::ArrayAdditionModel(int *in1, int *in2, int *out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
 ArrayAdditionModel::~ArrayAdditionModel() {}
 
 void ArrayAdditionModel::CPUImplementation(){
-    printf("Hello CPU IMPL \n");
     for(int x = 0; x < localL; x++){
+        //cout << localA[x] << "," << localB[x] << ",";
         localC[x] = localA[x] + localB[x];
     }
 }
 void ArrayAdditionModel::GPUImplementation(){
-    printf("Hello GPU IMPL \n");
     //Device array
     int *dev_a , *dev_b, *dev_c;
     //Allocate the memory on the GPU
