@@ -36,7 +36,7 @@ int main()
 
     if (GENERATE_ALIGNED_INPUT) {
         /*********Generate Aligned Input Stream*********/
-        int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
+        int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1; int maxLength = ARRAY_MAX_LENGTH; int minLength = SMALL_ARRAY_MAX_LENGTH;
         bool iSmall = true;
         for (x = 0; x < EXPERIMENT_COUNT; x++) {
             if (++widthCount > width) {
@@ -44,9 +44,11 @@ int main()
                 widthCount = 0;
                 width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
                 iSmall = !iSmall;
+                if (iSmall) minLength = rand() % (ARRAY_MAX_LENGTH- SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH +1;
+                else maxLength = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
             }
-            if (iSmall) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-            else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+            if (iSmall) length = rand() % minLength + 1;
+            else length = rand() % (maxLength - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
             int *temp1 = new int[length];
