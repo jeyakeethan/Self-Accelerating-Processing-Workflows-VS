@@ -38,7 +38,6 @@ int main()
         /*********Generate Aligned Input Stream*********/
         int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
         bool iSmall = true;
-        int *temp1, *temp2;
         for (x = 0; x < EXPERIMENT_COUNT; x++) {
             if (++widthCount > width) {
                 //cout << "width: " << width << endl << endl;
@@ -50,8 +49,8 @@ int main()
             else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            temp1 = new int[length];
-            temp2 = new int[length];
+            int *temp1 = new int[length];
+            int *temp2 = new int[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -62,13 +61,12 @@ int main()
     }
     else {
         /*********Generate Odd Input Stream*********/
-        int *temp1, *temp2;
         for (x = 0; x < EXPERIMENT_COUNT; x++) {
             length = rand() % ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            temp1 = new int[length];
-            temp2 = new int[length];
+            int *temp1 = new int[length];
+            int *temp2 = new int[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -101,6 +99,8 @@ int main()
         timeLogFile = "Time_" + to_string(++fileNum) + ".log";
     }
     outfile.open(timeLogFile);
+
+
     /**********Self flow experiment - ArrayAdditionModel**********/
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
@@ -151,32 +151,6 @@ int main()
 
     /*
 
-    int inputA[N];
-    int inputB[N];
-    int output[N];
-
-    ArrayAdditionModel arrayAdditionModel;
-
-    for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
-        for (int k = 0; k < N; k++) {
-            inputA[k] = rand() % RANGE_OF_INT_VALUES;
-            inputB[k] = rand() % RANGE_OF_INT_VALUES;
-        }
-
-        arrayAdditionModel.setData(inputA, inputB, output, N);
-        arrayAdditionModel.execute();
-        // for(int i=0; i<N; i++)
-        //    cout << output[i] << ", ";
-    }
-    QueryPerformanceCounter(&stop);
-    double delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-    int elapsedTime = int(delay * 1000);
-    cout << "CPU Time: " << elapsedTime << " ms" << endl;
-
-
-    int inputA[N];
-    int inputB[N];
-
     DotMultiplicationModel dotMultiplicationModel;
 
     for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
@@ -190,6 +164,6 @@ int main()
         dotMultiplicationModel.execute(1);
         //cout << out << endl;
     }
-    return 0;
     */
+    return 0;
 }
