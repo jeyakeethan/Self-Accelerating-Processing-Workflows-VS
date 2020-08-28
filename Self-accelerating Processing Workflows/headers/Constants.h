@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-const bool GENERATE_ALIGNED_INPUT = true;
+const bool INPUT_NATURE = 3;
 const int N = 10000;
 const int EXPERIMENT_COUNT = 10000;
 const int MAX_WIDTH_ALIGNED = 100;

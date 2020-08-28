@@ -34,9 +34,9 @@ int main()
     /*---Random Seed Value---*/
     srand(5);
 
-    if (GENERATE_ALIGNED_INPUT) {
-        /*********Generate Aligned Input Stream*********/
-        int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1; int maxLength = ARRAY_MAX_LENGTH; int minLength = SMALL_ARRAY_MAX_LENGTH;
+    if (INPUT_NATURE == 1) {
+        /*********Generate Aligned Bounded Input Stream*********/
+        int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1, arrayMaxLength = ARRAY_MAX_LENGTH, smallArrayMaxLength = SMALL_ARRAY_MAX_LENGTH;
         bool iSmall = true;
         for (x = 0; x < EXPERIMENT_COUNT; x++) {
             if (++widthCount > width) {
@@ -44,11 +44,36 @@ int main()
                 widthCount = 0;
                 width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
                 iSmall = !iSmall;
-                if (iSmall) minLength = rand() % (ARRAY_MAX_LENGTH- SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH +1;
-                else maxLength = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
+                if (iSmall) smallArrayMaxLength = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+                else arrayMaxLength = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
             }
-            if (iSmall) length = rand() % minLength + 1;
-            else length = rand() % (maxLength - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+            if (iSmall) length = rand() % smallArrayMaxLength + 1;
+            else length = rand() % (arrayMaxLength - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+            //cout << "length: " << length << endl;
+            arrayLength[x] = length;
+            int* temp1 = new int[length];
+            int* temp2 = new int[length];
+            arraySet1[x] = temp1;
+            arraySet2[x] = temp2;
+            for (k = 0; k < length; k++) {
+                temp1[k] = rand() % RANGE_OF_INT_VALUES;
+                temp2[k] = rand() % RANGE_OF_INT_VALUES;
+            }
+        }
+    }
+    else if (INPUT_NATURE == 2) {
+        /*********Generate Aligned Binary Input Stream*********/
+        int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
+        bool iSmall = true;
+        for (x = 0; x < EXPERIMENT_COUNT; x++) {
+            if (++widthCount > width) {
+                //cout << "width: " << width << endl << endl;
+                widthCount = 0;
+                width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+                iSmall = !iSmall;
+            }
+            if (iSmall) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
+            else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
             int *temp1 = new int[length];
@@ -61,7 +86,7 @@ int main()
             }
         }
     }
-    else {
+    else if (INPUT_NATURE == 3){
         /*********Generate Odd Input Stream*********/
         for (x = 0; x < EXPERIMENT_COUNT; x++) {
             length = rand() % ARRAY_MAX_LENGTH + 1;
@@ -69,6 +94,38 @@ int main()
             arrayLength[x] = length;
             int *temp1 = new int[length];
             int *temp2 = new int[length];
+            arraySet1[x] = temp1;
+            arraySet2[x] = temp2;
+            for (k = 0; k < length; k++) {
+                temp1[k] = rand() % RANGE_OF_INT_VALUES;
+                temp2[k] = rand() % RANGE_OF_INT_VALUES;
+            }
+        }
+    }
+    else if (INPUT_NATURE == 4) {
+        /*********Generate GPU Specific Input Stream*********/
+        for (x = 0; x < EXPERIMENT_COUNT; x++) {
+            length = rand() % (ARRAY_MAX_LENGTH- SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+            //cout << "length: " << length << endl;
+            arrayLength[x] = length;
+            int* temp1 = new int[length];
+            int* temp2 = new int[length];
+            arraySet1[x] = temp1;
+            arraySet2[x] = temp2;
+            for (k = 0; k < length; k++) {
+                temp1[k] = rand() % RANGE_OF_INT_VALUES;
+                temp2[k] = rand() % RANGE_OF_INT_VALUES;
+            }
+        }
+    }
+    else if (INPUT_NATURE == 5) {
+        /*********Generate CPU Specific Input Stream*********/
+        for (x = 0; x < EXPERIMENT_COUNT; x++) {
+            length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
+            //cout << "length: " << length << endl;
+            arrayLength[x] = length;
+            int* temp1 = new int[length];
+            int* temp2 = new int[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -151,7 +208,37 @@ int main()
     outfile << "GPU Only Time: " << elapsedTime << " ms" << endl << endl;
     outfile.close();
 
+    /*************Free Host Memory**************/
+    delete[] arraySet1;
+    delete[] arraySet2;
+
     /*
+
+    int inputA[N];
+    int inputB[N];
+    int output[N];
+
+    ArrayAdditionModel arrayAdditionModel;
+
+    for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
+        for (int k = 0; k < N; k++) {
+            inputA[k] = rand() % RANGE_OF_INT_VALUES;
+            inputB[k] = rand() % RANGE_OF_INT_VALUES;
+        }
+
+        arrayAdditionModel.setData(inputA, inputB, output, N);
+        arrayAdditionModel.execute();
+        // for(int i=0; i<N; i++)
+        //    cout << output[i] << ", ";
+    }
+    QueryPerformanceCounter(&stop);
+    double delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+    int elapsedTime = int(delay * 1000);
+    cout << "CPU Time: " << elapsedTime << " ms" << endl;
+
+
+    int inputA[N];
+    int inputB[N];
 
     DotMultiplicationModel dotMultiplicationModel;
 
