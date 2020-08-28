@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 
 // measure time
 #include <windows.h>
@@ -14,7 +15,6 @@
 #include <DotMultiplicationModel.h>
 #include <random>
 
-
 using namespace std;
 int main()
 {
@@ -24,33 +24,58 @@ int main()
     int elapsedTime;
     ArrayAdditionModel arrayAdditionModel;
 
-    /*********Generate Input Stream*********/
-    int ** arraySet1 = new int* [EXPERIMENT_COUNT];
-    int ** arraySet2 = new int* [EXPERIMENT_COUNT];
-    int* arrayLength = new int [EXPERIMENT_COUNT];
-    int k, x, length, widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
-    bool iSmall = true;
-    for (x = 0; x < EXPERIMENT_COUNT; x++) {
-        if (++widthCount > width) {
-            //cout << "width: " << width << endl << endl;
-            widthCount = 0;
-            width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
-            iSmall = !iSmall;
-        }
-        if (iSmall) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-        else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
-        //cout << "length: " << length << endl;
-        arrayLength[x] = length;
-        int* temp1 = new int[length];
-        int* temp2 = new int[length];
-        arraySet1[x] = temp1;
-        arraySet2[x] = temp2;
-        for (k = 0; k < length; k++) {
-            temp1[k] = rand() % RANGE_OF_INT_VALUES;
-            temp2[k] = rand() % RANGE_OF_INT_VALUES;
+    int** arraySet1 = new int* [EXPERIMENT_COUNT];
+    int** arraySet2 = new int* [EXPERIMENT_COUNT];
+    int* arrayLength = new int[EXPERIMENT_COUNT];
+    int x;
+
+    /*---Random Seed Value---*/
+    srand(5);
+
+    if (GENERATE_ALIGNED_INPUT) {
+        /*********Generate Aligned Input Stream*********/
+        int k, length, widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
+        bool iSmall = true;
+        for (x = 0; x < EXPERIMENT_COUNT; x++) {
+            if (++widthCount > width) {
+                //cout << "width: " << width << endl << endl;
+                widthCount = 0;
+                width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+                iSmall = !iSmall;
+            }
+            if (iSmall) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
+            else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+            //cout << "length: " << length << endl;
+            arrayLength[x] = length;
+            int* temp1 = new int[length];
+            int* temp2 = new int[length];
+            arraySet1[x] = temp1;
+            arraySet2[x] = temp2;
+            for (k = 0; k < length; k++) {
+                temp1[k] = rand() % RANGE_OF_INT_VALUES;
+                temp2[k] = rand() % RANGE_OF_INT_VALUES;
+            }
         }
     }
+    else {
+        /*********Generate Odd Input Stream*********/
+    }
 
+    /************Write Input Nature into File************/
+    ofstream outfile;
+    outfile.open("Input Nature.csv");
+
+    int y;
+    for (x = 0; x < EXPERIMENT_COUNT; x++) {
+        int len = arrayLength[x];
+        outfile << len << endl;
+        //for (y = 0; y < len/100+1; y++)
+        //    cout << "-";
+        //cout << endl;
+    }
+    outfile.close();
+
+    /**********Self flow experiment - ArrayAdditionModel**********/
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
         int len = arrayLength[x];

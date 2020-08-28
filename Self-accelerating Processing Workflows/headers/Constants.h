@@ -1,11 +1,12 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+const bool GENERATE_ALIGNED_INPUT = true;
 const int N = 10000;
-const int EXPERIMENT_COUNT = 1000;
+const int EXPERIMENT_COUNT = 10000;
 const int MAX_WIDTH_ALIGNED = 100;
 const int MIN_WIDTH_ALIGNED = 10;
-const int SMALL_ARRAY_MAX_LENGTH = 100;
+const int SMALL_ARRAY_MAX_LENGTH = 1000;
 const int ARRAY_MAX_LENGTH = 10000;
 const int REVISE_COUNT_MIN = 20;
 const int REVISE_COUNT_MAX = 1000;
