@@ -35,7 +35,7 @@ int main()
     srand(5);
 
     if (INPUT_NATURE == 1) {
-        /*********Generate Aligned Bounded Input Stream*********/
+        /*********Generate Aligned Square Wave Input Stream*********/
         int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1, arrayMaxLength = ARRAY_MAX_LENGTH, smallArrayMaxLength = SMALL_ARRAY_MAX_LENGTH;
         bool iSmall = true;
         for (x = 0; x < EXPERIMENT_COUNT; x++) {
