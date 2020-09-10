@@ -3,16 +3,16 @@
 
 #include <ComputationalModel.h>
 
-
+template <class T>
 class ArrayAdditionModel : public ComputationalModel
 {
     public:
-        int *localA, *localB, *localC;
+        T *localA, *localB, *localC;
         int localL;
         ArrayAdditionModel();
-        ArrayAdditionModel(int *in1, int *in2, int *out, int length);
-        virtual ~ArrayAdditionModel();
-        inline void setData(int *in1, int *in2, int *out, int length){
+        ArrayAdditionModel(T *in1, T *in2, T *out, int length);
+        ~ArrayAdditionModel();
+        inline void setData(T *in1, T *in2, T *out, int length){
             localA = in1; localB = in2; localC = out; localL = length;
             return;
         }
@@ -22,5 +22,7 @@ class ArrayAdditionModel : public ComputationalModel
         virtual void CPUImplementation();
         virtual void GPUImplementation();
 };
+
+#include "ArrayAdditionModel.cu"
 
 #endif // ARRAYADDITIONMODEL_H

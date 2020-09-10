@@ -16,6 +16,8 @@
 #include <random>
 #include <string>
 
+typedef long myType;
+
 using namespace std;
 int main()
 {
@@ -24,10 +26,10 @@ int main()
     QueryPerformanceFrequency(&clockFreq);
     double delay;
     int elapsedTime;
-    ArrayAdditionModel arrayAdditionModel;
+    ArrayAdditionModel<myType> arrayAdditionModel;
 
-    int** arraySet1 = new int* [EXPERIMENT_COUNT];
-    int** arraySet2 = new int* [EXPERIMENT_COUNT];
+    myType** arraySet1 = new myType* [EXPERIMENT_COUNT];
+    myType** arraySet2 = new myType* [EXPERIMENT_COUNT];
     int* arrayLength = new int[EXPERIMENT_COUNT];
     int x, k, length, fileNum;
 
@@ -51,8 +53,8 @@ int main()
             else length = rand() % (arrayMaxLength - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            int* temp1 = new int[length];
-            int* temp2 = new int[length];
+            myType* temp1 = new myType[length];
+            myType* temp2 = new myType[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -76,8 +78,8 @@ int main()
             else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            int *temp1 = new int[length];
-            int *temp2 = new int[length];
+            myType *temp1 = new myType[length];
+            myType *temp2 = new myType[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -92,8 +94,8 @@ int main()
             length = rand() % ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            int *temp1 = new int[length];
-            int *temp2 = new int[length];
+            myType *temp1 = new myType[length];
+            myType *temp2 = new myType[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -108,8 +110,8 @@ int main()
             length = rand() % (ARRAY_MAX_LENGTH- SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            int* temp1 = new int[length];
-            int* temp2 = new int[length];
+            myType * temp1 = new myType[length];
+            myType * temp2 = new myType[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -124,8 +126,8 @@ int main()
             length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            int* temp1 = new int[length];
-            int* temp2 = new int[length];
+            myType* temp1 = new myType[length];
+            myType* temp2 = new myType[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -164,7 +166,7 @@ int main()
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
         int len = arrayLength[x];
-        int* output = new int[len];
+        myType* output = new myType[len];
         arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
         arrayAdditionModel.execute();
         //for(int i=0; i<len; i++)
@@ -179,7 +181,7 @@ int main()
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
         int len = arrayLength[x];
-        int* output = new int[len];
+        myType* output = new myType[len];
         arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
         arrayAdditionModel.execute(1);
         //for (int i = 0; i < len; i++)
@@ -195,7 +197,7 @@ int main()
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
         int len = arrayLength[x];
-        int* output = new int[len];
+        myType* output = new myType[len];
         arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
         arrayAdditionModel.execute(2);
         //for (int i = 0; i < len; i++)
@@ -218,7 +220,7 @@ int main()
     int inputB[N];
     int output[N];
 
-    ArrayAdditionModel arrayAdditionModel;
+    ArrayAdditionModel<int> arrayAdditionModel;
 
     for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
         for (int k = 0; k < N; k++) {

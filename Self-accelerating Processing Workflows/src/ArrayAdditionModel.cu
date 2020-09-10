@@ -7,20 +7,30 @@
 #include <Constants.h>
 #include <iostream>
 
+#ifndef _ARRAYADDITIONMODEL_CPP_
+#define _ARRAYADDITIONMODEL_CPP_
 
 using namespace std;
 
-ArrayAdditionModel::ArrayAdditionModel() {}
-ArrayAdditionModel::ArrayAdditionModel(int *in1, int *in2, int *out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
-ArrayAdditionModel::~ArrayAdditionModel() {}
+template <class T>
+ArrayAdditionModel<T>::ArrayAdditionModel(){}
 
-void ArrayAdditionModel::CPUImplementation(){
+template <class T>
+ArrayAdditionModel<T>::ArrayAdditionModel(T *in1, T *in2, T *out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
+
+template <class T>
+ArrayAdditionModel<T>::~ArrayAdditionModel() {}
+
+template <class T>
+void ArrayAdditionModel<T>::CPUImplementation(){
     for(int x = 0; x < localL; x++){
         //cout << localA[x] << "," << localB[x] << ",";
         localC[x] = localA[x] + localB[x];
     }
 }
-void ArrayAdditionModel::GPUImplementation(){
+
+template <class T>
+void ArrayAdditionModel<T>::GPUImplementation(){
     //Device array
     int *dev_a , *dev_b, *dev_c;
     //Allocate the memory on the GPU
@@ -40,3 +50,5 @@ void ArrayAdditionModel::GPUImplementation(){
     cudaFree (dev_b);
     cudaFree (dev_c);
 }
+
+#endif // ARRAYADDITIONMODEL_CPP
