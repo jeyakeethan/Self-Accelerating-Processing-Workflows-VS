@@ -7,7 +7,7 @@ struct Clock { LONGLONG CPU, GPU; float CPUmean, GPUmean; };
 class ComputationalModel
 {
     public:
-        ComputationalModel();
+        ComputationalModel(int CPUCores);
         virtual ~ComputationalModel();
         void resetFlow();
         void execute();
@@ -15,8 +15,8 @@ class ComputationalModel
         void setProcessor(int p);
         int countS, countL, reviseCount, alignedCount, processor, lastProcessor, revisePeriod;
         Clock clocks;
-        int sampleMode;
-        int id_;
+        const int CPUCores;
+        int sampleMode, id_;
     protected:
     private:
         virtual void CPUImplementation() = 0;

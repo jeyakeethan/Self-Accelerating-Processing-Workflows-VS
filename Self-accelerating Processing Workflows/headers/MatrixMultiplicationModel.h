@@ -10,8 +10,7 @@ class MatrixMultiplicationModel : public ComputationalModel
     public:
         T *localA, *localB, *localC;
         dim3 *localMD;
-        MatrixMultiplicationModel();
-        MatrixMultiplicationModel(T *mat1, T *mat2, T *out, dim3 *matricesDim);
+        MatrixMultiplicationModel(int CPUCores);
         ~MatrixMultiplicationModel();
         inline void setData(T *mat1, T *mat2, T *out, dim3 *matricesDim){
             localA = mat1; localB = mat2; localC = out; localMD = matricesDim;
