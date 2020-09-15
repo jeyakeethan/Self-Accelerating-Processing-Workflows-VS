@@ -13,12 +13,23 @@
 #include <ComputationalModel.h>
 #include <ArrayAdditionModel.h>
 #include <DotMultiplicationModel.h>
+#include <MatrixMultiplicationModel.h>
 #include <random>
 #include <string>
 
 using namespace std;
 int main()
 {
+    
+    MatrixMultiplicationModel<numericalType1> matmulmodel(1);
+    numericalType1 mat1 [6]= { 1, 3, 7,8,4,3 };
+    numericalType1 mat2 [6]= { 1, 3, 7,8,3,2 };
+    numericalType1 out[4];
+    matmulmodel.setData(mat1, mat2, out, new myDim3(2, 3, 2));
+    matmulmodel.execute(1);
+    for (int t = 0; t < 4; t++)
+        cout << out[t] << endl;
+
     LARGE_INTEGER start, stop, clockFreq;
     ofstream outfile;
     QueryPerformanceFrequency(&clockFreq);

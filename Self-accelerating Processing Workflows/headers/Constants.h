@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-typedef long numericalType1;
+typedef float numericalType1;
 
 const int INPUT_NATURE = 5;
 const int N = 10000;

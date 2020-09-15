@@ -24,31 +24,23 @@ MatrixMultiplicationModel<T>::~MatrixMultiplicationModel() {}
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation(){
     // implement using multi threads
-    int no_rows_per_thread = this->localMD->y / this->CPUCores;
-    int no_rows = no_rows_per_thread;
-    myDim3 *matD = this->localMD;
-#pragma omp parallel num_threads(CPUCores)
+    #pragma omp parallel num_threads(CPUCores)
     {
-        long my_rank = omp_get_thread_num();
-        // long no_threads = omp_get_num_threads();
-        // long no_rows = mat->y / no_threads;
-
-        int my_first_row = my_rank * no_rows;
-        int my_last_row = (my_rank + 1) * no_rows - 1;
-
-        int i, j, k;
-        for (i = my_first_row; i < my_last_row; i++) {
-            for (j = 0; j < matD->y; j++) {
-                this->localC[matD->y * i + j] = 0;
-                for (k = 0; k < matD->y; k++)
-                    this->localC[matD->y * i + j] += this->localA[matD->y * i + k] * this->localB[j + matD->z * k];
+        #pragma omp for
+        for (int i = 0; i < localMD->x; i++) {
+            for (int j = 0; j < localMD->y; j++) {
+                localC[localMD->z * i + j] = 0;
+                for (int k = 0; k < localMD->y; k++) {
+                    localC[localMD->z * i + j] += localA[localMD->y * i + k] * localB[j + localMD->z * k];
+                }
             }
         }
+    #pragma omp barrier
     }
 }
 
 template <class T>
-void MatrixMultiplicationModel<T>::GPUImplementation(){
+void MatrixMultiplicationModel<T>::GPUImplementation(){/*
     //Device array
     int *dev_a , *dev_b, *dev_c;
 
@@ -74,7 +66,7 @@ void MatrixMultiplicationModel<T>::GPUImplementation(){
     //Free the Device array memory
     cudaFree (dev_a);
     cudaFree (dev_b);
-    cudaFree (dev_c);
+    cudaFree (dev_c);*/
 }
 
 #endif // _MATRIXMULTIPLICATIONMODEL_CPP_
