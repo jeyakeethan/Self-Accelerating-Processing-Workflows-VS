@@ -24,7 +24,7 @@ int main()
     QueryPerformanceFrequency(&clockFreq);
     double delay;
     int elapsedTime;
-    ArrayAdditionModel<numericalType1> arrayAdditionModel;
+    ArrayAdditionModel<numericalType1> arrayAdditionModel(1);
 
     numericalType1** arraySet1 = new numericalType1* [EXPERIMENT_COUNT];
     numericalType1** arraySet2 = new numericalType1* [EXPERIMENT_COUNT];

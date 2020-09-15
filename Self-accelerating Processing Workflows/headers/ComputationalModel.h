@@ -15,7 +15,7 @@ class ComputationalModel
         void setProcessor(int p);
         int countS, countL, reviseCount, alignedCount, processor, lastProcessor, revisePeriod;
         Clock clocks;
-        const int CPUCores;
+        int CPUCores;
         int sampleMode, id_;
     protected:
     private:

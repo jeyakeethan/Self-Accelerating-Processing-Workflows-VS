@@ -10,8 +10,7 @@ class DotMultiplicationModel : public ComputationalModel
         int *localA, *localB;
         int *localC;
         int localL;
-        DotMultiplicationModel();
-        DotMultiplicationModel(int *in1, int *in2, int *out, int length);
+        DotMultiplicationModel(int CPUCores);
         virtual ~DotMultiplicationModel();
         inline void setData(int *in1, int *in2, int *out, int length){
             localA = in1; localB = in2; localC = out; localL = length;

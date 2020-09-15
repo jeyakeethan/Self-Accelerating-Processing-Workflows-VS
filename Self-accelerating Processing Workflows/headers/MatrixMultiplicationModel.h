@@ -9,16 +9,17 @@ class MatrixMultiplicationModel : public ComputationalModel
 {
     public:
         T *localA, *localB, *localC;
-        dim3 *localMD;
+        myDim3 *localMD;
         MatrixMultiplicationModel(int CPUCores);
         ~MatrixMultiplicationModel();
-        inline void setData(T *mat1, T *mat2, T *out, dim3 *matricesDim){
+        inline void setData(T *mat1, T *mat2, T *out, myDim3 *matricesDim){
             localA = mat1; localB = mat2; localC = out; localMD = matricesDim;
             return;
         }
     protected:
 
     private:
+        void threadMatMult(T* a, T* b, T* out, myDim3* matD, int no_rows);
         virtual void CPUImplementation();
         virtual void GPUImplementation();
 };

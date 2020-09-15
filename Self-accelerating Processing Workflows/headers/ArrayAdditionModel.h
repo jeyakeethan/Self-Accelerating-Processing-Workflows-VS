@@ -9,8 +9,7 @@ class ArrayAdditionModel : public ComputationalModel
     public:
         T *localA, *localB, *localC;
         int localL;
-        ArrayAdditionModel();
-        ArrayAdditionModel(T *in1, T *in2, T *out, int length);
+        ArrayAdditionModel(int CPUCores);
         ~ArrayAdditionModel();
         inline void setData(T *in1, T *in2, T *out, int length){
             localA = in1; localB = in2; localC = out; localL = length;

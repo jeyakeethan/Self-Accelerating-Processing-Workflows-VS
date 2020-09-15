@@ -14,8 +14,8 @@
 using namespace std;
 
 template <class T>
-MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores){
-    super(CPUCores);
+MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores):ComputationalModel(CPUCores){
+    //super(CPUCores);
 }
 
 template <class T>
@@ -24,29 +24,27 @@ MatrixMultiplicationModel<T>::~MatrixMultiplicationModel() {}
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation(){
     // implement using multi threads
-    int no_rows_per_thread = localMD->y / CPUCores;
+    int no_rows_per_thread = this->localMD->y / this->CPUCores;
+    int no_rows = no_rows_per_thread;
+    myDim3 *matD = this->localMD;
 #pragma omp parallel num_threads(CPUCores)
-    threadMatMult(localA, localB, localC, localMD, no_rows_per_thread);
-}
+    {
+        long my_rank = omp_get_thread_num();
+        // long no_threads = omp_get_num_threads();
+        // long no_rows = mat->y / no_threads;
 
-template <class T>
-void threadMatMult(T *a, T *b, T *out, myDim3 *matD, int no_rows) {
-    long my_rank = omp_get_thread_num();
-    // long no_threads = omp_get_num_threads();
-    // long no_rows = mat->y / no_threads;
+        int my_first_row = my_rank * no_rows;
+        int my_last_row = (my_rank + 1) * no_rows - 1;
 
-    int my_first_row = my_rank * no_rows;
-    int my_last_row = (my_rank+1) * no_rows-1;
-
-    int i, j, k;
-    for (i = my_first_row; i < my_last_row; i++) {
-        for (j = 0; j < matD->y; j++) {
-            out[matD->y * i + j] = 0;
-            for (k = 0; k < matD->y; k++)
-                out[matD->y*i+j] += a[matD->y * i+k] * b[j+ matD->z * k];
+        int i, j, k;
+        for (i = my_first_row; i < my_last_row; i++) {
+            for (j = 0; j < matD->y; j++) {
+                this->localC[matD->y * i + j] = 0;
+                for (k = 0; k < matD->y; k++)
+                    this->localC[matD->y * i + j] += this->localA[matD->y * i + k] * this->localB[j + matD->z * k];
+            }
         }
     }
-    return;
 }
 
 template <class T>

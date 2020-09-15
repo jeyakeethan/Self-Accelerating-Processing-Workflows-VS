@@ -13,10 +13,8 @@
 using namespace std;
 
 template <class T>
-ArrayAdditionModel<T>::ArrayAdditionModel(){}
-
-template <class T>
-ArrayAdditionModel<T>::ArrayAdditionModel(T *in1, T *in2, T *out, int length): localA(in1), localB(in2), localC(out), localL(length) { }
+ArrayAdditionModel<T>::ArrayAdditionModel(int CPUCores): ComputationalModel(CPUCores) {
+}
 
 template <class T>
 ArrayAdditionModel<T>::~ArrayAdditionModel() {}

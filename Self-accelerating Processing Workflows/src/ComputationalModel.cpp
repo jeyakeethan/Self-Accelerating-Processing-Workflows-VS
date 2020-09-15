@@ -13,7 +13,7 @@
 
 using namespace std;
 
-ComputationalModel::ComputationalModel(int CPUCores = 1):CPUCores(CPUCores){
+ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     resetFlow();
 }
 
