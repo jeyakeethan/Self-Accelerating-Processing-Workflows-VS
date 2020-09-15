@@ -40,9 +40,9 @@ void MatrixMultiplicationModel<T>::CPUImplementation(){
 }
 
 template <class T>
-void MatrixMultiplicationModel<T>::GPUImplementation(){/*
+void MatrixMultiplicationModel<T>::GPUImplementation(){
     //Device array
-    int *dev_a , *dev_b, *dev_c;
+    numericalType1 *dev_a , *dev_b, *dev_c;
 
     int l1 = localMD->x * localMD->y * sizeof(numericalType1);
     int l2 = localMD->y * localMD->z * sizeof(numericalType1);
@@ -66,7 +66,7 @@ void MatrixMultiplicationModel<T>::GPUImplementation(){/*
     //Free the Device array memory
     cudaFree (dev_a);
     cudaFree (dev_b);
-    cudaFree (dev_c);*/
+    cudaFree (dev_c);
 }
 
 #endif // _MATRIXMULTIPLICATIONMODEL_CPP_

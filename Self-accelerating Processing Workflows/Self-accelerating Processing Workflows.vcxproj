@@ -101,6 +101,7 @@
     <CudaCompile Include="src\ArrayAdditionModel.cu">
       <FileType>Document</FileType>
     </CudaCompile>
+    <CudaCompile Include="mainx.cpp" />
     <ClCompile Include="src\ComputationalModel.cpp" />
   </ItemGroup>
   <ItemGroup>
