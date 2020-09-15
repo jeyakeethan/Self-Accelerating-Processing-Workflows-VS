@@ -16,8 +16,6 @@
 #include <random>
 #include <string>
 
-typedef long myType;
-
 using namespace std;
 int main()
 {
@@ -26,10 +24,10 @@ int main()
     QueryPerformanceFrequency(&clockFreq);
     double delay;
     int elapsedTime;
-    ArrayAdditionModel<myType> arrayAdditionModel;
+    ArrayAdditionModel<numericalType1> arrayAdditionModel;
 
-    myType** arraySet1 = new myType* [EXPERIMENT_COUNT];
-    myType** arraySet2 = new myType* [EXPERIMENT_COUNT];
+    numericalType1** arraySet1 = new numericalType1* [EXPERIMENT_COUNT];
+    numericalType1** arraySet2 = new numericalType1* [EXPERIMENT_COUNT];
     int* arrayLength = new int[EXPERIMENT_COUNT];
     int x, k, length, fileNum;
 
@@ -53,8 +51,8 @@ int main()
             else length = rand() % (arrayMaxLength - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            myType* temp1 = new myType[length];
-            myType* temp2 = new myType[length];
+            numericalType1* temp1 = new numericalType1[length];
+            numericalType1* temp2 = new numericalType1[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -78,8 +76,8 @@ int main()
             else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            myType *temp1 = new myType[length];
-            myType *temp2 = new myType[length];
+            numericalType1 *temp1 = new numericalType1[length];
+            numericalType1 *temp2 = new numericalType1[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -94,8 +92,8 @@ int main()
             length = rand() % ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            myType *temp1 = new myType[length];
-            myType *temp2 = new myType[length];
+            numericalType1 *temp1 = new numericalType1[length];
+            numericalType1 *temp2 = new numericalType1[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -110,8 +108,8 @@ int main()
             length = rand() % (ARRAY_MAX_LENGTH- SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            myType * temp1 = new myType[length];
-            myType * temp2 = new myType[length];
+            numericalType1 * temp1 = new numericalType1[length];
+            numericalType1 * temp2 = new numericalType1[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -126,8 +124,8 @@ int main()
             length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
             //cout << "length: " << length << endl;
             arrayLength[x] = length;
-            myType* temp1 = new myType[length];
-            myType* temp2 = new myType[length];
+            numericalType1* temp1 = new numericalType1[length];
+            numericalType1* temp2 = new numericalType1[length];
             arraySet1[x] = temp1;
             arraySet2[x] = temp2;
             for (k = 0; k < length; k++) {
@@ -166,7 +164,7 @@ int main()
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
         int len = arrayLength[x];
-        myType* output = new myType[len];
+        numericalType1* output = new numericalType1[len];
         arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
         arrayAdditionModel.execute();
         //for(int i=0; i<len; i++)
@@ -181,7 +179,7 @@ int main()
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
         int len = arrayLength[x];
-        myType* output = new myType[len];
+        numericalType1* output = new numericalType1[len];
         arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
         arrayAdditionModel.execute(1);
         //for (int i = 0; i < len; i++)
@@ -197,7 +195,7 @@ int main()
     QueryPerformanceCounter(&start);
     for (x = 0; x < EXPERIMENT_COUNT; x++) {
         int len = arrayLength[x];
-        myType* output = new myType[len];
+        numericalType1* output = new numericalType1[len];
         arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
         arrayAdditionModel.execute(2);
         //for (int i = 0; i < len; i++)

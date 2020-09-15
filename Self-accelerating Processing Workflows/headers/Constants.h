@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+typedef long numericalType1;
+
 const int INPUT_NATURE = 5;
 const int N = 10000;
 const int EXPERIMENT_COUNT = 10000;
@@ -19,5 +21,11 @@ const int THREADS_PER_BLOCK = 1024;
 
 const int REVISE_PERIOD = 1000;
 const int RESET_COUNT = 19;
+
+struct myDim3 {
+	short x, y, z;
+	myDim3() :x(1), y(1), z(1) {}
+	myDim3(short x_, short y_, short z_):x(x_), y(y_), z(z_) {}
+};
 
 #endif // CONSTANTS_H
