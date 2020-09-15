@@ -1,6 +1,6 @@
 #include <MatrixMultiplicationModel.h>
 #include <kernels.h>
-#include <pthread.h>
+#include <omp.h>
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -25,32 +25,28 @@ template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation(){
     // implement using multi threads
     int no_rows_per_thread = localMD->y / CPUCores;
-    pthread_t* thread_handles;
-    malloc(thread_handles, CPUCores * sizeof(pthread_t));
-    for (int i = 0; i < CPUCores; i++) {
-        int[2] args_ = {i, no_rows_per_thread };
-        pthread_create(&thread_handles[i], NULL, threadMatMult, (void*)args_);
-    }
-    for (int i = 0; i < CPUCores; i++) {
-        pthread_join(thread_handles[i], NULL);
-    }
+#pragma omp parallel num_threads(CPUCores)
+    threadMatMult(localA, localB, localC, localMD, no_rows_per_thread);
 }
 
-void* threadMatMult(void* args) {
-    long my_rank = (long)args[0];
-    long no_rows = (long)args[1];
+template <class T>
+void threadMatMult(T *a, T *b, T *out, myDim3 *matD, int no_rows) {
+    long my_rank = omp_get_thread_num();
+    // long no_threads = omp_get_num_threads();
+    // long no_rows = mat->y / no_threads;
+
     int my_first_row = my_rank * no_rows;
     int my_last_row = (my_rank+1) * no_rows-1;
 
     int i, j, k;
     for (i = my_first_row; i < my_last_row; i++) {
-        for (j = 0; j < localMD->y; j++) {
-            out[localMD->y * i + j] = 0;
-            for (k = 0; k < localMD->y; k++)
-                out[localMD->y*i+j] += localA[localMD->y * i+k] * localB[j+ localMD->z * k];
+        for (j = 0; j < matD->y; j++) {
+            out[matD->y * i + j] = 0;
+            for (k = 0; k < matD->y; k++)
+                out[matD->y*i+j] += a[matD->y * i+k] * b[j+ matD->z * k];
         }
     }
-    return NULL;
+    return;
 }
 
 template <class T>
