@@ -83,7 +83,8 @@ void ComputationalModel::execute()
                         reviseCount = REVISE_COUNT_MIN;
                         alignedCount = 0;
                     }
-//                    cout << "REVISE_COUNT: " << reviseCount << endl;
+                    lastRevisedClock.QuadPart = stop.QuadPart;
+                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
 //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
                 } else {
                     processor = -2; // processor = (processor - 1) % 3;
@@ -108,6 +109,7 @@ void ComputationalModel::execute()
                         processor = 1;
                         reviseCount += REVISE_COUNT_STEP * ++alignedCount;
                     }
+                    lastRevisedClock.QuadPart = stop.QuadPart;
 //                    cout << "REVISE_COUNT: " << reviseCount << endl;
 //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
                 }
@@ -144,7 +146,7 @@ void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
     while (true) {
         this_thread::sleep_for(chrono::seconds(cm->revisePeriod));
         QueryPerformanceCounter(&now);
-        if (now.QuadPart - cm->stop.QuadPart > reviseBoundary.QuadPart) {
+        if (now.QuadPart - cm->lastRevisedClock.QuadPart > reviseBoundary.QuadPart) {
             cm->resetFlow();    // reset the flow
         }
     }
