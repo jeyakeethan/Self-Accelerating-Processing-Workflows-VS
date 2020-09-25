@@ -19,7 +19,7 @@ const int RANGE_OF_INT_VALUES = 1024;
 
 const int THREADS_PER_BLOCK = 1024;
 
-const int REVISE_PERIOD = 1000;
+const int REVISE_PERIOD = 1;		// in seconds
 const int RESET_COUNT = 19;
 
 struct myDim3 {

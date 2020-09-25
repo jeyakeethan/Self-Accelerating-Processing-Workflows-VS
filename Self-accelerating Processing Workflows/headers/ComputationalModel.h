@@ -17,6 +17,8 @@ class ComputationalModel
         Clock clocks;
         int CPUCores;
         int sampleMode, id_;
+        LARGE_INTEGER start, stop;
+        static void resetOverPeriodIfBurst(ComputationalModel *cm);
     protected:
     private:
         virtual void CPUImplementation() = 0;

@@ -15,6 +15,8 @@ using namespace std;
 
 ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     resetFlow();
+    ComputationalModel* temp = this;
+    ComputationalModel::resetOverPeriodIfBurst(temp);
 }
 
 inline void ComputationalModel::resetFlow() {
@@ -28,6 +30,7 @@ inline void ComputationalModel::resetFlow() {
     processor = -1;
     lastProcessor = -1;
     id_ = int(&*this);
+
 }
 
 ComputationalModel::~ComputationalModel(){
@@ -52,7 +55,6 @@ void ComputationalModel::execute(int mode)
 // Auto mode execution
 void ComputationalModel::execute()
 {
-    LARGE_INTEGER start, stop;
     switch(processor){
         case 1:
             //cout << "Hello CPU" << endl;
@@ -131,4 +133,20 @@ void ComputationalModel::execute()
 
 void ComputationalModel::setProcessor(int p) {
     processor = p;
+}
+
+inline void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
+{
+    thread revisor([cm]() {
+        LARGE_INTEGER now, frequency, reviseBoundary;
+        QueryPerformanceFrequency(&frequency);
+        reviseBoundary.QuadPart = frequency.QuadPart * cm->revisePeriod;
+        while (true) {
+            this_thread::sleep_for(chrono::seconds(cm->revisePeriod));
+            QueryPerformanceCounter(&now);
+            if (now.QuadPart - cm->stop.QuadPart > reviseBoundary.QuadPart) {
+                cm->resetFlow();    // reset the flow if the input stream is burst and sparsed
+            }
+        }
+    });
 }
