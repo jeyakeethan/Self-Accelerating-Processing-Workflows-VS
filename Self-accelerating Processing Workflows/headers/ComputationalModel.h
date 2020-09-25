@@ -16,7 +16,7 @@ class ComputationalModel
         Clock clocks;
         int CPUCores;
         int sampleMode, id_;
-        LARGE_INTEGER start, stop;
+        LARGE_INTEGER start, stop, lastRevisedClock;
 
         ComputationalModel(int CPUCores);
         virtual ~ComputationalModel();
