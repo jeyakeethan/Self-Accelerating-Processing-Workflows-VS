@@ -29,9 +29,6 @@ int main()
 	int elapsedTime;
 
 	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
-
-	this_thread::sleep_for(chrono::seconds(5));
-	cout << matmulmodel.id_;
 	numericalType1 mat1[6] = { 1, 3, 7,8,4,3 };
 	numericalType1 mat2[6] = { 1, 3, 7,8,3,2 };
 	numericalType1 out[4];

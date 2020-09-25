@@ -15,8 +15,8 @@ using namespace std;
 
 ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     resetFlow();
-    ComputationalModel* temp = this;
-    ComputationalModel::resetOverPeriodIfBurst(temp);
+    revisor = thread(&ComputationalModel::resetOverPeriodIfBurst, this);
+    revisor.detach();
 }
 
 inline void ComputationalModel::resetFlow() {
@@ -30,10 +30,10 @@ inline void ComputationalModel::resetFlow() {
     processor = -1;
     lastProcessor = -1;
     id_ = int(&*this);
-
 }
 
 ComputationalModel::~ComputationalModel(){
+    revisor.~thread();
     //TO DO; log present values for using next boot
 }
 
@@ -135,18 +135,17 @@ void ComputationalModel::setProcessor(int p) {
     processor = p;
 }
 
-inline void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
+/* static method run by a thread to reset the flow if the input stream is burst and sparsed */
+void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
 {
-    thread revisor([cm]() {
-        LARGE_INTEGER now, frequency, reviseBoundary;
-        QueryPerformanceFrequency(&frequency);
-        reviseBoundary.QuadPart = frequency.QuadPart * cm->revisePeriod;
-        while (true) {
-            this_thread::sleep_for(chrono::seconds(cm->revisePeriod));
-            QueryPerformanceCounter(&now);
-            if (now.QuadPart - cm->stop.QuadPart > reviseBoundary.QuadPart) {
-                cm->resetFlow();    // reset the flow if the input stream is burst and sparsed
-            }
+    LARGE_INTEGER now, frequency, reviseBoundary;
+    QueryPerformanceFrequency(&frequency);
+    reviseBoundary.QuadPart = frequency.QuadPart * cm->revisePeriod;
+    while (true) {
+        this_thread::sleep_for(chrono::seconds(cm->revisePeriod));
+        QueryPerformanceCounter(&now);
+        if (now.QuadPart - cm->stop.QuadPart > reviseBoundary.QuadPart) {
+            cm->resetFlow();    // reset the flow
         }
-    });
+    }
 }
