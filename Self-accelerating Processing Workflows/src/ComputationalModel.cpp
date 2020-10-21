@@ -5,7 +5,6 @@
 
 #include <ComputationalModel.h>
 #include <Logger.h>
-
 //for time measure
 #include <windows.h>
 #include <time.h>
@@ -18,7 +17,6 @@
 using namespace std;
 
 bool ComputationalModel::operationalMode = false;
-
 ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     obj_id = obj_id_counter();
     resetFlow();
@@ -57,25 +55,134 @@ void ComputationalModel::execute(int mode)
         for (int i = 0; i < 3; i++) {
             s << attr[i] << " ";
         }
+        switch (mode) {
+        case 1:
+            // cout << "Hello CPU" << endl;// cout << "Hello CPU" << endl;
+            QueryPerformanceCounter(&start);
+            CPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            break;
+        case 2:
+            // cout << "Hello GPU" << endl;// cout << "Hello CPU" << endl;
+            QueryPerformanceCounter(&start);
+            GPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            break;
+        }
+        s << duration << endl;
         logExTime(s.str());
+
+    }
+    else {
+        switch (mode) {
+        case 1:
+            // cout << "Hello CPU" << endl;
+            CPUImplementation();
+            break;
+        case 2:
+            // cout << "Hello GPU" << endl;
+            GPUImplementation();
+            break;
+        }
     }
 
-    switch (mode) {
-    case 1:
-        // cout << "Hello CPU" << endl;
-        CPUImplementation();
-        break;
-    case 2:
-        // cout << "Hello GPU" << endl;
-        GPUImplementation();
-        break;
-    }
 }
 
 // Auto mode execution
 void ComputationalModel::execute()
 {
-    switch(processor){
+    if (operationalMode) {
+        s.clear();
+        s << typeid(*this).name() << " ";
+        s << obj_id << " ";
+        int* attr = getAttributes();
+        for (int i = 0; i < 3; i++) {
+            s << attr[i] << " ";
+        }
+        switch (processor) {
+        case 1:
+            // cout << "Hello CPU" << endl;
+            QueryPerformanceCounter(&start);
+            CPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            break;
+        case 2:
+            // cout << "Hello GPU" << endl;
+            QueryPerformanceCounter(&start);
+            GPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            break;
+        case -1:
+            // cout << "Hello CPU" << endl;
+            QueryPerformanceCounter(&start);
+            CPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            clocks.CPU += duration;
+            // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
+            if (++countS > SAMPLE_COUNT) {
+                if (--sampleMode == 0) {
+                    if (clocks.CPU > clocks.GPU) {
+                        processor = 2;
+                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
+                    }
+                    else {
+                        processor = 1;
+                        reviseCount = REVISE_COUNT_MIN;
+                        alignedCount = 0;
+                    }
+                    lastRevisedClock.QuadPart = stop.QuadPart;
+                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
+//                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+                }
+                else {
+                    processor = -2; // processor = (processor - 1) % 3;
+                    countS = 1;
+                }
+            }
+            return;
+        case -2:
+            // cout << "Hello GPU" << endl;
+            QueryPerformanceCounter(&start);
+            GPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            clocks.GPU += duration;
+            // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
+            if (++countS > SAMPLE_COUNT) {
+                if (--sampleMode == 0) {
+                    if (clocks.CPU > clocks.GPU) {
+                        processor = 2;
+                        reviseCount = REVISE_COUNT_MIN;
+                        alignedCount = 0;
+                    }
+                    else {
+                        processor = 1;
+                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
+                    }
+                    lastRevisedClock.QuadPart = stop.QuadPart;
+                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
+                    //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+                }
+                else {
+                    processor = -1; // processor = (processor - 1) % 3;
+                    countS = 1;
+                }
+            }
+            return;
+        default:
+            sampleMode = 2;
+            processor = -1;
+        }
+        s << duration << endl;
+        logExTime(s.str());
+    }
+    else {
+        switch (processor) {
         case 1:
             //cout << "Hello CPU" << endl;
             CPUImplementation();
@@ -98,7 +205,8 @@ void ComputationalModel::execute()
                     if (clocks.CPU > clocks.GPU) {
                         processor = 2;
                         reviseCount += REVISE_COUNT_STEP * ++alignedCount;
-                    } else {
+                    }
+                    else {
                         processor = 1;
                         reviseCount = REVISE_COUNT_MIN;
                         alignedCount = 0;
@@ -106,7 +214,8 @@ void ComputationalModel::execute()
                     lastRevisedClock.QuadPart = stop.QuadPart;
                     //                    cout << "REVISE_COUNT: " << reviseCount << endl;
 //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
-                } else {
+                }
+                else {
                     processor = -2; // processor = (processor - 1) % 3;
                     countS = 1;
                 }
@@ -125,13 +234,14 @@ void ComputationalModel::execute()
                         processor = 2;
                         reviseCount = REVISE_COUNT_MIN;
                         alignedCount = 0;
-                    } else {
+                    }
+                    else {
                         processor = 1;
                         reviseCount += REVISE_COUNT_STEP * ++alignedCount;
                     }
                     lastRevisedClock.QuadPart = stop.QuadPart;
-//                    cout << "REVISE_COUNT: " << reviseCount << endl;
-//                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
+                    //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
                 }
                 else {
                     processor = -1; // processor = (processor - 1) % 3;
@@ -142,6 +252,8 @@ void ComputationalModel::execute()
         default:
             sampleMode = 2;
             processor = -1;
+        }
+
     }
     if (countL > reviseCount) {
             sampleMode = 2;

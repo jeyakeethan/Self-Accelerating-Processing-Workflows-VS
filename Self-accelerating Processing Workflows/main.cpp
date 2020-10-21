@@ -29,14 +29,14 @@ int main()
 	double delay;
 	int elapsedTime; int i;
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(1);
+	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
 	numericalType1 mat1[6] = { 1, 3, 7,8,4,3 };
 	numericalType1 mat2[6] = { 1, 3, 7,8,3,2 };
 	numericalType1 outCPU[4] = {0,0,0,0};
 	matmulmodel.setData(mat1, mat2, outCPU, new myDim3(2, 3, 2));
 
 	QueryPerformanceCounter(&start);
-	matmulmodel.execute(2);
+	matmulmodel.execute(1);
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);

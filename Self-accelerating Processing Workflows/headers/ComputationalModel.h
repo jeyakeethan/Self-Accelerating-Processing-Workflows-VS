@@ -5,6 +5,7 @@
 
 #include <Constants.h>
 #include <fstream>
+#include <sstream>
 
 //for async function
 #include <thread>
@@ -17,9 +18,11 @@ class ComputationalModel
     public:
         static bool operationalMode;
         int countS, countL, reviseCount, alignedCount, processor, lastProcessor, revisePeriod;
+        stringstream s;
         Clock clocks;
         int CPUCores;
         int sampleMode, model_id, obj_id;
+        long long duration;
         LARGE_INTEGER start, stop, lastRevisedClock;
 
         ComputationalModel(int CPUCores);
