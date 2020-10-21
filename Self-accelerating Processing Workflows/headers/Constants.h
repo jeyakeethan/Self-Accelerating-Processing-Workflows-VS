@@ -1,6 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <string>
 typedef float numericalType1;
 
 const int INPUT_NATURE = 5;
@@ -21,6 +22,8 @@ const int THREADS_PER_BLOCK = 1024;
 
 const int REVISE_PERIOD = 1800;		// in seconds
 const int RESET_COUNT = 19;
+
+const std::string LOG_FILE_NAME = "statistics.log";
 
 struct myDim3 {
 	short x, y, z;

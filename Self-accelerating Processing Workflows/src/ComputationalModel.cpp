@@ -1,6 +1,10 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
 #include <ComputationalModel.h>
-#include <Constants.h>
+#include <Logger.h>
 
 //for time measure
 #include <windows.h>
@@ -13,7 +17,10 @@
 
 using namespace std;
 
+bool ComputationalModel::operationalMode = false;
+
 ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
+    obj_id = obj_id_counter();
     resetFlow();
     revisor = thread(&ComputationalModel::resetOverPeriodIfBurst, this);
     revisor.detach();
@@ -29,17 +36,30 @@ inline void ComputationalModel::resetFlow() {
     sampleMode = 2;
     processor = -1;
     lastProcessor = -1;
-    id_ = int(&*this);
+    // id_ = int(&*this);
 }
 
 ComputationalModel::~ComputationalModel(){
     revisor.~thread();
+    Logger::close();
     //TO DO; log present values for using next boot
 }
 
 // Mannual mode execution
 void ComputationalModel::execute(int mode)
 {
+    // first class name, object id, data and finally the execution time
+    if (operationalMode) {
+        stringstream s;
+        s << typeid(*this).name() << " ";
+        s << obj_id << " ";
+        int* attr = getAttributes();
+        for (int i = 0; i < 3; i++) {
+            s << attr[i] << " ";
+        }
+        logExTime(s.str());
+    }
+
     switch (mode) {
     case 1:
         // cout << "Hello CPU" << endl;
@@ -137,6 +157,11 @@ void ComputationalModel::setProcessor(int p) {
     processor = p;
 }
 
+
+void ComputationalModel::prepareLogging() {
+
+}
+
 /* static method run by a thread to reset the flow if the input stream is burst and sparsed */
 void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
 {
@@ -151,3 +176,15 @@ void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
         }
     }
 }
+
+void ComputationalModel::setOperationalMode(bool om) {
+    operationalMode = om;
+}
+
+void ComputationalModel::logExTime(string str) {
+    if (!Logger::isOpen()) {
+        Logger::open(LOG_FILE_NAME);
+    }
+    Logger::write(str);
+}
+

@@ -98,10 +98,10 @@
     <CudaCompile Include="src\MatrixMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Logger.cpp" />
     <CudaCompile Include="src\ArrayAdditionModel.cu">
       <FileType>Document</FileType>
     </CudaCompile>
-    <CudaCompile Include="mainx.cpp" />
     <ClCompile Include="src\ComputationalModel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +109,7 @@
     <ClInclude Include="headers\ComputationalModel.h" />
     <ClInclude Include="headers\Constants.h" />
     <ClInclude Include="headers\DotMultiplicationModel.h" />
+    <ClInclude Include="headers\Logger.h" />
     <ClInclude Include="headers\kernels.h" />
     <ClInclude Include="headers\MatrixMultiplicationModel.h" />
     <ClInclude Include="headers\WorkflowController.h" />

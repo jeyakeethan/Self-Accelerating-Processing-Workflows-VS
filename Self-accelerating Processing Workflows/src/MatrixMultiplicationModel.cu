@@ -21,12 +21,23 @@ MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores) :Computati
 template <class T>
 MatrixMultiplicationModel<T>::~MatrixMultiplicationModel() {}
 
+
+// retrive influenced attributes
+template <class T>
+int* MatrixMultiplicationModel<T>::getAttributes() {
+	int* attr = new int[3];
+	attr[0] = localMD->x;
+	attr[1] = localMD->y;
+	attr[2] = localMD->z;
+	return attr;
+}
+
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation() {
 	// implement using multi threads
 #pragma omp parallel num_threads(CPUCores)
 	{
-#pragma omp for
+	#pragma omp for
 		for (int i = 0; i < localMD->x; i++) {
 			for (int j = 0; j < localMD->y; j++) {
 				localC[localMD->z * i + j] = 0;
@@ -35,7 +46,6 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 				}
 			}
 		}
-#pragma omp barrier
 	}
 }
 

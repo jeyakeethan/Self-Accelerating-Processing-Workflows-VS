@@ -10,6 +10,7 @@ class MatrixMultiplicationModel : public ComputationalModel
     public:
         T *localA, *localB, *localC;
         myDim3 *localMD;
+        int* attributes;
         MatrixMultiplicationModel(int CPUCores);
         ~MatrixMultiplicationModel();
         inline void setData(T *mat1, T *mat2, T *out, myDim3 *matricesDim){
@@ -19,9 +20,9 @@ class MatrixMultiplicationModel : public ComputationalModel
     protected:
 
     private:
-        void threadMatMult(T* a, T* b, T* out, myDim3* matD, int no_rows);
         virtual void CPUImplementation();
         virtual void GPUImplementation();
+        virtual int* getAttributes();
 };
 
 #include "MatrixMultiplicationModel.cu"
