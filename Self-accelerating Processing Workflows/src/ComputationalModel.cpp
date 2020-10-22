@@ -122,8 +122,6 @@ void ComputationalModel::execute() {
                     alignedCount = 0;
                 }
                 lastRevisedClock.QuadPart = stop.QuadPart;
-                //                    cout << "REVISE_COUNT: " << reviseCount << endl;
-//                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
             }
             else {
                 processor = -2; // processor = (processor - 1) % 3;
@@ -150,8 +148,6 @@ void ComputationalModel::execute() {
                     reviseCount += REVISE_COUNT_STEP * ++alignedCount;
                 }
                 lastRevisedClock.QuadPart = stop.QuadPart;
-                //                    cout << "REVISE_COUNT: " << reviseCount << endl;
-                //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
             }
             else {
                 processor = -1; // processor = (processor - 1) % 3;
@@ -246,8 +242,6 @@ void ComputationalModel::executeAndLogging()
                     reviseCount += REVISE_COUNT_STEP * ++alignedCount;
                 }
                 lastRevisedClock.QuadPart = stop.QuadPart;
-                //                    cout << "REVISE_COUNT: " << reviseCount << endl;
-                //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
             }
             else {
                 processor = -1; // processor = (processor - 1) % 3;
