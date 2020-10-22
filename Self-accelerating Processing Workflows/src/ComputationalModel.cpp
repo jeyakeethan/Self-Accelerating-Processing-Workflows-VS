@@ -44,216 +44,124 @@ ComputationalModel::~ComputationalModel(){
 }
 
 // Mannual mode execution
-void ComputationalModel::execute(int mode)
+void ComputationalModel::execute(int mode) {
+    switch (mode) {
+    case 1:
+        // cout << "Hello CPU" << endl;
+        CPUImplementation();
+        break;
+    case 2:
+        // cout << "Hello GPU" << endl;
+        GPUImplementation();
+        break;
+    }
+}
+
+void ComputationalModel::executeAndLogging(int mode)
 {
     // first class name, object id, data and finally the execution time
-    if (operationalMode) {
-        stringstream s;
-        s << typeid(*this).name() << " ";
-        s << obj_id << " ";
-        int* attr = getAttributes();
-        for (int i = 0; i < 3; i++) {
-            s << attr[i] << " ";
-        }
-        switch (mode) {
-        case 1:
-            // cout << "Hello CPU" << endl;// cout << "Hello CPU" << endl;
-            QueryPerformanceCounter(&start);
-            CPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
-            break;
-        case 2:
-            // cout << "Hello GPU" << endl;// cout << "Hello CPU" << endl;
-            QueryPerformanceCounter(&start);
-            GPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
-            break;
-        }
-        s << duration << endl;
-        logExTime(s.str());
-
-    }
-    else {
-        switch (mode) {
-        case 1:
-            // cout << "Hello CPU" << endl;
-            CPUImplementation();
-            break;
-        case 2:
-            // cout << "Hello GPU" << endl;
-            GPUImplementation();
-            break;
-        }
+    stringstream s;
+    s << typeid(*this).name() << " ";
+    s << obj_id << " ";
+    switch (mode) {
+    case 1:
+        // cout << "Hello CPU" << endl;
+        QueryPerformanceCounter(&start);
+        CPUImplementation();
+        QueryPerformanceCounter(&stop);
+        duration = stop.QuadPart - start.QuadPart;
+        s << "CPU ";
+        break;
+    case 2:
+        // cout << "Hello GPU" << endl;
+        QueryPerformanceCounter(&start);
+        GPUImplementation();
+        QueryPerformanceCounter(&stop);
+        duration = stop.QuadPart - start.QuadPart;
+        s << "GPU ";
+        break;
     }
 
+    int* attr = getAttributes();
+    for (int i = 0; i < 3; i++) {
+        s << attr[i] << " ";
+    }
+    s << duration;
+    logExTime(s.str());
 }
 
 // Auto mode execution
-void ComputationalModel::execute()
-{
-    if (operationalMode) {
-        s.clear();
-        s << typeid(*this).name() << " ";
-        s << obj_id << " ";
-        int* attr = getAttributes();
-        for (int i = 0; i < 3; i++) {
-            s << attr[i] << " ";
-        }
-        switch (processor) {
-        case 1:
-            // cout << "Hello CPU" << endl;
-            QueryPerformanceCounter(&start);
-            CPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
-            break;
-        case 2:
-            // cout << "Hello GPU" << endl;
-            QueryPerformanceCounter(&start);
-            GPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
-            break;
-        case -1:
-            // cout << "Hello CPU" << endl;
-            QueryPerformanceCounter(&start);
-            CPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
-            clocks.CPU += duration;
-            // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
-            if (++countS > SAMPLE_COUNT) {
-                if (--sampleMode == 0) {
-                    if (clocks.CPU > clocks.GPU) {
-                        processor = 2;
-                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
-                    }
-                    else {
-                        processor = 1;
-                        reviseCount = REVISE_COUNT_MIN;
-                        alignedCount = 0;
-                    }
-                    lastRevisedClock.QuadPart = stop.QuadPart;
-                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
+void ComputationalModel::execute() {
+    switch (processor) {
+    case 1:
+        //cout << "Hello CPU" << endl;
+        CPUImplementation();
+        countL++;
+        break;
+    case 2:
+        //cout << "Hello GPU" << endl;
+        GPUImplementation();
+        countL++;
+        break;
+    case -1:
+        // cout << "Hello CPU" << endl;
+        QueryPerformanceCounter(&start);
+        CPUImplementation();
+        QueryPerformanceCounter(&stop);
+        clocks.CPU += stop.QuadPart - start.QuadPart;
+        // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
+        if (++countS > SAMPLE_COUNT) {
+            if (--sampleMode == 0) {
+                if (clocks.CPU > clocks.GPU) {
+                    processor = 2;
+                    reviseCount += REVISE_COUNT_STEP * ++alignedCount;
+                }
+                else {
+                    processor = 1;
+                    reviseCount = REVISE_COUNT_MIN;
+                    alignedCount = 0;
+                }
+                lastRevisedClock.QuadPart = stop.QuadPart;
+                //                    cout << "REVISE_COUNT: " << reviseCount << endl;
 //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
-                }
-                else {
-                    processor = -2; // processor = (processor - 1) % 3;
-                    countS = 1;
-                }
             }
-            return;
-        case -2:
-            // cout << "Hello GPU" << endl;
-            QueryPerformanceCounter(&start);
-            GPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
-            clocks.GPU += duration;
-            // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
-            if (++countS > SAMPLE_COUNT) {
-                if (--sampleMode == 0) {
-                    if (clocks.CPU > clocks.GPU) {
-                        processor = 2;
-                        reviseCount = REVISE_COUNT_MIN;
-                        alignedCount = 0;
-                    }
-                    else {
-                        processor = 1;
-                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
-                    }
-                    lastRevisedClock.QuadPart = stop.QuadPart;
-                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
-                    //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
-                }
-                else {
-                    processor = -1; // processor = (processor - 1) % 3;
-                    countS = 1;
-                }
+            else {
+                processor = -2; // processor = (processor - 1) % 3;
+                countS = 1;
             }
-            return;
-        default:
-            sampleMode = 2;
-            processor = -1;
         }
-        s << duration << endl;
-        logExTime(s.str());
-    }
-    else {
-        switch (processor) {
-        case 1:
-            //cout << "Hello CPU" << endl;
-            CPUImplementation();
-            countL++;
-            break;
-        case 2:
-            //cout << "Hello GPU" << endl;
-            GPUImplementation();
-            countL++;
-            break;
-        case -1:
-            // cout << "Hello CPU" << endl;
-            QueryPerformanceCounter(&start);
-            CPUImplementation();
-            QueryPerformanceCounter(&stop);
-            clocks.CPU += stop.QuadPart - start.QuadPart;
-            // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
-            if (++countS > SAMPLE_COUNT) {
-                if (--sampleMode == 0) {
-                    if (clocks.CPU > clocks.GPU) {
-                        processor = 2;
-                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
-                    }
-                    else {
-                        processor = 1;
-                        reviseCount = REVISE_COUNT_MIN;
-                        alignedCount = 0;
-                    }
-                    lastRevisedClock.QuadPart = stop.QuadPart;
-                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
-//                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+        return;
+    case -2:
+        // cout << "Hello GPU" << endl;
+        QueryPerformanceCounter(&start);
+        GPUImplementation();
+        QueryPerformanceCounter(&stop);
+        clocks.GPU += stop.QuadPart - start.QuadPart;
+        // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
+        if (++countS > SAMPLE_COUNT) {
+            if (--sampleMode == 0) {
+                if (clocks.CPU > clocks.GPU) {
+                    processor = 2;
+                    reviseCount = REVISE_COUNT_MIN;
+                    alignedCount = 0;
                 }
                 else {
-                    processor = -2; // processor = (processor - 1) % 3;
-                    countS = 1;
+                    processor = 1;
+                    reviseCount += REVISE_COUNT_STEP * ++alignedCount;
                 }
+                lastRevisedClock.QuadPart = stop.QuadPart;
+                //                    cout << "REVISE_COUNT: " << reviseCount << endl;
+                //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
             }
-            return;
-        case -2:
-            // cout << "Hello GPU" << endl;
-            QueryPerformanceCounter(&start);
-            GPUImplementation();
-            QueryPerformanceCounter(&stop);
-            clocks.GPU += stop.QuadPart - start.QuadPart;
-            // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
-            if (++countS > SAMPLE_COUNT) {
-                if (--sampleMode == 0) {
-                    if (clocks.CPU > clocks.GPU) {
-                        processor = 2;
-                        reviseCount = REVISE_COUNT_MIN;
-                        alignedCount = 0;
-                    }
-                    else {
-                        processor = 1;
-                        reviseCount += REVISE_COUNT_STEP * ++alignedCount;
-                    }
-                    lastRevisedClock.QuadPart = stop.QuadPart;
-                    //                    cout << "REVISE_COUNT: " << reviseCount << endl;
-                    //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
-                }
-                else {
-                    processor = -1; // processor = (processor - 1) % 3;
-                    countS = 1;
-                }
+            else {
+                processor = -1; // processor = (processor - 1) % 3;
+                countS = 1;
             }
-            return;
-        default:
-            sampleMode = 2;
-            processor = -1;
         }
-
+        return;
+    default:
+        sampleMode = 2;
+        processor = -1;
     }
     if (countL > reviseCount) {
             sampleMode = 2;
@@ -262,6 +170,110 @@ void ComputationalModel::execute()
             processor = -processor;
             clocks = { 0, 0, 0.0, 0.0 };
 //            cout << endl;
+    }
+}
+
+void ComputationalModel::executeAndLogging()
+{
+    s.clear();
+    s << typeid(*this).name() << " ";
+    s << obj_id << " ";
+    switch (processor) {
+    case 1:
+        // cout << "Hello CPU" << endl;
+        s << "CPU ";
+        QueryPerformanceCounter(&start);
+        CPUImplementation();
+        QueryPerformanceCounter(&stop);
+        duration = stop.QuadPart - start.QuadPart;
+        break;
+    case 2:
+        // cout << "Hello GPU" << endl;
+        s << "GPU ";
+        QueryPerformanceCounter(&start);
+        GPUImplementation();
+        QueryPerformanceCounter(&stop);
+        duration = stop.QuadPart - start.QuadPart;
+        break;
+    case -1:
+        // cout << "Hello CPU" << endl;
+        s << "CPU ";
+        QueryPerformanceCounter(&start);
+        CPUImplementation();
+        QueryPerformanceCounter(&stop);
+        duration = stop.QuadPart - start.QuadPart;
+        clocks.CPU += duration;
+        // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
+        if (++countS > SAMPLE_COUNT) {
+            if (--sampleMode == 0) {
+                if (clocks.CPU > clocks.GPU) {
+                    processor = 2;
+                    reviseCount += REVISE_COUNT_STEP * ++alignedCount;
+                }
+                else {
+                    processor = 1;
+                    reviseCount = REVISE_COUNT_MIN;
+                    alignedCount = 0;
+                }
+                lastRevisedClock.QuadPart = stop.QuadPart;
+                //                    cout << "REVISE_COUNT: " << reviseCount << endl;
+//                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+            }
+            else {
+                processor = -2; // processor = (processor - 1) % 3;
+                countS = 1;
+            }
+        }
+        return;
+    case -2:
+        s << "GPU ";
+        // cout << "Hello GPU" << endl;
+        QueryPerformanceCounter(&start);
+        GPUImplementation();
+        QueryPerformanceCounter(&stop);
+        duration = stop.QuadPart - start.QuadPart;
+        clocks.GPU += duration;
+        // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
+        if (++countS > SAMPLE_COUNT) {
+            if (--sampleMode == 0) {
+                if (clocks.CPU > clocks.GPU) {
+                    processor = 2;
+                    reviseCount = REVISE_COUNT_MIN;
+                    alignedCount = 0;
+                }
+                else {
+                    processor = 1;
+                    reviseCount += REVISE_COUNT_STEP * ++alignedCount;
+                }
+                lastRevisedClock.QuadPart = stop.QuadPart;
+                //                    cout << "REVISE_COUNT: " << reviseCount << endl;
+                //                    cout << alignedCount << "," << clocks.CPU << "," << clocks.GPU << endl << endl;
+            }
+            else {
+                processor = -1; // processor = (processor - 1) % 3;
+                countS = 1;
+            }
+        }
+        return;
+    default:
+        sampleMode = 2;
+        processor = -1;
+    }
+
+    int* attr = getAttributes();
+    for (int i = 0; i < 3; i++) {
+        s << attr[i] << " ";
+    }
+    s << duration << endl;
+    logExTime(s.str());
+
+    if (countL > reviseCount) {
+        sampleMode = 2;
+        countS = 1;
+        countL = 1;
+        processor = -processor;
+        clocks = { 0, 0, 0.0, 0.0 };
+        //            cout << endl;
     }
 }
 

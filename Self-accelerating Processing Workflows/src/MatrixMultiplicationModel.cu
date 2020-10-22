@@ -14,7 +14,7 @@
 using namespace std;
 
 template <class T>
-MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores) :ComputationalModel(CPUCores) {
+MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores):ComputationalModel(CPUCores) {
 	//super(CPUCores);
 }
 
@@ -34,18 +34,21 @@ int* MatrixMultiplicationModel<T>::getAttributes() {
 
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation() {
-	// implement using multi threads
+//implement using multi threads
+
 #pragma omp parallel num_threads(CPUCores)
 	{
-	#pragma omp for
+#pragma omp for
 		for (int i = 0; i < localMD->x; i++) {
-			for (int j = 0; j < localMD->y; j++) {
-				localC[localMD->z * i + j] = 0;
+			for (int j = 0; j < localMD->z; j++) {
+				T sum = 0;
 				for (int k = 0; k < localMD->y; k++) {
-					localC[localMD->z * i + j] += localA[localMD->y * i + k] * localB[j + localMD->z * k];
+					sum += localA[localMD->y * i + k] * localB[j + localMD->z * k];
 				}
+				localC[localMD->z * i + j] = sum;
 			}
 		}
+#pragma omp barrier
 	}
 }
 

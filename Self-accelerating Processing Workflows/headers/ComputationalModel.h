@@ -34,6 +34,8 @@ class ComputationalModel
         void resetFlow();
         void execute();
         void execute(int mode);
+        void executeAndLogging();
+        void executeAndLogging(int mode);
         void prepareLogging();
         void setProcessor(int p);
     protected:
