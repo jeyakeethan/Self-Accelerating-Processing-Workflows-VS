@@ -63,24 +63,30 @@ void ComputationalModel::executeAndLogging(int mode)
     stringstream s;
     s << typeid(*this).name() << " ";
     s << obj_id << " ";
+    LARGE_INTEGER start_cover;
+    LARGE_INTEGER stop_cover;
+    QueryPerformanceCounter(&start_cover);
+
     switch (mode) {
-    case 1:
-        // cout << "Hello CPU" << endl;
-        QueryPerformanceCounter(&start);
-        CPUImplementation();
-        QueryPerformanceCounter(&stop);
-        duration = stop.QuadPart - start.QuadPart;
-        s << "CPU ";
-        break;
-    case 2:
-        // cout << "Hello GPU" << endl;
-        QueryPerformanceCounter(&start);
-        GPUImplementation();
-        QueryPerformanceCounter(&stop);
-        duration = stop.QuadPart - start.QuadPart;
-        s << "GPU ";
-        break;
+        case 1:
+            // cout << "Hello CPU" << endl;
+            CPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            s << "CPU ";
+            break;
+        case 2:
+            // cout << "Hello GPU" << endl;
+            QueryPerformanceCounter(&start);
+            GPUImplementation();
+            QueryPerformanceCounter(&stop);
+            duration = stop.QuadPart - start.QuadPart;
+            s << "GPU ";
+            break;
     }
+
+    QueryPerformanceCounter(&stop_cover);
+    duration = stop_cover.QuadPart - start_cover.QuadPart;
 
     int* attr = getAttributes();
     for (int i = 0; i < 3; i++) {
@@ -174,22 +180,19 @@ void ComputationalModel::executeAndLogging()
     s.clear();
     s << typeid(*this).name() << " ";
     s << obj_id << " ";
+    LARGE_INTEGER start_cover;
+    LARGE_INTEGER stop_cover;
+    QueryPerformanceCounter(&start_cover);
     switch (processor) {
     case 1:
         // cout << "Hello CPU" << endl;
         s << "CPU ";
-        QueryPerformanceCounter(&start);
         CPUImplementation();
-        QueryPerformanceCounter(&stop);
-        duration = stop.QuadPart - start.QuadPart;
         break;
     case 2:
         // cout << "Hello GPU" << endl;
         s << "GPU ";
-        QueryPerformanceCounter(&start);
         GPUImplementation();
-        QueryPerformanceCounter(&stop);
-        duration = stop.QuadPart - start.QuadPart;
         break;
     case -1:
         // cout << "Hello CPU" << endl;
@@ -197,8 +200,7 @@ void ComputationalModel::executeAndLogging()
         QueryPerformanceCounter(&start);
         CPUImplementation();
         QueryPerformanceCounter(&stop);
-        duration = stop.QuadPart - start.QuadPart;
-        clocks.CPU += duration;
+        clocks.CPU += stop.QuadPart - start.QuadPart;;
         // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
         if (++countS > SAMPLE_COUNT) {
             if (--sampleMode == 0) {
@@ -227,8 +229,7 @@ void ComputationalModel::executeAndLogging()
         QueryPerformanceCounter(&start);
         GPUImplementation();
         QueryPerformanceCounter(&stop);
-        duration = stop.QuadPart - start.QuadPart;
-        clocks.GPU += duration;
+        clocks.GPU += stop.QuadPart - start.QuadPart;;
         // cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
         if (++countS > SAMPLE_COUNT) {
             if (--sampleMode == 0) {
@@ -254,6 +255,9 @@ void ComputationalModel::executeAndLogging()
         processor = -1;
     }
 
+    QueryPerformanceCounter(&stop_cover);
+    duration = stop_cover.QuadPart - start_cover.QuadPart;
+
     int* attr = getAttributes();
     for (int i = 0; i < 3; i++) {
         s << attr[i] << " ";
@@ -267,7 +271,6 @@ void ComputationalModel::executeAndLogging()
         countL = 1;
         processor = -processor;
         clocks = { 0, 0, 0.0, 0.0 };
-        //            cout << endl;
     }
 }
 
