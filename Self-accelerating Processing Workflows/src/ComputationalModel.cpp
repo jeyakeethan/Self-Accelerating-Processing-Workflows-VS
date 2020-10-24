@@ -34,6 +34,7 @@ inline void ComputationalModel::resetFlow() {
     sampleMode = 2;
     processor = -1;
     lastProcessor = -1;
+    QueryPerformanceFrequency(&clockFreq);
     // id_ = int(&*this);
 }
 
@@ -86,13 +87,14 @@ void ComputationalModel::executeAndLogging(int mode)
     }
 
     QueryPerformanceCounter(&stop_cover);
-    duration = stop_cover.QuadPart - start_cover.QuadPart;
 
+    duration = (double)(stop_cover.QuadPart - start_cover.QuadPart) / (double)clockFreq.QuadPart;
+    double elapsedTime = int(duration * 1000);
     int* attr = getAttributes();
     for (int i = 0; i < 3; i++) {
         s << attr[i] << " ";
     }
-    s << duration;
+    s << elapsedTime;
     logExTime(s.str());
 }
 
@@ -256,13 +258,14 @@ void ComputationalModel::executeAndLogging()
     }
 
     QueryPerformanceCounter(&stop_cover);
-    duration = stop_cover.QuadPart - start_cover.QuadPart;
 
+    duration = (double)(stop_cover.QuadPart - start_cover.QuadPart) / (double)clockFreq.QuadPart;
+    double elapsedTime = int(duration * 1000);
     int* attr = getAttributes();
     for (int i = 0; i < 3; i++) {
         s << attr[i] << " ";
     }
-    s << duration << endl;
+    s << elapsedTime;
     logExTime(s.str());
 
     if (countL > reviseCount) {

@@ -23,7 +23,7 @@ class ComputationalModel
         int CPUCores;
         int sampleMode, model_id, obj_id;
         long long duration;
-        LARGE_INTEGER start, stop, lastRevisedClock;
+        LARGE_INTEGER start, stop, lastRevisedClock, clockFreq;
 
         ComputationalModel(int CPUCores);
         virtual ~ComputationalModel();
