@@ -38,6 +38,7 @@ class ComputationalModel
         void executeAndLogging(int mode);
         void prepareLogging();
         void setProcessor(int p);
+        void clearLogs();
     protected:
     private:
         thread revisor;

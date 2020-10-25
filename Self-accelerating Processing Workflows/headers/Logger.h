@@ -12,6 +12,7 @@ public:
     // write message
     static void write(const string& message);
     static bool isOpen();
+    static void clearLogs(const string& logFile);
 private:
     Logger();
     ofstream fileStream;

@@ -20,6 +20,14 @@
 #include <future>
 
 using namespace std;
+
+static bool compareResults(numericalType1* arr1, numericalType1* arr2, int len) {
+	for (int x = 0; x < len; x++)
+		if (arr1[x] != arr2[x])
+			return false;
+	return true;
+}
+
 int main()
 {
 	// ComputationalModel::setOperationalMode(true);
@@ -27,42 +35,16 @@ int main()
 	ofstream outfile;
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
-	int elapsedTime; int i;
+	int elapsedTimeCPU, elapsedTimeGPU;
 
 	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
-	
-	/*
-	numericalType1 mat1[6] = { 1, 3, 7, 8, 4, 3 };
-	numericalType1 mat2[6] = { 1, 3, 7, 8, 3, 2 };
-	numericalType1 outCPU[4] = {0,0,0,0};
-	matmulmodel.setData(mat1, mat2, outCPU, new myDim3(2, 3, 2));
-
-	QueryPerformanceCounter(&start);
-	matmulmodel.executeAndLogging(1);
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	elapsedTime = int(delay * 1000);
-	cout << endl << "CPU Time: " << elapsedTime << " ms" << endl;
-	for (i = 0; i < 4; i++) {
-		cout << outCPU[i] << endl;
-	}
-
-	numericalType1 outGPU[4] = { 0,0,0,0 };
-	matmulmodel.setData(mat1, mat2, outGPU, new myDim3(2, 3, 2));
-	QueryPerformanceCounter(&start);
-	matmulmodel.executeAndLogging(2);
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	elapsedTime = int(delay * 1000);
-	cout << endl << "GPU Time: " << elapsedTime << " ms" << endl;
-	for (i = 0; i < 4; i++)
-		cout << outGPU[i] << endl;
-	*/
+	// matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	int step = 100;
 	int levels = 10;
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
+	cout << "Status " << "CPU (ms) " << "GPU (ms)" << endl;		// print header
 	for (int l = step; l <= levels * step; l += step) {
 		for (int m = step; m <= levels * step; m += step) {
 			for (int n = step; n <= levels * step; n += step) {
@@ -84,16 +66,20 @@ int main()
 				matmulmodel.executeAndLogging(1);
 				QueryPerformanceCounter(&stop);
 				delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-				elapsedTime = int(delay * 1000);
-				cout << endl << "CPU Time: " << elapsedTime << " ms" << endl;
+				elapsedTimeCPU = int(delay * 1000);
 
 				matmulmodel.setData(mat1, mat2, matOut2, new myDim3(l, m, n));
 				QueryPerformanceCounter(&start);
 				matmulmodel.executeAndLogging(2);
 				QueryPerformanceCounter(&stop);
 				delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-				elapsedTime = int(delay * 1000);
-				cout << endl << "GPU Time: " << elapsedTime << " ms" << endl;
+				elapsedTimeGPU = int(delay * 1000);
+
+				string status = "Differ";
+				if (compareResults(matOut1, matOut2, lengthZ))
+					status = "Same";
+				cout << status << " " << elapsedTimeCPU << " " << elapsedTimeGPU << endl;
+
 				free(mat1);
 				free(matOut1);
 				free(mat2);

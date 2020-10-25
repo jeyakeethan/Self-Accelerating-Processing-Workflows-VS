@@ -309,3 +309,7 @@ void ComputationalModel::logExTime(string str) {
     Logger::write(str);
 }
 
+void ComputationalModel::clearLogs() {
+    Logger::clearLogs(LOG_FILE_NAME);
+}
+
