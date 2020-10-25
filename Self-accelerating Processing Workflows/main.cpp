@@ -44,7 +44,7 @@ int main()
 	int levels = 10;
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
-	cout << "Status " << "CPU (ms) " << "GPU (ms)" << endl;		// print header
+	cout << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header
 	for (int l = step; l <= levels * step; l += step) {
 		for (int m = step; m <= levels * step; m += step) {
 			for (int n = step; n <= levels * step; n += step) {
@@ -78,7 +78,7 @@ int main()
 				string status = "Differ";
 				if (compareResults(matOut1, matOut2, lengthZ))
 					status = "Same";
-				cout << status << " " << elapsedTimeCPU << " " << elapsedTimeGPU << endl;
+				cout << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;
 
 				free(mat1);
 				free(matOut1);
