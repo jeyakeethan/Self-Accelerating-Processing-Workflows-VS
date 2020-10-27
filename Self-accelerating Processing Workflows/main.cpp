@@ -30,6 +30,39 @@ static bool compareResults(numericalType1* arr1, numericalType1* arr2, int len) 
 
 int main()
 {
+	LARGE_INTEGER start, stop, clockFreq;
+	ofstream outfile;
+	QueryPerformanceFrequency(&clockFreq);
+	double delay;
+	int elapsedTime;
+
+	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
+	numericalType1 mat1[6] = { 1, 3, 7,8,4,3 };
+	numericalType1 mat2[6] = { 1, 3, 7,8,3,2 };
+	numericalType1 out[4];
+	matmulmodel.setData(mat1, mat2, out, new myDim3(2, 3, 2));
+
+	QueryPerformanceCounter(&start);
+	matmulmodel.execute(1);
+	QueryPerformanceCounter(&stop);
+	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+	elapsedTime = int(delay * 1000);
+	cout << endl << "CPU Time: " << elapsedTime << " ms" << endl;
+	for (int t = 0; t < 4; t++) {
+		cout << out[t] << endl;
+		out[t] = 0;
+	}
+
+	QueryPerformanceCounter(&start);
+	matmulmodel.execute(2);
+	QueryPerformanceCounter(&stop);
+	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+	elapsedTime = int(delay * 1000);
+	cout << endl << "GPU Time: " << elapsedTime << " ms" << endl;
+	for (int t = 0; t < 4; t++)
+		cout << out[t] << endl;
+
+	/*
 	// ComputationalModel::setOperationalMode(true);
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
@@ -87,6 +120,6 @@ int main()
 			}
 		}
 	}
-
+	*/
 	return 0;
 }
