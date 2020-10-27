@@ -55,7 +55,7 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 template <class T>
 void MatrixMultiplicationModel<T>::GPUImplementation() {
 	//Device array
-	numericalType1* dev_a, * dev_b, * dev_c;
+	numericalType1 *dev_a, *dev_b, *dev_c;
 
 	int l1 = localMD->x * localMD->y * sizeof(numericalType1);
 	int l2 = localMD->y * localMD->z * sizeof(numericalType1);
@@ -73,7 +73,7 @@ void MatrixMultiplicationModel<T>::GPUImplementation() {
 	// define grid and thread block sizes
 
 	dim3 dimGrid((l3 / 1024 / 32 + 1), 1024), dimBlock(32);
-	matrix_multiplication << <dimGrid, dimBlock >> > (dev_a, dev_b, dev_c, localMD->x);
+	matrix_multiplication << <dimGrid, dimBlock >> > (dev_a, dev_b, dev_c, localMD->y);
 	//Copy back to Host array from Device array
 	cudaMemcpy(localC, dev_c, l3, cudaMemcpyDeviceToHost);
 	//Free the Device array memory
