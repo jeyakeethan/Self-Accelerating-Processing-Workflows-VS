@@ -12,7 +12,7 @@ void Logger::close() {
 }
 void Logger::write(const string& message) {
     ostream& stream = instance.fileStream;
-    stream << message << endl;
+    stream << message;
 }
 
 void Logger::clearLogs(const string& logFile) {

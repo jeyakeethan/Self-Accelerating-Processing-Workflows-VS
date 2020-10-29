@@ -30,7 +30,7 @@ static bool compareResults(numericalType1* arr1, numericalType1* arr2, int len) 
 
 int main()
 {
-	LARGE_INTEGER start, stop, clockFreq;
+	/*LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
@@ -62,7 +62,8 @@ int main()
 	for (int t = 0; t < 4; t++)
 		cout << out[t] << endl;
 
-	/*
+	*/
+
 	// ComputationalModel::setOperationalMode(true);
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
@@ -120,6 +121,5 @@ int main()
 			}
 		}
 	}
-	*/
 	return 0;
 }
