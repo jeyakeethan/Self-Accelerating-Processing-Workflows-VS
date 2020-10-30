@@ -18,7 +18,7 @@ class ComputationalModel
     public:
         static bool operationalMode;
         int countS, countL, reviseCount, alignedCount, processor, lastProcessor, revisePeriod;
-        stringstream s;
+        // stringstream s;
         Clock clocks;
         int CPUCores;
         int sampleMode, model_id, obj_id;

@@ -83,7 +83,7 @@ void ComputationalModel::executeAndLogging(int mode)
     QueryPerformanceCounter(&stop_cover);
 
     duration = stop_cover.QuadPart - start_cover.QuadPart;
-    s.clear();
+    stringstream s;
     if (mode == 1) {
         s << typeid(*this).name() << ",";
         s << obj_id << ",";
@@ -255,7 +255,7 @@ void ComputationalModel::executeAndLogging()
 
     duration = stop_cover.QuadPart - start_cover.QuadPart;
 
-    s.clear();
+    stringstream s;
     if (processor == 1 || processor == -1) {
         s << typeid(*this).name() << ",";
         s << obj_id << ",";
