@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 #include <string>
-typedef float numericalType1;
+typedef int numericalType1;
 
 const int INPUT_NATURE = 5;
 const int N = 10000;
