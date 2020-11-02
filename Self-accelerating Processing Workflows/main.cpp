@@ -14,10 +14,14 @@
 #include <ArrayAdditionModel.h>
 #include <DotMultiplicationModel.h>
 #include <MatrixMultiplicationModel.h>
+#include <predictors.cpp>
 #include <random>
 #include <string>
 #include <thread>
 #include <future>
+
+#include <python.h>
+#include <pyhelper.cpp>
 
 using namespace std;
 
@@ -30,6 +34,22 @@ static bool compareResults(numericalType1* arr1, numericalType1* arr2, int len) 
 
 int main()
 {
+	CPyInstance hInstance;
+
+	CPyObject pName = PyUnicode_FromString("predictor");
+	CPyObject pModule = PyImport_Import(pName);
+	CPyObject module = PyImport_AddModule("__main__");
+	CPyObject pFunc = PyObject_GetAttrString(pModule, "predictTime");
+	PyObject* args = PyList_New(3);
+	int a[] = { 100,100,100 };
+
+	PyArg_ParseTuple(args, "0", a);
+	if (pFunc && PyCallable_Check(pFunc))
+	{
+		CPyObject pValue = PyObject_CallObject(pFunc, args);
+		cout << PyLong_AsLong(pValue) << endl;
+	}
+
 	/*LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
 	QueryPerformanceFrequency(&clockFreq);

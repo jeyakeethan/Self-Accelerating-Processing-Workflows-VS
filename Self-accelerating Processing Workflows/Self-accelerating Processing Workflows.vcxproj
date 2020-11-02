@@ -13,6 +13,10 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="test|x64">
+      <Configuration>test</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{21E4705D-1910-4285-A78F-1AD1B620181D}</ProjectGuid>
@@ -36,6 +40,9 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Linux|x64'">
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='test|x64'">
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.0.props" />
@@ -55,12 +62,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\kernels;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\src;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\headers;%(AdditionalDeps);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\headers;.\src;.\kernels;C:\Users\JK\AppData\Local\Programs\Python\Python38\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(CudaToolkitLibDir);C:\Users\JK\AppData\Local\Programs\Python\Python38\libs</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
@@ -75,7 +83,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\headers;.\src;.\kernels;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\headers;.\src;.\kernels;C:\Users\JK\AppData\Local\Programs\Python\Python38\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
@@ -84,6 +92,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(CudaToolkitLibDir);C:\Users\JK\AppData\Local\Programs\Python\Python38\libs</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
@@ -98,13 +107,112 @@
     <CudaCompile Include="src\MatrixMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\EmbeddedPython3\inc\pyhelper.cpp" />
     <ClCompile Include="src\Logger.cpp" />
+    <ClCompile Include="src\pyhelper.cpp" />
+    <ClCompile Include="src\predictors.cpp" />
     <CudaCompile Include="src\ArrayAdditionModel.cu">
       <FileType>Document</FileType>
     </CudaCompile>
     <ClCompile Include="src\ComputationalModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\EmbeddedPython3\include\abstract.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\accu.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\asdl.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\ast.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\bitset.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\bltinmodule.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\boolobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\bytearrayobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\bytesobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\bytes_methods.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\cellobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\ceval.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\classobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\code.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\codecs.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\compile.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\complexobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\datetime.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\descrobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\dictobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\dtoa.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\dynamic_annotations.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\enumobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\errcode.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\eval.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\fileobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\fileutils.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\floatobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\frameobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\funcobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\genobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\graminit.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\grammar.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\import.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\intrcheck.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\iterobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\listobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\longintrepr.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\longobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\marshal.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\memoryobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\metagrammar.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\methodobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\modsupport.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\moduleobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\namespaceobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\node.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\object.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\objimpl.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\opcode.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\osdefs.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\parsetok.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\patchlevel.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pgen.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pgenheaders.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyarena.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyatomic.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pycapsule.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyconfig.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyctype.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pydebug.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyerrors.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyexpat.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyfpe.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pygetopt.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyhash.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pymacconfig.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pymacro.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pymath.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pymem.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pyport.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pystate.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pystrcmp.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pystrtod.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\Python-ast.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\Python.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pythonrun.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pythread.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\pytime.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\py_curses.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\rangeobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\setobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\sliceobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\structmember.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\structseq.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\symtable.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\sysmodule.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\token.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\traceback.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\tupleobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\typeslots.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\ucnhash.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\unicodeobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\warnings.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\include\weakrefobject.h" />
+    <ClInclude Include="..\..\EmbeddedPython3\inc\pyhelper.hpp" />
     <ClInclude Include="headers\ArrayAdditionModel.h" />
     <ClInclude Include="headers\ComputationalModel.h" />
     <ClInclude Include="headers\Constants.h" />

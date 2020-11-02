@@ -10,6 +10,7 @@ Global
 		Debug|x64 = Debug|x64
 		Linux|x64 = Linux|x64
 		Release|x64 = Release|x64
+		test|x64 = test|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{21E4705D-1910-4285-A78F-1AD1B620181D}.Debug|x64.ActiveCfg = Debug|x64
@@ -18,6 +19,8 @@ Global
 		{21E4705D-1910-4285-A78F-1AD1B620181D}.Linux|x64.Build.0 = Linux|x64
 		{21E4705D-1910-4285-A78F-1AD1B620181D}.Release|x64.ActiveCfg = Release|x64
 		{21E4705D-1910-4285-A78F-1AD1B620181D}.Release|x64.Build.0 = Release|x64
+		{21E4705D-1910-4285-A78F-1AD1B620181D}.test|x64.ActiveCfg = test|x64
+		{21E4705D-1910-4285-A78F-1AD1B620181D}.test|x64.Build.0 = test|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
