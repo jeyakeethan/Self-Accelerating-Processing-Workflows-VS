@@ -5,7 +5,7 @@
 
 __global__ void matrix_multiplication(numericalType1* A, numericalType1* B, numericalType1* C, const int widthA, const int widthB) {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
+    int y = blockIdx.y;
     numericalType1 sum = 0;
 
     for (int k = 0; k < widthA; k++) {
