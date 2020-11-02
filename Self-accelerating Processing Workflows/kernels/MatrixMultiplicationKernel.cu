@@ -4,7 +4,7 @@
 #include "device_launch_parameters.h"
 
 __global__ void matrix_multiplication(numericalType1* A, numericalType1* B, numericalType1* C, const int widthA, const int widthB) {
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int x = blockIdx.x * gridDim.x + threadIdx.x;
     int y = blockIdx.y;
     numericalType1 sum = 0;
 

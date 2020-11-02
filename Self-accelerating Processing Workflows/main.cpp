@@ -114,6 +114,9 @@ int main()
 					status = "Same";
 				cout << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;
 
+				for (int t = 0; t < lengthZ; t++)
+					cout << matOut1[t] << ", " << matOut2[t] << endl;
+
 				free(mat1);
 				free(matOut1);
 				free(mat2);
