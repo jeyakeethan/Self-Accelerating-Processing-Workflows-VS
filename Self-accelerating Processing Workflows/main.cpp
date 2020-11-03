@@ -74,8 +74,8 @@ int main()
 	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
 	 matmulmodel.clearLogs();		// empty the performance matrix log file
 
-	int step = 100;
-	int levels = 10;
+	int step = 32;
+	int levels = 1;
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
 	cout << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header

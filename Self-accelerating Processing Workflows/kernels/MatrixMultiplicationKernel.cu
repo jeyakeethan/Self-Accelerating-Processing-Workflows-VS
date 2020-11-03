@@ -6,11 +6,14 @@
 __global__ void matrix_multiplication(numericalType1* A, numericalType1* B, numericalType1* C, const int widthA, const int widthB) {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y;
-    numericalType1 sum = 0;
+    if (x < widthB) {
+        numericalType1 sum = 0;
 
-    for (int k = 0; k < widthA; k++) {
-        sum += A[y * widthA + k] * B[k * widthB + x];
+        for (int k = 0; k < widthA; k++) {
+            sum += A[y * widthA + k] * B[k * widthB + x];
+        }
+
+        C[y * widthB + x] = sum;
     }
-
-    C[y * widthB + x] = sum;
+    return;
 }

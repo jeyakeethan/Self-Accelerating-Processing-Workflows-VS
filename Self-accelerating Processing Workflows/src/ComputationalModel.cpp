@@ -13,6 +13,7 @@
 //for async function
 #include <thread>
 #include <future>
+#include "CurrentCPULoad.cpp"
 
 using namespace std;
 
