@@ -98,6 +98,7 @@
     <CudaCompile Include="src\MatrixMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CurrentCPULoad.cpp" />
     <ClCompile Include="src\Logger.cpp" />
     <CudaCompile Include="src\ArrayAdditionModel.cu">
       <FileType>Document</FileType>

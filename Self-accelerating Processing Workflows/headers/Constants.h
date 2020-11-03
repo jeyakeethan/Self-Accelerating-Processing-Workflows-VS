@@ -21,6 +21,7 @@ const int RANGE_OF_INT_VALUES = 8;
 const int THREADS_PER_BLOCK = 1024;
 
 const int REVISE_PERIOD = 1800;		// in seconds
+const int CPU_LOAD_REVISE_PERIOD = 3600;		// in seconds
 const int RESET_COUNT = 19;
 
 const std::string LOG_FILE_NAME = "statistics.log";
