@@ -49,5 +49,114 @@ int main()
 	for (int space = 0; space < spaceLength; space++) {
 		cout << matrixSpace[space].x << ", " << matrixSpace[space].y << ", " << matrixSpace[space].z << endl;
 	}
+
+	numericalType1** arraySet1 = new numericalType1 * [EXPERIMENT_COUNT];
+	numericalType1** arraySet2 = new numericalType1 * [EXPERIMENT_COUNT];
+	int* arrayLength = new int[EXPERIMENT_COUNT];
+	int x, k, length, fileNum;
+
+	// ---Random Seed Value---
+	srand(5);
+
+	switch (INPUT_NATURE) {
+	case 1:
+		//  *********Generate Aligned Square Wave Input Stream*********
+		int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
+		bool iSmall = true;
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			if (++widthCount > width) {
+				//cout << "width: " << width << endl << endl;
+				widthCount = 0;
+				width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+				iSmall = !iSmall;
+			}
+			//cout << "length: " << length << endl;
+			arrayLength[x] = length;
+			numericalType1* temp1 = new numericalType1[length];
+			numericalType1* temp2 = new numericalType1[length];
+			arraySet1[x] = temp1;
+			arraySet2[x] = temp2;
+			for (k = 0; k < length; k++) {
+				temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				temp2[k] = rand() % RANGE_OF_INT_VALUES;
+			}
+		}
+		break;
+	case 2:
+		/*********Generate Aligned Binary Input Stream*********/
+		int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
+		bool iSmall = true;
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			if (++widthCount > width) {
+				//cout << "width: " << width << endl << endl;
+				widthCount = 0;
+				width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+				iSmall = !iSmall;
+			}
+			if (iSmall) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
+			else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+			//cout << "length: " << length << endl;
+			arrayLength[x] = length;
+			numericalType1* temp1 = new numericalType1[length];
+			numericalType1* temp2 = new numericalType1[length];
+			arraySet1[x] = temp1;
+			arraySet2[x] = temp2;
+			for (k = 0; k < length; k++) {
+				temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				temp2[k] = rand() % RANGE_OF_INT_VALUES;
+			}
+		}
+		break;
+	case 3:
+		/*********Generate Odd Input Stream*********/
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			length = rand() % ARRAY_MAX_LENGTH + 1;
+			//cout << "length: " << length << endl;
+			arrayLength[x] = length;
+			numericalType1* temp1 = new numericalType1[length];
+			numericalType1* temp2 = new numericalType1[length];
+			arraySet1[x] = temp1;
+			arraySet2[x] = temp2;
+			for (k = 0; k < length; k++) {
+				temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				temp2[k] = rand() % RANGE_OF_INT_VALUES;
+			}
+		}
+		break;
+	case 4:
+		/*********Generate GPU Specific Input Stream*********/
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+			//cout << "length: " << length << endl;
+			arrayLength[x] = length;
+			numericalType1* temp1 = new numericalType1[length];
+			numericalType1* temp2 = new numericalType1[length];
+			arraySet1[x] = temp1;
+			arraySet2[x] = temp2;
+			for (k = 0; k < length; k++) {
+				temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				temp2[k] = rand() % RANGE_OF_INT_VALUES;
+			}
+		}
+		break;
+	case 5:
+		/*********Generate CPU Specific Input Stream*********/
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
+			//cout << "length: " << length << endl;
+			arrayLength[x] = length;
+			numericalType1* temp1 = new numericalType1[length];
+			numericalType1* temp2 = new numericalType1[length];
+			arraySet1[x] = temp1;
+			arraySet2[x] = temp2;
+			for (k = 0; k < length; k++) {
+				temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				temp2[k] = rand() % RANGE_OF_INT_VALUES;
+			}
+		}
+		break;
+	}
+
+	free(matrixSpace);
 	return 0;
 }
