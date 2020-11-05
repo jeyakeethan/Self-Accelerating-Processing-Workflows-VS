@@ -18,7 +18,7 @@
 #include <string>
 
 using namespace std;
-int main2()
+int main()
 {
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;

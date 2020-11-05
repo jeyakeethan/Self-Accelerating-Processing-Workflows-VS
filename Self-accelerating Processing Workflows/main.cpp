@@ -72,7 +72,7 @@ int main()
 	int elapsedTimeCPU, elapsedTimeGPU;
 
 	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
-	 matmulmodel.clearLogs();		// empty the performance matrix log file
+	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	int step = 32;
 	int levels = 1;

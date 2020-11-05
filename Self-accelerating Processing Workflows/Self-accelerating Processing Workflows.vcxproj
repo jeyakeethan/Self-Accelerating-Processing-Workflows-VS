@@ -93,11 +93,11 @@
     <CudaCompile Include="kernels\ArrayAdditionKernel.cu" />
     <CudaCompile Include="kernels\DotMultiplicationKernel.cu" />
     <CudaCompile Include="kernels\MatrixMultiplicationKernel.cu" />
-    <CudaCompile Include="main.cpp" />
     <CudaCompile Include="src\DotMultiplicationModel.cu" />
     <CudaCompile Include="src\MatrixMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="main_matrix_mul.cpp" />
     <ClCompile Include="src\CurrentCPULoad.cpp" />
     <ClCompile Include="src\Logger.cpp" />
     <CudaCompile Include="src\ArrayAdditionModel.cu">
