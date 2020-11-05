@@ -97,7 +97,7 @@
     <CudaCompile Include="src\MatrixMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="main_matrix_mul.cpp" />
+    <CudaCompile Include="main_matrix_mul.cu" />
     <ClCompile Include="src\CurrentCPULoad.cpp" />
     <ClCompile Include="src\Logger.cpp" />
     <CudaCompile Include="src\ArrayAdditionModel.cu">

@@ -4,9 +4,9 @@
 #include <string>
 typedef int numericalType1;
 
-const int INPUT_NATURE = 5;
+const int INPUT_NATURE = 1;
 const int N = 10000;
-const int EXPERIMENT_COUNT = 10000;
+const int EXPERIMENT_COUNT = 100;
 const int MAX_WIDTH_ALIGNED = 100;
 const int MIN_WIDTH_ALIGNED = 10;
 const int SMALL_ARRAY_MAX_LENGTH = 1300;
