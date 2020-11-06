@@ -74,6 +74,10 @@ void MatrixMultiplicationModel<T>::GPUImplementation() {
 
 	dim3 dimGrid(32, 1024), dimBlock(32);
 	matrix_multiplication << < dimGrid, dimBlock >> > (dev_a, dev_b, dev_c, localMD->y, localMD->z);
+
+	//sychronize to confirm that results have been computed
+	cudaDeviceSynchronize();
+
 	//Copy back to Host array from Device array
 	cudaMemcpy(localC, dev_c, l3, cudaMemcpyDeviceToHost);
 	//Free the Device array memory

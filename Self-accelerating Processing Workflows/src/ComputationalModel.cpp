@@ -311,14 +311,15 @@ void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
 
 void ComputationalModel::checkMLModel(ComputationalModel* cm) {
     while (true) {
-        ifstream mlTrainerReadFile("ml_Trainer.cache");
+        string file_ml = "ml_Trainer.cache";
+        ifstream mlTrainerReadFile(file_ml);
         int lastUpdatedTime=0;
         mlTrainerReadFile >> lastUpdatedTime;
         mlTrainerReadFile.close();
         if (lastUpdatedTime !=0 && currentTimeMillis()-lastUpdatedTime > MONTH) {
             trainML(cm);
         }
-        ofstream mlTrainerWriteFile("ml_Trainer.cache");
+        ofstream mlTrainerWriteFile(file_ml);
         mlTrainerWriteFile << currentTimeMillis() << endl;
         mlTrainerWriteFile.close();
         this_thread::sleep_for(chrono::seconds(ML_TRAIN_CHECK_PERIOD));
