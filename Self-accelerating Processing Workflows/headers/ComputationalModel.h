@@ -31,6 +31,8 @@ class ComputationalModel
         static int obj_id_counter() { static int obj_id = 0; return obj_id++; }
         static void setOperationalMode(bool om);
         static void resetOverPeriodIfBurst(ComputationalModel *cm);
+        static void checkMLModel(ComputationalModel *cm);
+        static void trainML(ComputationalModel *cm);
         void resetFlow();
         void execute();
         void execute(int mode);
@@ -41,7 +43,7 @@ class ComputationalModel
         void clearLogs();
     protected:
     private:
-        thread revisor;
+        thread resetOperator, mlTrainer;
         void logExTime(string str);
         virtual void CPUImplementation() = 0;
         virtual void GPUImplementation() = 0;

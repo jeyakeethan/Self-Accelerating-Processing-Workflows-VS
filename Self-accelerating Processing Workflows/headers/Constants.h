@@ -22,7 +22,10 @@ const int THREADS_PER_BLOCK = 1024;
 
 const int REVISE_PERIOD = 1800;		// in seconds
 const int CPU_LOAD_REVISE_PERIOD = 3600;		// in seconds
+const int ML_TRAIN_CHECK_PERIOD = 14400;		// in seconds
 const int RESET_COUNT = 19;
+const int DAY = 86400;
+const int MONTH = 86400*30;
 
 const std::string LOG_FILE_NAME = "statistics.log";
 

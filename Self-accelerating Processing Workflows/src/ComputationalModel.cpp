@@ -17,12 +17,16 @@
 
 using namespace std;
 
+__int64 currentTimeMillis();
+
 bool ComputationalModel::operationalMode = false;
 ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     obj_id = obj_id_counter();
     resetFlow();
-    revisor = thread(&ComputationalModel::resetOverPeriodIfBurst, this);
-    revisor.detach();
+    resetOperator = thread(&ComputationalModel::resetOverPeriodIfBurst, this);
+    resetOperator.detach();
+    mlTrainer = thread(&ComputationalModel::checkMLModel, this);
+    mlTrainer.detach();
 }
 
 inline void ComputationalModel::resetFlow() {
@@ -39,7 +43,8 @@ inline void ComputationalModel::resetFlow() {
 }
 
 ComputationalModel::~ComputationalModel(){
-    revisor.~thread();
+    resetOperator.~thread();
+    mlTrainer.~thread();
     Logger::close();
     //TO DO; log present values for using next boot
 }
@@ -304,6 +309,26 @@ void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
     }
 }
 
+void ComputationalModel::checkMLModel(ComputationalModel* cm) {
+    while (true) {
+        ifstream mlTrainerReadFile("ml_Trainer.cache");
+        int lastUpdatedTime=0;
+        mlTrainerReadFile >> lastUpdatedTime;
+        mlTrainerReadFile.close();
+        if (lastUpdatedTime !=0 && currentTimeMillis()-lastUpdatedTime > MONTH) {
+            trainML(cm);
+        }
+        ofstream mlTrainerWriteFile("ml_Trainer.cache");
+        mlTrainerWriteFile << currentTimeMillis() << endl;
+        mlTrainerWriteFile.close();
+        this_thread::sleep_for(chrono::seconds(ML_TRAIN_CHECK_PERIOD));
+    }
+}
+
+void ComputationalModel::trainML(ComputationalModel* cm) {
+
+}
+
 void ComputationalModel::setOperationalMode(bool om) {
     operationalMode = om;
 }
@@ -319,3 +344,10 @@ void ComputationalModel::clearLogs() {
     Logger::clearLogs(LOG_FILE_NAME);
 }
 
+__int64 currentTimeMillis() {
+    FILETIME f;
+    GetSystemTimeAsFileTime(&f);
+    (long long)f.dwHighDateTime;
+    __int64 nano = ((__int64)f.dwHighDateTime << 32LL) + (__int64)f.dwLowDateTime;
+    return (nano - 116444736000000000LL) / 10000;
+}
