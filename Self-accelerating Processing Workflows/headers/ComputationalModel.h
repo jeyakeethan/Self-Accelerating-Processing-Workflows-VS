@@ -38,6 +38,8 @@ class ComputationalModel
         void execute(int mode);
         void executeAndLogging();
         void executeAndLogging(int mode);
+        void executeByML();
+        void executeByMLAndLogging();
         void prepareLogging();
         void setProcessor(int p);
         void clearLogs();

@@ -14,6 +14,7 @@
 #include <thread>
 #include <future>
 #include "CurrentCPULoad.cpp"
+#include "XGBoostModel.cpp"
 
 using namespace std;
 
@@ -283,6 +284,42 @@ void ComputationalModel::executeAndLogging()
         processor = -processor;
         clocks = { 0, 0, 0.0, 0.0 };
     }
+}
+
+
+
+void ComputationalModel::executeByML() {
+    if (MatrixMulXGBoostModel::predict(getAttributes()) == 0) {
+        CPUImplementation();
+    }
+    else {
+        GPUImplementation();
+    }
+}
+
+void ComputationalModel::executeByMLAndLogging() {
+    stringstream s;
+    s << typeid(*this).name() << ",";
+    s << obj_id << ",";
+    if (MatrixMulXGBoostModel::predict(getAttributes()) == 0) {
+        s << "CPU,";
+        QueryPerformanceCounter(&start);
+        CPUImplementation();
+        QueryPerformanceCounter(&stop);
+    }
+    else {
+        s << "GPU,";
+        QueryPerformanceCounter(&start);
+        GPUImplementation();
+        QueryPerformanceCounter(&stop);
+    }
+    duration = stop.QuadPart - start.QuadPart;
+    int* attr = getAttributes();
+    for (int i = 0; i < 3; i++) {
+        s << attr[i] << ",";
+    }
+    s << duration << endl;
+    logExTime(s.str());
 }
 
 void ComputationalModel::setProcessor(int p) {

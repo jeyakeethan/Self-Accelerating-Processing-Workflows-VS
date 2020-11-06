@@ -97,6 +97,7 @@
     <CudaCompile Include="src\MatrixMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\XGBoostModel.cpp" />
     <CudaCompile Include="main_matrix_mul.cu" />
     <ClCompile Include="src\CurrentCPULoad.cpp" />
     <ClCompile Include="src\Logger.cpp" />
