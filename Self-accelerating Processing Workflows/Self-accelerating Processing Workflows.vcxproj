@@ -17,7 +17,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{21E4705D-1910-4285-A78F-1AD1B620181D}</ProjectGuid>
     <RootNamespace>Self_accelerating_Processing_Workflows</RootNamespace>
-    <CudaToolkitCustomDir>..\..\..\NVIDIA GPU Computing Toolkit\CUDA\v11.0</CudaToolkitCustomDir>
+    <CudaToolkitCustomDir>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0</CudaToolkitCustomDir>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -55,18 +56,23 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\kernels;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\src;E:\Cuda Repos\Self-accelerating Processing Workflows\Self-accelerating Processing Workflows\headers;%(AdditionalDeps);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\mlpack\armadillo\include;C:\mlpack\mlpack-3.4.2\build\include;C:\boost\boost_1_71_0;F:\Downloads\niro\project\Self-Accelerating-Processing-Workflows-VS\Self-accelerating Processing Workflows\src;F:\Downloads\niro\project\Self-Accelerating-Processing-Workflows-VS\Self-accelerating Processing Workflows\kernels;F:\Downloads\niro\project\Self-Accelerating-Processing-Workflows-VS\Self-accelerating Processing Workflows\headers;%(AdditionalDeps);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;C:\mlpack\mlpack-3.4.2\build\Debug\mlpack.lib;C:\boost\boost_1_71_0\lib64-msvc-14.2\libboost_serialization-vc142-mt-gd-x64-1_71.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <AdditionalDeps>Self-accelerating Processing Workflows\headers;Self-accelerating Processing Workflows\kernels;Self-accelerating Processing Workflows\src;%(AdditionalDeps)</AdditionalDeps>
       <Include>.</Include>
     </CudaCompile>
+    <PostBuildEvent>
+      <Command>xcopy /y "C:\mlpack\mlpack-3.4.2\build\Debug\mlpack.dll" $(OutDir)
+xcopy /y "C:\mlpack\mlpack-3.4.2\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
