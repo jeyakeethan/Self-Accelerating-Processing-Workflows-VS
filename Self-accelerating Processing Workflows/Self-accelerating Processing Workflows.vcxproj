@@ -96,7 +96,7 @@ xcopy /y "C:\mlpack\mlpack-3.4.2\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
     <PreBuildEvent>
-      <Command>xcopy /y "C:\mlpack\mlpack\build\Debug\mlpack.dll" $(OutDir);
+      <Command>xcopy /y "C:\mlpack\mlpack\build\Debug\mlpack.dll" $(OutDir)
 xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" $(OutDir)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
