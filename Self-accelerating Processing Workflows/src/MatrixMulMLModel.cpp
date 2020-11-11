@@ -24,6 +24,7 @@ MatrixMulMLModel::~MatrixMulMLModel(){}
 int MatrixMulMLModel::predict(int* params) {
 	stringstream s;
 	s << "\"" << params[1] << ";" << params[2] << ";" << params[3] << ";\"";
+	std::cout << s.str() << endl;
 	mat attr(s.str());
 	rf.Classify(attr, prediction, probabilities);
 	return prediction;
