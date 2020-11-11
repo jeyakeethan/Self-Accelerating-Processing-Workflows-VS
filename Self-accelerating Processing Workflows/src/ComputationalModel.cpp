@@ -262,7 +262,7 @@ void ComputationalModel::executeAndLogging()
     stringstream s;
     s << typeid(*this).name() << ",";
     int* attr = getAttributes();
-    for (int i = 1; i < attr[0]; i++) {
+    for (int i = 1; i <= attr[0]; i++) {
         s << attr[i] << ",";
     }
     if (processor == 1 || processor == -1)
