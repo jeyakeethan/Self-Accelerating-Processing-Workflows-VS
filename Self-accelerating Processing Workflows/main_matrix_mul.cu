@@ -159,6 +159,8 @@ int main()
 		break;
 	}
 
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initial overhead
+	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initial overhead
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < spaceLength; x++) {
 		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
@@ -179,6 +181,8 @@ int main()
 	int elapsedTimeCPU = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initial overhead
+	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initial overhead
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < spaceLength; x++) {
 		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
@@ -189,6 +193,8 @@ int main()
 	int elapsedAutoTime = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initial overhead
+	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initial overhead
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < spaceLength; x++) {
 		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
