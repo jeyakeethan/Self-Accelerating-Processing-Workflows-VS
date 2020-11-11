@@ -58,13 +58,12 @@ int main()
 	numericalType1* mat1, * mat2;
 	numericalType1*  matOut;
 	bool iSmall;
-	const int discrete = levels * levels * levels;
 	switch (INPUT_NATURE) {
 	case 1:
 		/*********Generate Aligned Binary Input Stream*********/
 		widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 		iSmall = true;
-		for (x = 0; x < discrete; x++) {
+		for (x = 0; x < spaceLength; x++) {
 			if (++widthCount > width) {
 				//cout << "width: " << width << endl << endl;
 				widthCount = 0;
@@ -161,8 +160,8 @@ int main()
 	}
 
 	QueryPerformanceCounter(&start);
-	for (x = 0; x < discrete; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, dimension);
+	for (x = 0; x < spaceLength; x++) {
+		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
 		matmulmodel.executeAndLogging(2);
 	}
 	QueryPerformanceCounter(&stop);
@@ -170,8 +169,8 @@ int main()
 	int elapsedTimeGPU = int(delay * 1000);
 	
 	QueryPerformanceCounter(&start);
-	for (x = 0; x < discrete; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, dimension);
+	for (x = 0; x < spaceLength; x++) {
+		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
 		matmulmodel.executeAndLogging(1);
 	}
 	QueryPerformanceCounter(&stop);
@@ -179,17 +178,17 @@ int main()
 	int elapsedTimeCPU = int(delay * 1000);
 
 	QueryPerformanceCounter(&start);
-	for (x = 0; x < discrete; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, dimension);
-		matmulmodel.execute();
+	for (x = 0; x < spaceLength; x++) {
+		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+		matmulmodel.executeAndLogging();
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedAutoTime = int(delay * 1000);
 
 	QueryPerformanceCounter(&start);
-	for (x = 0; x < discrete; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, dimension);
+	for (x = 0; x < spaceLength; x++) {
+		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
 		matmulmodel.executeByMLAndLogging();
 	}
 	QueryPerformanceCounter(&stop);
@@ -198,7 +197,7 @@ int main()
 
 	cout << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU  << "\tSelfFlow:\t" << elapsedAutoTime<< "\tML Flow:\t" << elapsedML << endl;
 
-	for (int ex = 0; ex < discrete; ex++) {
+	for (int ex = 0; ex < spaceLength; ex++) {
 		free(arraySet1[ex]);
 		free(arraySet2[ex]);
 	}
