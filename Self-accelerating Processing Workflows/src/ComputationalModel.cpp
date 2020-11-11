@@ -223,7 +223,7 @@ void ComputationalModel::executeAndLogging()
                 countS = 1;
             }
         }
-        return;
+        break;
     case -2:
         // cout << "Hello GPU" << endl;
         QueryPerformanceCounter(&start);
@@ -249,7 +249,7 @@ void ComputationalModel::executeAndLogging()
                 countS = 1;
             }
         }
-        return;
+        break;
     default:
         sampleMode = 2;
         processor = -1;
@@ -265,13 +265,18 @@ void ComputationalModel::executeAndLogging()
     for (int i = 1; i <= attr[0]; i++) {
         s << attr[i] << ",";
     }
-    if (processor == 1 || processor == -1)
+
+    if (processor == 1 || processor == -1) {
         s << 0 << ",";
-    else
+    }
+    else {
         s << 1 << ",";
+    }
     s << duration << endl;
     logExTime(s.str());
 
+    if (processor == -2 || processor == -1)
+        return;
     if (countL > reviseCount) {
         sampleMode = 2;
         countS = 1;
@@ -280,8 +285,6 @@ void ComputationalModel::executeAndLogging()
         clocks = { 0, 0, 0.0, 0.0 };
     }
 }
-
-
 
 void ComputationalModel::executeByML() {
     if (mlModel->predict(getAttributes()) == 0) {

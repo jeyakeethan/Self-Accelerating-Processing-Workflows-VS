@@ -45,10 +45,11 @@ class ComputationalModel
         void prepareLogging();
         void setProcessor(int p);
         void clearLogs();
+        void logExTime(string str);
     protected:
     private:
         thread resetOperator, mlTrainer;
-        void logExTime(string str);
+        //void logExTime(string str);
         virtual void CPUImplementation() = 0;
         virtual void GPUImplementation() = 0;
         virtual int* getAttributes() = 0;

@@ -167,6 +167,7 @@ int main()
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedTimeGPU = int(delay * 1000);
+	matmulmodel.logExTime("\n\n"); // add new line in logging file
 	
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < spaceLength; x++) {
@@ -176,6 +177,7 @@ int main()
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedTimeCPU = int(delay * 1000);
+	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < spaceLength; x++) {
@@ -185,6 +187,7 @@ int main()
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedAutoTime = int(delay * 1000);
+	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < spaceLength; x++) {
@@ -194,6 +197,7 @@ int main()
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedML = int(delay * 1000);
+	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
 	cout << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU  << "\tSelfFlow:\t" << elapsedAutoTime<< "\tML Flow:\t" << elapsedML << endl;
 
