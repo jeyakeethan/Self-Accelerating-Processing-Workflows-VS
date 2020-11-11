@@ -181,7 +181,7 @@ int main()
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, dimension);
-		matmulmodel.executeAndLogging();
+		matmulmodel.execute();
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;

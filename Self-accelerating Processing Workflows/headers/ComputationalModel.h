@@ -4,6 +4,7 @@
 #include <windows.h>
 
 #include <Constants.h>
+#include <MatrixMulMLModel.h>
 #include <fstream>
 #include <sstream>
 
@@ -23,6 +24,7 @@ class ComputationalModel
         int CPUCores;
         int sampleMode, model_id, obj_id;
         long long duration;
+        MatrixMulMLModel * mlModel;
         LARGE_INTEGER start, stop, lastRevisedClock;
 
         ComputationalModel(int CPUCores);

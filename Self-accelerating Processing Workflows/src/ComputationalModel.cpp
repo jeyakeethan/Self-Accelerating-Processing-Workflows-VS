@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include <ComputationalModel.h>
+#include <MatrixMulMLModel.h>
 #include <Logger.h>
 //for time measure
 #include <windows.h>
@@ -14,7 +15,6 @@
 #include <thread>
 #include <future>
 #include "CurrentCPULoad.cpp"
-#include "XGBoostModel.cpp"
 
 using namespace std;
 
@@ -28,6 +28,10 @@ ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     resetOperator.detach();
     mlTrainer = thread(&ComputationalModel::checkMLModel, this);
     mlTrainer.detach();
+
+    int a[] = { 3, 100,200,200 };
+    mlModel = new MatrixMulMLModel();
+    mlModel->predict(a);
 }
 
 inline void ComputationalModel::resetFlow() {
@@ -75,15 +79,10 @@ void ComputationalModel::executeAndLogging(int mode)
         case 1:
             // cout << "Hello CPU" << endl;
             CPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
             break;
         case 2:
             // cout << "Hello GPU" << endl;
-            QueryPerformanceCounter(&start);
             GPUImplementation();
-            QueryPerformanceCounter(&stop);
-            duration = stop.QuadPart - start.QuadPart;
             break;
     }
 
@@ -91,18 +90,16 @@ void ComputationalModel::executeAndLogging(int mode)
 
     duration = stop_cover.QuadPart - start_cover.QuadPart;
     stringstream s;
-    if (mode == 1) {
-        s << typeid(*this).name() << ",";
-        s << obj_id << ",";
+    s << typeid(*this).name() << ",";
         int* attr = getAttributes();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i <= attr[0]; i++) {
             s << attr[i] << ",";
         }
-        s << duration << ",";
-    }
-    else {
+        if (mode == 1)
+            s << 0 << ",";
+        else 
+            s << 1 << ",";
         s << duration << endl;
-    }
     logExTime(s.str());
 }
 
@@ -263,18 +260,16 @@ void ComputationalModel::executeAndLogging()
     duration = stop_cover.QuadPart - start_cover.QuadPart;
 
     stringstream s;
-    if (processor == 1 || processor == -1) {
-        s << typeid(*this).name() << ",";
-        s << obj_id << ",";
-        int* attr = getAttributes();
-        for (int i = 0; i < 3; i++) {
-            s << attr[i] << ",";
-        }
-        s << duration << ",";
+    s << typeid(*this).name() << ",";
+    int* attr = getAttributes();
+    for (int i = 1; i < attr[0]; i++) {
+        s << attr[i] << ",";
     }
-    else {
-        s << duration << endl;
-    }
+    if (processor == 1 || processor == -1)
+        s << 0 << ",";
+    else
+        s << 1 << ",";
+    s << duration << endl;
     logExTime(s.str());
 
     if (countL > reviseCount) {
@@ -289,7 +284,7 @@ void ComputationalModel::executeAndLogging()
 
 
 void ComputationalModel::executeByML() {
-    if (MatrixMulXGBoostModel::predict(getAttributes()) == 0) {
+    if (mlModel->predict(getAttributes()) == 0) {
         CPUImplementation();
     }
     else {
@@ -300,24 +295,23 @@ void ComputationalModel::executeByML() {
 void ComputationalModel::executeByMLAndLogging() {
     stringstream s;
     s << typeid(*this).name() << ",";
-    s << obj_id << ",";
-    if (MatrixMulXGBoostModel::predict(getAttributes()) == 0) {
-        s << "CPU,";
+    int* attr = getAttributes();
+    for (int i = 1; i <= attr[0]; i++) {
+        s << attr[i] << ",";
+    }
+    if (mlModel->predict(getAttributes()) == 0) {
+        s << 0 << ",";
         QueryPerformanceCounter(&start);
         CPUImplementation();
         QueryPerformanceCounter(&stop);
     }
     else {
-        s << "GPU,";
+        s << 1 << ",";
         QueryPerformanceCounter(&start);
         GPUImplementation();
         QueryPerformanceCounter(&stop);
     }
     duration = stop.QuadPart - start.QuadPart;
-    int* attr = getAttributes();
-    for (int i = 0; i < 3; i++) {
-        s << attr[i] << ",";
-    }
     s << duration << endl;
     logExTime(s.str());
 }
