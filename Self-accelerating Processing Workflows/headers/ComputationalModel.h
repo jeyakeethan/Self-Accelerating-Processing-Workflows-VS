@@ -24,6 +24,7 @@ class ComputationalModel
         int CPUCores;
         int sampleMode, model_id, obj_id;
         long long duration;
+        int* lastPredictedBoundary;
         MatrixMulMLModel * mlModel;
         LARGE_INTEGER start, stop, lastRevisedClock;
 
@@ -52,7 +53,20 @@ class ComputationalModel
         //void logExTime(string str);
         virtual void CPUImplementation() = 0;
         virtual void GPUImplementation() = 0;
+
+        /**
+        * developer has to return a array of values that have impact in the workload of the task that has been set
+        * the first value of the pointer would be the length of the array and the attributes are followed
+        * every subclass implementing this class must have to implement this virtual method
+        **/
         virtual int* getAttributes() = 0;
+        inline bool isBoundedTask() {
+            int* attr = getAttributes();
+            for (int i = 1; i <= attr[0]; i++)
+                if (attr[i] > lastPredictedBoundary[i])
+                    return false;
+            return true;
+        }
 };
 
 #endif // COMPUTATIONALMODEL_H

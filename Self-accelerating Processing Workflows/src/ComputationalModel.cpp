@@ -28,10 +28,7 @@ ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     resetOperator.detach();
     mlTrainer = thread(&ComputationalModel::checkMLModel, this);
     mlTrainer.detach();
-
-    int a[] = { 3, 100,200,200 };
     mlModel = new MatrixMulMLModel();
-    mlModel->predict(a);
 }
 
 inline void ComputationalModel::resetFlow() {
