@@ -116,7 +116,14 @@ xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" 
     <CudaCompile Include="src\MatrixMultiplicationModel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\c_api.cpp" />
+    <ClCompile Include="src\decision_tree.cpp" />
     <ClCompile Include="src\MatrixMulMLModel.cpp" />
+    <ClCompile Include="src\numpy.cpp" />
+    <ClCompile Include="src\pandas.cpp" />
+    <ClCompile Include="src\tree.cpp" />
+    <ClCompile Include="src\utils.cpp" />
+    <ClCompile Include="src\xgboost.cpp" />
     <CudaCompile Include="main_matrix_mul.cu" />
     <ClCompile Include="src\CurrentCPULoad.cpp" />
     <ClCompile Include="src\Logger.cpp" />
@@ -131,7 +138,15 @@ xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" 
     <ClInclude Include="headers\kernels.h" />
     <ClInclude Include="headers\MatrixMulMLModel.h" />
     <ClInclude Include="headers\MatrixMultiplicationModel.h" />
+    <ClInclude Include="headers\ML_Configs.h" />
     <ClInclude Include="headers\WorkflowController.h" />
+    <ClInclude Include="include\config.h" />
+    <ClInclude Include="include\decision_tree.h" />
+    <ClInclude Include="include\numpy.h" />
+    <ClInclude Include="include\pandas.h" />
+    <ClInclude Include="include\tree.h" />
+    <ClInclude Include="include\utils.h" />
+    <ClInclude Include="include\xgboost.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\xgboost.lib" />

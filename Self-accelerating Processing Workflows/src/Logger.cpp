@@ -1,3 +1,4 @@
+#include<sstream>
 #include "Logger.h"
 
 Logger Logger::instance;
@@ -25,4 +26,20 @@ void Logger::clearLogs(const string& logFile) {
 }
 bool Logger::isOpen() {
     return instance.fileStream.is_open();
+}
+
+void Logger::writeToFile(string path, const string& txt) {
+    ofstream stream;
+    stream.open(path, ios::out);
+    stream << txt;
+    stream.close();
+}
+
+string Logger::readFromFile(string path) {
+    ifstream stream;
+    stream.open(path);
+    string s;
+    getline(stream,s);
+    stream.close();
+    return s;
 }
