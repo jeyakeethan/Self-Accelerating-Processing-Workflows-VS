@@ -19,10 +19,16 @@
 #include <thread>
 #include <future>
 #include<cmath>
+#include <MatrixMulMLModel.h>
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <xgboost/c_api.h>
 using namespace std;
 int main()
 {
+	MatrixMulMLModel::trainModel();
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
 	QueryPerformanceFrequency(&clockFreq);

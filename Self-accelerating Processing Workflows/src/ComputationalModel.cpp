@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include <ComputationalModel.h>
-#include <MatrixMulMLModel.h>
+// #include <MatrixMulMLModel.h>
 #include <Logger.h>
 //for time measure
 #include <windows.h>
@@ -28,7 +28,7 @@ ComputationalModel::ComputationalModel(int CPUCores_):CPUCores(CPUCores_) {
     resetOperator.detach();
     mlTrainer = thread(&ComputationalModel::checkMLModel, this);
     mlTrainer.detach();
-    mlModel = new MatrixMulMLModel();
+    // mlModel = new MatrixMulMLModel();
 }
 
 inline void ComputationalModel::resetFlow() {
@@ -284,15 +284,15 @@ void ComputationalModel::executeAndLogging()
 }
 
 void ComputationalModel::executeByML() {
-    if (mlModel->predict(getAttributes()) == 0) {
+    /*if (mlModel->predict(getAttributes()) == 0) {
         CPUImplementation();
     }
     else {
         GPUImplementation();
-    }
+    }*/
 }
 
-void ComputationalModel::executeByMLAndLogging() {
+void ComputationalModel::executeByMLAndLogging() {/*
     stringstream s;
     s << typeid(*this).name() << ",";
     int* attr = getAttributes();
@@ -313,7 +313,7 @@ void ComputationalModel::executeByMLAndLogging() {
     }
     duration = stop.QuadPart - start.QuadPart;
     s << duration << endl;
-    logExTime(s.str());
+    logExTime(s.str());*/
 }
 
 void ComputationalModel::setProcessor(int p) {
