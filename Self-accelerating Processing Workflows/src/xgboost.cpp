@@ -27,12 +27,12 @@ namespace xgboost {
 		}
 
 		for (int stage = 1; stage <= config.n_estimators; ++stage) {
-			cout << "=============================== iter: " << stage << " ===============================" << endl;
+			// cout << "=============================== iter: " << stage << " ===============================" << endl;
 			Tree *tree_stage;
 			BaseDecisionTree base_decision_tree = BaseDecisionTree(config);
 			tree_stage = base_decision_tree.fit(features, labels, grad, hess);
 			trees.push_back(tree_stage);
-			cout << tree_stage->DescribeTree() << endl;
+			// cout << tree_stage->DescribeTree() << endl;
 
 			for (size_t i = 0; i < labels.size(); ++i) {
 				float y_pred = tree_stage->PredictLeafValue(features[i]);
