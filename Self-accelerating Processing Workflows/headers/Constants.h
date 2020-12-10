@@ -4,6 +4,8 @@
 #include <string>
 typedef int numericalType1;
 
+const bool LOGGER_MODE_ON = false;
+
 const int INPUT_NATURE = 1;
 const int N = 10000;
 const int EXPERIMENT_COUNT = 100;
@@ -35,7 +37,7 @@ struct myDim3 {
 	myDim3(short x_, short y_, short z_):x(x_), y(y_), z(z_) {}
 };
 
-// ML part constants section
+// ML part
 const short NUMBER_OF_PREDICTIONS_TO_BE_CACHED = 5;
 
 

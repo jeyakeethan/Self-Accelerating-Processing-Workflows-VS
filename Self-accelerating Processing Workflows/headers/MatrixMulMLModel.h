@@ -60,7 +60,7 @@ public:
 		mat paramsMat(s.str());
 		return paramsMat;
 	}*/
-	static void trainModel();
+	static void trainModel(MatrixMulMLModel* model);
 };
 
 #endif //MATRIXMULMLMODEL_H

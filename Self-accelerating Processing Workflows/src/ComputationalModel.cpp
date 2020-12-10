@@ -26,9 +26,12 @@ ComputationalModel::ComputationalModel(int CPUCores_) :CPUCores(CPUCores_) {
 	resetFlow();
 	resetOperator = thread(&ComputationalModel::resetOverPeriodIfBurst, this);
 	resetOperator.detach();
-	mlTrainer = thread(&ComputationalModel::checkMLModel, this);
-	mlTrainer.detach();
+
+	// ml related codes
 	mlModel = new MatrixMulMLModel();
+	MatrixMulMLModel::trainModel(mlModel);
+	mlTrainer = thread(&ComputationalModel::checkMLModel, mlModel);
+	mlTrainer.detach();
 }
 
 inline void ComputationalModel::resetFlow() {
@@ -88,10 +91,7 @@ void ComputationalModel::executeAndLogging(int mode)
 	duration = stop_cover.QuadPart - start_cover.QuadPart;
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	vector<float> attr = *getAttributes();
-	for (int i = 1; i <= attr[0]; i++) {
-		s << attr[i] << ",";
-	}
+	s << getAttributeString();
 	if (mode == 1)
 		s << 0 << ",";
 	else
@@ -270,10 +270,7 @@ void ComputationalModel::executeAndLogging()
 
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	vector<float>* attr = getAttributes();
-	for (int i = 1; i <= (*attr)[0]; i++) {
-		s << (*attr)[i] << ",";
-	}
+	s << getAttributeString();
 
 	if (processor == 1 || processor == -1) {
 		s << 0 << ",";
@@ -307,10 +304,7 @@ void ComputationalModel::executeByML() {
 void ComputationalModel::executeByMLAndLogging() {
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	vector<float>* attr = getAttributes();
-	for (int i = 1; i <= (*attr)[0]; i++) {
-		s << (*attr)[i] << ",";
-	}
+	s << getAttributeString();
 	if (mlModel->predict(getAttributes()) == 0) {
 		s << 0 << ",";
 		QueryPerformanceCounter(&start);
@@ -332,11 +326,6 @@ void ComputationalModel::setProcessor(int p) {
 	processor = p;
 }
 
-
-void ComputationalModel::prepareLogging() {
-
-}
-
 /* static method run by a thread to reset the flow if the input stream is burst and sparsed */
 void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
 {
@@ -352,7 +341,7 @@ void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
 	}
 }
 
-void ComputationalModel::checkMLModel(ComputationalModel* cm) {
+void ComputationalModel::checkMLModel(MatrixMulMLModel* model) {
 	while (true) {
 		string file_ml = "ml_Trainer.cache";
 		ifstream mlTrainerReadFile(file_ml);
@@ -360,7 +349,7 @@ void ComputationalModel::checkMLModel(ComputationalModel* cm) {
 		mlTrainerReadFile >> lastUpdatedTime;
 		mlTrainerReadFile.close();
 		if (lastUpdatedTime != 0 && currentTimeMillis() - lastUpdatedTime > MONTH) {
-			trainML(cm);
+			trainML(model);
 		}
 		ofstream mlTrainerWriteFile(file_ml);
 		mlTrainerWriteFile << currentTimeMillis() << endl;
@@ -370,25 +359,25 @@ void ComputationalModel::checkMLModel(ComputationalModel* cm) {
 }
 
 bool ComputationalModel::catchOutlier(vector<float>* attr) {
-	for (vector<float> *cache : cached_predictions) {
-		if ((*cache) > (*attr))
+	for (int i = 0; i < prediction_empty_slot; i++) {
+		if (*cached_predictions[i] > *attr)
 			return false;
-		if ((*cache) == cached_prediction_last) {
-			if (mlModel->predict(attr) == 0)
-				return true;
-			else {
-				if (prediction_empty_slot < NUMBER_OF_PREDICTIONS_TO_BE_CACHED - 1)
-					cached_predictions[prediction_empty_slot] = attr;
-				return false;
-			}
-			break;
-		}
+	}
+	if (mlModel->predict(attr) == 0) {
+		cout << "An outlier caught " << getAttributeString() << endl;
+
+		return true;
+	}
+	else {
+		if (prediction_empty_slot < NUMBER_OF_PREDICTIONS_TO_BE_CACHED - 1)
+			cached_predictions[prediction_empty_slot++] = attr;
+		return false;
 	}
 	return false;
 }
 
-void ComputationalModel::trainML(ComputationalModel* cm) {
-	MatrixMulMLModel::trainModel();
+void ComputationalModel::trainML(MatrixMulMLModel* model) {
+	MatrixMulMLModel::trainModel(model);
 }
 
 void ComputationalModel::setOperationalMode(bool om) {
@@ -404,6 +393,15 @@ void ComputationalModel::logExTime(string str) {
 
 void ComputationalModel::clearLogs() {
 	Logger::clearLogs(LOG_FILE_NAME);
+}
+
+string ComputationalModel::getAttributeString() {
+	stringstream s;
+	vector<float>* attr = getAttributes();
+	for (int i = 1; i <= (*attr)[0]; i++) {
+		s << (*attr)[i] << ",";
+	}
+	return s.str();
 }
 
 __int64 currentTimeMillis() {

@@ -28,7 +28,6 @@
 using namespace std;
 int main()
 {
-	MatrixMulMLModel::trainModel();
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
 	QueryPerformanceFrequency(&clockFreq);
@@ -165,48 +164,87 @@ int main()
 		break;
 	}
 
+	/*Mannual Execute only in GPU*/
 	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
-	QueryPerformanceCounter(&start);
-	for (x = 0; x < spaceLength; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
-		matmulmodel.executeAndLogging(2);
+	if (LOGGER_MODE_ON) {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.executeAndLogging(2);
+		}
+		QueryPerformanceCounter(&stop);
 	}
-	QueryPerformanceCounter(&stop);
+	else {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.execute(2);
+		}
+		QueryPerformanceCounter(&stop);
+	}
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedTimeGPU = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 	
-	QueryPerformanceCounter(&start);
-	for (x = 0; x < spaceLength; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
-		matmulmodel.executeAndLogging(1);
+
+	/*Mannual Execute only in CPU*/
+	if (LOGGER_MODE_ON) {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.executeAndLogging(1);
+		}
+		QueryPerformanceCounter(&stop);
 	}
-	QueryPerformanceCounter(&stop);
+	else {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.execute(1);
+		}
+		QueryPerformanceCounter(&stop);
+	}
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedTimeCPU = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
+	/*Automated Hybrid*/
 	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
-	QueryPerformanceCounter(&start);
-	for (x = 0; x < spaceLength; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
-		matmulmodel.executeAndLogging();
+	if (LOGGER_MODE_ON) {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.executeAndLogging();
+		}
+		QueryPerformanceCounter(&stop);
 	}
-	QueryPerformanceCounter(&stop);
+	else {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.execute();
+		}
+		QueryPerformanceCounter(&stop);
+	}
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedAutoTime = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
+	// Automated ML only
 	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
-	QueryPerformanceCounter(&start);
-	for (x = 0; x < spaceLength; x++) {
-		matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
-		matmulmodel.executeByMLAndLogging();
+	if (LOGGER_MODE_ON) {
 	}
-	QueryPerformanceCounter(&stop);
+	else {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.executeByML();
+		}
+		QueryPerformanceCounter(&stop);
+	}
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedML = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file

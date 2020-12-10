@@ -37,11 +37,11 @@ int err = (call);                                                       \
     }                                                                       \
 }
 
-void MatrixMulMLModel::trainModel() {
+void MatrixMulMLModel::trainModel(MatrixMulMLModel* model) {
 	clock_t startTime, endTime;
 	startTime = clock();
 
-	Config config;
+	/*Config config;
 	config.n_estimators = 10;
 	config.learning_rate = 0.1;
 	config.max_depth = 6;
@@ -51,14 +51,17 @@ void MatrixMulMLModel::trainModel() {
 	config.reg_lambda = 0.3;
 	config.colsample_bytree = 0.8;
 	config.min_child_weight = 5;
-	config.max_bin = 100;
-
-	pandas::Dataset dataset = pandas::ReadCSV("../source/submission.csv", ',', -1,1000);
+	config.max_bin = 100;*/
+	XGBoost *xgboost = model->xgboost;
+	pandas::Dataset dataset = pandas::ReadCSV("../source/submission.csv", ',', -1, 1000);
 	// pandas::Dataset dataset = pandas::ReadCSV("../source/credit_card.csv", ',', 5000, 50);
-	XGBoost xgboost = XGBoost(config);
-	xgboost.fit(dataset.features, dataset.labels);
-	cout << xgboost.SaveModelToString() << endl << endl;
-	Logger::writeToFile("model.dump", xgboost.SaveModelToString());
+	//XGBoost xgboost = XGBoost(config);
+	xgboost->fit(dataset.features, dataset.labels);
+	cout << xgboost->SaveModelToString() << endl << endl;
+
+	// sump model for future use
+	// Logger::writeToFile("model.dump", xgboost->SaveModelToString());
+
 	/*
 	for (int i = 0; i < dataset.features.size(); i++) {
 		cout << i << ": " << xgboost.PredictProba(dataset.features[i])[0] << endl;
