@@ -369,6 +369,12 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 		return true;
 	}
 	else {
+		for (int i = 0; i < prediction_empty_slot; i++) {
+			if (*cached_predictions[i] < *attr) {
+				*cached_predictions[i] = *attr;
+				return false;
+			}
+		}
 		if (prediction_empty_slot < NUMBER_OF_PREDICTIONS_TO_BE_CACHED - 1)
 			cached_predictions[prediction_empty_slot++] = attr;
 		return false;
