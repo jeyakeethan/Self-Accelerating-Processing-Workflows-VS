@@ -13,7 +13,6 @@
 #include <xgboost/c_api.h>
 #include <MatrixMulMLModel.h>
 
-#include <vector>
 #include <time.h>
 #include "config.h"
 #include "pandas.h"
@@ -51,7 +50,7 @@ public:
 	};
 	inline ~MatrixMulMLModel() { };
 
-	int predict(int* params);
+	int predict(vector<float>* params);
 	/*inline mat intArrToMat(int* params) {
 		stringstream s;
 		s << "\"";

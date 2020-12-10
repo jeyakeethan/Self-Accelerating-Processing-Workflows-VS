@@ -88,7 +88,7 @@ void ComputationalModel::executeAndLogging(int mode)
 	duration = stop_cover.QuadPart - start_cover.QuadPart;
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	int* attr = getAttributes();
+	vector<float> attr = *getAttributes();
 	for (int i = 1; i <= attr[0]; i++) {
 		s << attr[i] << ",";
 	}
@@ -270,9 +270,9 @@ void ComputationalModel::executeAndLogging()
 
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	int* attr = getAttributes();
-	for (int i = 1; i <= attr[0]; i++) {
-		s << attr[i] << ",";
+	vector<float>* attr = getAttributes();
+	for (int i = 1; i <= (*attr)[0]; i++) {
+		s << (*attr)[i] << ",";
 	}
 
 	if (processor == 1 || processor == -1) {
@@ -307,9 +307,9 @@ void ComputationalModel::executeByML() {
 void ComputationalModel::executeByMLAndLogging() {
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	int* attr = getAttributes();
-	for (int i = 1; i <= attr[0]; i++) {
-		s << attr[i] << ",";
+	vector<float>* attr = getAttributes();
+	for (int i = 1; i <= (*attr)[0]; i++) {
+		s << (*attr)[i] << ",";
 	}
 	if (mlModel->predict(getAttributes()) == 0) {
 		s << 0 << ",";
@@ -369,9 +369,21 @@ void ComputationalModel::checkMLModel(ComputationalModel* cm) {
 	}
 }
 
-bool ComputationalModel::catchOutlier(int* attr) {
-	return true;
-	// TODO return true if caught
+bool ComputationalModel::catchOutlier(vector<float>* attr) {
+	for (vector<float> *cache : cached_predictions) {
+		if ((*cache) > (*attr))
+			return false;
+		if ((*cache) == cached_prediction_last) {
+			if (mlModel->predict(attr) == 0)
+				return true;
+			else {
+				if (prediction_empty_slot < NUMBER_OF_PREDICTIONS_TO_BE_CACHED - 1)
+					cached_predictions[prediction_empty_slot] = attr;
+				return false;
+			}
+			break;
+		}
+	}
 	return false;
 }
 

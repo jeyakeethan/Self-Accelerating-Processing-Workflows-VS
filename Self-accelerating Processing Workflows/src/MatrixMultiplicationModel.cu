@@ -24,12 +24,9 @@ MatrixMultiplicationModel<T>::~MatrixMultiplicationModel() {}
 
 // retrive influenced attributes
 template <class T>
-int* MatrixMultiplicationModel<T>::getAttributes() {
-	int* attr = new int[4];
-	attr[0] = 3;
-	attr[1] = localMD->x;
-	attr[2] = localMD->y;
-	attr[3] = localMD->z;
+vector<float>* MatrixMultiplicationModel<T>::getAttributes() {
+	//if (attr == null)
+		//return new vector<float>{ 3, 0, 0, 0 };
 	return attr;
 }
 

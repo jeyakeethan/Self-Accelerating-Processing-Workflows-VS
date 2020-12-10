@@ -17,7 +17,6 @@ using namespace rapidjson;
 #define API_BEGIN() try {
 #define API_END() } catch(std::runtime_error &_except_) { return -1; } return 0;
 
-//训练模型接口
 XGB_DLL int BoosterTrain(Config *conf, const float *data, const int *label, int nrow, int ncol, Booster *booster) {
 	API_BEGIN();
 	vector< vector<float> > features(nrow, vector<float>(ncol));

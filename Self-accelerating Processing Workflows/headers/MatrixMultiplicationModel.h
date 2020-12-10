@@ -3,18 +3,21 @@
 
 #include <ComputationalModel.h>
 #include <Constants.h>
+#include <vector>
+using namespace std;
 
 template <class T>
-class MatrixMultiplicationModel : public ComputationalModel
+class MatrixMultiplicationModel: public ComputationalModel
 {
     public:
         T *localA, *localB, *localC;
         myDim3 *localMD;
-        int* attributes;
+        vector<float> * attr;
         MatrixMultiplicationModel(int CPUCores);
         ~MatrixMultiplicationModel();
         inline void setData(T *mat1, T *mat2, T *out, myDim3 *matricesDim){
             localA = mat1; localB = mat2; localC = out; localMD = matricesDim;
+            attr = new vector<float>{ 3, matricesDim->x, matricesDim->y, matricesDim->z };
             return;
         }
     protected:
@@ -22,7 +25,7 @@ class MatrixMultiplicationModel : public ComputationalModel
     private:
         virtual void CPUImplementation();
         virtual void GPUImplementation();
-        virtual int* getAttributes();
+        virtual vector<float>* getAttributes();
 };
 
 #include "MatrixMultiplicationModel.cu"

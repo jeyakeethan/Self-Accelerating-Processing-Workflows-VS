@@ -7,6 +7,7 @@
 #include <MatrixMulMLModel.h>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 //for async function
 #include <thread>
@@ -22,12 +23,13 @@ public:
 	// stringstream s;
 	Clock clocks;
 	int CPUCores;
-	int sampleMode, model_id, obj_id;
+	int sampleMode, model_id, obj_id, prediction_empty_slot = 0;
 	long long duration;
 	int* predictionBoundary;
 	MatrixMulMLModel * mlModel;
 	LARGE_INTEGER start, stop, lastRevisedClock;
-
+	vector<float>* cached_predictions[NUMBER_OF_PREDICTIONS_TO_BE_CACHED];
+	vector<float> cached_prediction_last;
 	ComputationalModel(int CPUCores);
 	virtual ~ComputationalModel();
 	static int m_id_counter() { static int m_id = 0; return m_id++; }
@@ -47,7 +49,7 @@ public:
 	void setProcessor(int p);
 	void clearLogs();
 	void logExTime(string str);
-	bool catchOutlier(int * attr);
+	bool catchOutlier(vector<float> * attr);
 protected:
 private:
 	thread resetOperator, mlTrainer;
@@ -60,11 +62,11 @@ private:
 	* the first value of the pointer would be the length of the array and the attributes are followed
 	* every subclass implementing this class must have to implement this virtual method
 	**/
-	virtual int* getAttributes() = 0;
+	virtual vector<float>* getAttributes() = 0;
 	inline bool isBoundedTask() {
-		int* attr = getAttributes();
-		for (int i = 1; i <= attr[0]; i++)
-			if (attr[i] > predictionBoundary[i])
+		vector<float> *attr = getAttributes();
+		for (int i = 1; i <= (int)(*attr)[0]; i++)
+			if ((*attr)[i] > predictionBoundary[i])
 				return false;
 		return true;
 	}

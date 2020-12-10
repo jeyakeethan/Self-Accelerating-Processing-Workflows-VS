@@ -79,3 +79,6 @@ void MatrixMulMLModel::trainModel() {
 	*/
 }
 
+int MatrixMulMLModel::predict(vector<float>* params) {
+	return (int)xgboost->PredictProba(*params)[0];
+}

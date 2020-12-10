@@ -35,4 +35,9 @@ struct myDim3 {
 	myDim3(short x_, short y_, short z_):x(x_), y(y_), z(z_) {}
 };
 
+// ML part constants section
+const short NUMBER_OF_PREDICTIONS_TO_BE_CACHED = 5;
+
+
 #endif // CONSTANTS_H
+
