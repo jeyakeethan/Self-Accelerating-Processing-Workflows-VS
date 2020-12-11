@@ -101,14 +101,13 @@ void ComputationalModel::executeAndLogging(int mode)
 
 // Auto mode execution
 void ComputationalModel::execute() {
-	// catch ouliers and send them to the GPU to avoid severe letency 
-	if (catchOutlier(getAttributes())) {
-		GPUImplementation();
-		return;
-	}
-
 	switch (processor) {
 		case 1:
+			// catch ouliers and send them to the GPU to avoid severe letency 
+			if (catchOutlier(getAttributes())) {
+				GPUImplementation();
+				return;
+			}
 			//cout << "Hello CPU" << endl;
 			CPUImplementation();
 			countL++;
@@ -119,6 +118,11 @@ void ComputationalModel::execute() {
 			countL++;
 			break;
 		case -1:
+			// catch ouliers and send them to the GPU to avoid severe letency 
+			if (catchOutlier(getAttributes())) {
+				GPUImplementation();
+				return;
+			}
 			// cout << "Hello CPU" << endl;
 			QueryPerformanceCounter(&start);
 			CPUImplementation();
@@ -186,17 +190,16 @@ void ComputationalModel::execute() {
 
 void ComputationalModel::executeAndLogging()
 {
-	// catch ouliers and send them to the GPU to avoid severe letency 
-	if (catchOutlier(getAttributes())) {
-		GPUImplementation();
-		return;
-	}
-
 	LARGE_INTEGER start_cover;
 	LARGE_INTEGER stop_cover;
 	QueryPerformanceCounter(&start_cover);
 	switch (processor) {
 		case 1:
+			// catch ouliers and send them to the GPU to avoid severe letency 
+			if (catchOutlier(getAttributes())) {
+				GPUImplementation();
+				return;
+			}
 			// cout << "Hello CPU" << endl;
 			CPUImplementation();
 			break;
@@ -205,6 +208,11 @@ void ComputationalModel::executeAndLogging()
 			GPUImplementation();
 			break;
 		case -1:
+			// catch ouliers and send them to the GPU to avoid severe letency 
+			if (catchOutlier(getAttributes())) {
+				GPUImplementation();
+				return;
+			}
 			// cout << "Hello CPU" << endl;
 			QueryPerformanceCounter(&start);
 			CPUImplementation();
