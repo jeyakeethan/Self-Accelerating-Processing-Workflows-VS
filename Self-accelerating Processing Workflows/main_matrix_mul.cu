@@ -42,8 +42,8 @@ int main()
 	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
-	const int step = 164;
-	const int levels = 3;
+	const int step = 64;
+	const int levels = 4;
 	const int spaceLength = pow(levels, 3);
 	myDim3**matrixSpace = new myDim3*[spaceLength];
 

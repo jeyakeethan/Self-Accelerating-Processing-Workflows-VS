@@ -384,10 +384,10 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 				cout << "switched due to max caught" << endl;
 				return true;
 			}
-			outlier_count = 0;
 		return true;
 	}
 	else {
+		outlier_count = 0;
 		for (int i = 0; i < prediction_empty_slot; i++) {
 			if (*cached_predictions[i] < *attr) {
 				*cached_predictions[i] = *attr;
