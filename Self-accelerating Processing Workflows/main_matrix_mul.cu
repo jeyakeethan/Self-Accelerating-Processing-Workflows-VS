@@ -28,6 +28,8 @@
 using namespace std;
 int main()
 {
+	//MatrixMulMLModel::trainModelStatic();
+
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
 	QueryPerformanceFrequency(&clockFreq);
@@ -40,28 +42,24 @@ int main()
 	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
-	const int step = 32;
+	const int step = 164;
 	const int levels = 3;
 	const int spaceLength = pow(levels, 3);
 	myDim3**matrixSpace = new myDim3*[spaceLength];
 
-	int lengthX, lengthY, lengthZ, counter = 0;
-	for (int l = step; l <= levels * step; l += step) 
-		for (int m = step; m <= levels * step; m += step) 
-			for (int n = step; n <= levels * step; n += step) {
-				matrixSpace[counter++] = new myDim3(l,m,n);
-			}
-//	for (int space = 0; space < spaceLength; space++) {
-//		cout << matrixSpace[space].x << ", " << matrixSpace[space].y << ", " << matrixSpace[space].z << endl;
-//	}
-
+	int lengthX, lengthY, lengthZ;
+	int levels2 = levels * levels;
+	for (int n = 0; n < spaceLength; n++) {
+		matrixSpace[n] = new myDim3((n / levels2 + 1) * step, (n % levels2 / levels + 1) * step, (n % levels + 1) * step);
+		// cout << matrixSpace[n]->x << ", " << matrixSpace[n]->y << ", " << matrixSpace[n]->z << endl;
+	}
 	numericalType1** arraySet1 = new numericalType1 * [EXPERIMENT_COUNT];
 	numericalType1** arraySet2 = new numericalType1 * [EXPERIMENT_COUNT];
+	numericalType1** matOut = new numericalType1 * [EXPERIMENT_COUNT];
 	int x, k, fileNum, length, widthCount, width;
 	int arrayLength[EXPERIMENT_COUNT];
 	myDim3* dimension;
-	numericalType1* mat1, * mat2;
-	numericalType1*  matOut;
+	//numericalType1* mat1, * mat2;
 	bool iSmall;
 	switch (INPUT_NATURE) {
 	case 1:
@@ -81,9 +79,9 @@ int main()
 			int l1 = matrixSpace[x]->x * matrixSpace[x]->y, l2 = matrixSpace[x]->z * matrixSpace[x]->y, l3 = matrixSpace[x]->x * matrixSpace[x]->z;
 			numericalType1* temp1 = new numericalType1[l1];
 			numericalType1* temp2 = new numericalType1[l2];
-			matOut = new numericalType1[l3];
 			arraySet1[x] = temp1;
 			arraySet2[x] = temp2;
+			matOut[x] = new numericalType1[l3];
 			for (k = 0; k < l1; k++) 
 				temp1[k] = rand() % RANGE_OF_INT_VALUES;
 			for (k = 0; k < l2; k++)
@@ -165,12 +163,12 @@ int main()
 	}
 
 	/*Mannual Execute only in GPU*/
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[5], matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < spaceLength; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], matrixSpace[x]);
 			matmulmodel.executeAndLogging(2);
 		}
 		QueryPerformanceCounter(&stop);
@@ -178,7 +176,7 @@ int main()
 	else {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < spaceLength; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], matrixSpace[x]);
 			matmulmodel.execute(2);
 		}
 		QueryPerformanceCounter(&stop);
@@ -192,7 +190,7 @@ int main()
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < spaceLength; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], matrixSpace[x]);
 			matmulmodel.executeAndLogging(1);
 		}
 		QueryPerformanceCounter(&stop);
@@ -200,7 +198,7 @@ int main()
 	else {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < spaceLength; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], matrixSpace[x]);
 			matmulmodel.execute(1);
 		}
 		QueryPerformanceCounter(&stop);
@@ -210,12 +208,12 @@ int main()
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
 	/*Automated Hybrid*/
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[x], matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < spaceLength; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], matrixSpace[x]);
 			matmulmodel.executeAndLogging();
 		}
 		QueryPerformanceCounter(&stop);
@@ -223,7 +221,7 @@ int main()
 	else {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < spaceLength; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], matrixSpace[x]);
 			matmulmodel.execute();
 		}
 		QueryPerformanceCounter(&stop);
@@ -233,14 +231,14 @@ int main()
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
 	// Automated ML only
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut, matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[x], matrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 	}
 	else {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < spaceLength; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut, matrixSpace[x]);
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], matrixSpace[x]);
 			matmulmodel.executeByML();
 		}
 		QueryPerformanceCounter(&stop);
@@ -254,6 +252,8 @@ int main()
 	for (int ex = 0; ex < spaceLength; ex++) {
 		free(arraySet1[ex]);
 		free(arraySet2[ex]);
+		free(matOut[ex]);
+		free(matrixSpace[ex]);
 	}
 	free(matrixSpace);
 	free(matOut);

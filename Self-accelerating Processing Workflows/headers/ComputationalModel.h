@@ -26,6 +26,7 @@ public:
 	int sampleMode, model_id, obj_id, prediction_empty_slot = 0;
 	long long duration;
 	int* predictionBoundary;
+	int outlier_count = 0;
 	MatrixMulMLModel * mlModel;
 	LARGE_INTEGER start, stop, lastRevisedClock;
 	vector<float> *cached_predictions[NUMBER_OF_PREDICTIONS_TO_BE_CACHED];
@@ -36,8 +37,9 @@ public:
 	static int obj_id_counter() { static int obj_id = 0; return obj_id++; }
 	static void setOperationalMode(bool om);
 	static void resetOverPeriodIfBurst(ComputationalModel* cm);
-	static void checkMLModel(MatrixMulMLModel* model);
-	static void trainML(MatrixMulMLModel* model);
+	string static attributeToString(vector<float>* attr);
+	void checkMLModel();
+	void trainML();
 	void resetFlow();
 	void execute();
 	void execute(int mode);
@@ -48,8 +50,7 @@ public:
 	void setProcessor(int p);
 	void clearLogs();
 	void logExTime(string str);
-	bool catchOutlier(vector<float> * attr);
-	string getAttributeString();
+	bool catchOutlier(vector<float>* attr);
 protected:
 private:
 	thread resetOperator, mlTrainer;

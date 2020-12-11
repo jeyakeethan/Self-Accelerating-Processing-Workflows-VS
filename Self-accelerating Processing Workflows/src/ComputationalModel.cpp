@@ -29,8 +29,7 @@ ComputationalModel::ComputationalModel(int CPUCores_) :CPUCores(CPUCores_) {
 
 	// ml related codes
 	mlModel = new MatrixMulMLModel();
-	MatrixMulMLModel::trainModel(mlModel);
-	mlTrainer = thread(&ComputationalModel::checkMLModel, mlModel);
+	mlTrainer = thread([this] {checkMLModel();});
 	mlTrainer.detach();
 }
 
@@ -91,7 +90,7 @@ void ComputationalModel::executeAndLogging(int mode)
 	duration = stop_cover.QuadPart - start_cover.QuadPart;
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	s << getAttributeString();
+	s << attributeToString(getAttributes());
 	if (mode == 1)
 		s << 0 << ",";
 	else
@@ -215,10 +214,12 @@ void ComputationalModel::executeAndLogging()
 			if (++countS > SAMPLE_COUNT) {
 				if (--sampleMode == 0) {
 					if (clocks.CPU > clocks.GPU) {
+						cout << "Switched to GPU" << endl;
 						processor = 2;
 						reviseCount += REVISE_COUNT_STEP * ++alignedCount;
 					}
 					else {
+						cout << "CPU continue processing" << endl;
 						processor = 1;
 						reviseCount = REVISE_COUNT_MIN;
 						alignedCount = 0;
@@ -242,12 +243,14 @@ void ComputationalModel::executeAndLogging()
 			// cout << stop.QuadPart - start.QuadPart << " clocks" << endl;
 			if (++countS > SAMPLE_COUNT) {
 				if (--sampleMode == 0) {
-					if (clocks.CPU > clocks.GPU) {
+					if (clocks.CPU > clocks.GPU){
+						cout << "GPU continue processing" << endl;
 						processor = 2;
 						reviseCount = REVISE_COUNT_MIN;
 						alignedCount = 0;
 					}
 					else {
+						cout << "Switched to CPU" << endl;
 						processor = 1;
 						reviseCount += REVISE_COUNT_STEP * ++alignedCount;
 					}
@@ -270,7 +273,7 @@ void ComputationalModel::executeAndLogging()
 
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	s << getAttributeString();
+	s << attributeToString(getAttributes());
 
 	if (processor == 1 || processor == -1) {
 		s << 0 << ",";
@@ -304,7 +307,7 @@ void ComputationalModel::executeByML() {
 void ComputationalModel::executeByMLAndLogging() {
 	stringstream s;
 	s << typeid(*this).name() << ",";
-	s << getAttributeString();
+	s << attributeToString(getAttributes());
 	if (mlModel->predict(getAttributes()) == 0) {
 		s << 0 << ",";
 		QueryPerformanceCounter(&start);
@@ -341,7 +344,7 @@ void ComputationalModel::resetOverPeriodIfBurst(ComputationalModel* cm)
 	}
 }
 
-void ComputationalModel::checkMLModel(MatrixMulMLModel* model) {
+void ComputationalModel::checkMLModel() {
 	while (true) {
 		string file_ml = "ml_Trainer.cache";
 		ifstream mlTrainerReadFile(file_ml);
@@ -349,7 +352,7 @@ void ComputationalModel::checkMLModel(MatrixMulMLModel* model) {
 		mlTrainerReadFile >> lastUpdatedTime;
 		mlTrainerReadFile.close();
 		if (lastUpdatedTime != 0 && currentTimeMillis() - lastUpdatedTime > MONTH) {
-			trainML(model);
+			trainML();
 		}
 		ofstream mlTrainerWriteFile(file_ml);
 		mlTrainerWriteFile << currentTimeMillis() << endl;
@@ -363,9 +366,17 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 		if (*cached_predictions[i] > *attr)
 			return false;
 	}
-	if (mlModel->predict(attr) == 0) {
-		cout << "An outlier caught " << getAttributeString() << endl;
-
+		if (mlModel->predict(attr) == 0) {
+			cout << "An outlier caught " << attributeToString(attr) << endl;
+			if (++outlier_count > MAX_OUTLIERS_LIMIT) {
+				processor = 2;
+				reviseCount = REVISE_COUNT_MIN;
+				alignedCount = 0;
+				countL = 1;
+				cout << "switched due to max caught" << endl;
+				return true;
+			}
+			outlier_count = 0;
 		return true;
 	}
 	else {
@@ -382,8 +393,8 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 	return false;
 }
 
-void ComputationalModel::trainML(MatrixMulMLModel* model) {
-	MatrixMulMLModel::trainModel(model);
+void ComputationalModel::trainML() {
+	mlModel->trainModel();
 }
 
 void ComputationalModel::setOperationalMode(bool om) {
@@ -401,9 +412,8 @@ void ComputationalModel::clearLogs() {
 	Logger::clearLogs(LOG_FILE_NAME);
 }
 
-string ComputationalModel::getAttributeString() {
+string ComputationalModel::attributeToString(vector<float>* attr) {
 	stringstream s;
-	vector<float>* attr = getAttributes();
 	for (int i = 1; i <= (*attr)[0]; i++) {
 		s << (*attr)[i] << ",";
 	}

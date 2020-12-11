@@ -31,23 +31,7 @@ class MatrixMulMLModel {
 public:
 	size_t prediction;
 	XGBoost * xgboost;
-	inline MatrixMulMLModel() {
-		Config mlConfig;
-		mlConfig.n_estimators = 10;
-		mlConfig.learning_rate = 0.1;
-		mlConfig.max_depth = 6;
-		mlConfig.min_samples_split = 10;
-		mlConfig.min_data_in_leaf = 10;
-		mlConfig.reg_gamma = 0.3;
-		mlConfig.reg_lambda = 0.3;
-		mlConfig.colsample_bytree = 0.8;
-		mlConfig.min_child_weight = 5;
-		mlConfig.max_bin = 100;
-		xgboost = new XGBoost(mlConfig);
-		//Document document;
-		//document.parse(Logger::readFromFile("model.dump"));
-		//xgboost->LoadModelFromJson(document);
-	};
+	MatrixMulMLModel();
 	inline ~MatrixMulMLModel() { };
 
 	int predict(vector<float>* params);
@@ -60,7 +44,8 @@ public:
 		mat paramsMat(s.str());
 		return paramsMat;
 	}*/
-	static void trainModel(MatrixMulMLModel* model);
+	void trainModel();
+	static void trainModelStatic();
 };
 
 #endif //MATRIXMULMLMODEL_H

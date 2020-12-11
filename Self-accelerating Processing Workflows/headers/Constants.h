@@ -4,11 +4,11 @@
 #include <string>
 typedef int numericalType1;
 
-const bool LOGGER_MODE_ON = false;
+const bool LOGGER_MODE_ON = true;
 
 const int INPUT_NATURE = 1;
 const int N = 10000;
-const int EXPERIMENT_COUNT = 100;
+const int EXPERIMENT_COUNT = 1000;
 const int MAX_WIDTH_ALIGNED = 100;
 const int MIN_WIDTH_ALIGNED = 10;
 const int SMALL_ARRAY_MAX_LENGTH = 1300;
@@ -39,6 +39,7 @@ struct myDim3 {
 
 // ML part
 const short NUMBER_OF_PREDICTIONS_TO_BE_CACHED = 5;
+const int MAX_OUTLIERS_LIMIT = 10;
 
 
 #endif // CONSTANTS_H
