@@ -15,7 +15,6 @@ namespace xgboost {
 	BaseDecisionTree::BaseDecisionTree(Config conf) :config(conf) {};
 	//BaseDecisionTree::~BaseDecisionTree() {};
 
-	//训练单棵回归树
 	Tree* BaseDecisionTree::fit(const vector<vector<float>>& features_in, const vector<int>& labels_in,
 		const vector<float>& grad_in, const vector<float>& hess_in) {
 		features = features_in;
@@ -30,15 +29,13 @@ namespace xgboost {
 		return decision_tree;
 	}
 
-	//递归生成树
 	Tree* BaseDecisionTree::_fit(vector<int>& sub_dataset, int depth) {
-		//计算二阶导数之和
 		float sub_hess = 0.0;
 		for (int i : sub_dataset) {
 			sub_hess += hess[i];
 		}
 
-		//当前节点样本数量小于最小叶子节点样本数量或二阶导数之和小于给定weight，则停止分裂
+
 		if (sub_dataset.size() <= config.min_samples_split || sub_hess <= config.min_child_weight) {
 			Tree *tree = new Tree();
 			tree->leaf_value = CalculateLeafValue(sub_dataset);
@@ -75,17 +72,14 @@ namespace xgboost {
 		}
 	}
 
-	//寻找最优分割特征和分割点
 	BestSplitInfo BaseDecisionTree::ChooseBestSplitFeature(const vector<int>& sub_dataset) {
 		BestSplitInfo best_split_info;
 
-		//当前节点作为叶子节点时的取值
 		float best_internal_value = CalculateLeafValue(sub_dataset);
 		best_split_info.best_internal_value = best_internal_value;
 		
 		list<BestSplitInfo> best_split_info_list(features[0].size(), BestSplitInfo());
 
-		//对每一个特征寻找最优分割点
 #pragma omp parallel for schedule(static, 1)
 		for (int i = 0; i < features[0].size(); ++i) {
 			best_split_info_list.push_back(ChooseBestSplitValue(sub_dataset, i));
@@ -106,13 +100,11 @@ namespace xgboost {
 		return best_split_info;
 	}
 
-	//给定特征，寻找该特征下的最优分割点
 	BestSplitInfo BaseDecisionTree::ChooseBestSplitValue(const vector<int>& sub_dataset, int feature_index) {
-		//找到该特征下所有可能的分割点
+
 		vector<float> feature_values;
 		vector<float> feature_values_unique;
 
-		//如果循环体内部包含有向vector对象添加元素的语句，则不能使用范围for循环
 		int dataset_index;
 		for (size_t j = 0; j < sub_dataset.size(); ++j) {
 			dataset_index = sub_dataset[j];
@@ -120,7 +112,6 @@ namespace xgboost {
 			feature_values_unique.push_back(features[dataset_index][feature_index]);
 		}
 
-		//连续特征分箱，得到max_bin个可能的分割点
 		vector<float> unique_values;
 		sort(feature_values_unique.begin(), feature_values_unique.end());
 		feature_values_unique.erase(unique(feature_values_unique.begin(), feature_values_unique.end()), feature_values_unique.end());
@@ -147,7 +138,6 @@ namespace xgboost {
 		BestSplitInfo best_split_info;
 		best_split_info.best_split_feature = feature_index;
 
-		//寻找使gain最大的分割点
 		for (float split_value : unique_values) {
 			sub_dataset_left.clear();
 			sub_dataset_right.clear();
@@ -156,8 +146,7 @@ namespace xgboost {
 			right_grad_sum = 0;
 			right_hess_sum = 0;
 
-			//#pragma omp parallel for schedule(static) reduction(+:left_grad_sum, left_hess_sum, right_grad_sum, right_hess_sum)
-			//开启openMP后，多个进程对同一个vector同时进行push_back操作，就可能存在冲突
+
 			for (int index : sub_dataset) {
 				if (features[index][feature_index] <= split_value) {
 					sub_dataset_left.push_back(index);
@@ -182,7 +171,7 @@ namespace xgboost {
 		return best_split_info;
 	}
 
-	//计算分裂后的增益
+
 	float BaseDecisionTree::CalculateSplitGain(const float& left_grad_sum, const float& left_hess_sum,
 		const float& right_grad_sum, const float& right_hess_sum) {
 		float tmp1 = pow(left_grad_sum, 2) / (left_hess_sum + config.reg_lambda);
@@ -191,7 +180,7 @@ namespace xgboost {
 		return (tmp1 + tmp2 - tmp3) / 2 - config.reg_gamma;
 	}
 
-	//计算叶子节点取值
+
 	float BaseDecisionTree::CalculateLeafValue(const vector<int>& sub_dataset) {
 		float grad_sum = 0;
 		float hess_sum = 0;

@@ -6,6 +6,7 @@ typedef int numericalType1;
 
 const bool LOGGER_MODE_ON = true;
 
+// Test Data Generation
 const int INPUT_NATURE = 1;
 const int N = 10000;
 const int EXPERIMENT_COUNT = 1000;
@@ -13,6 +14,7 @@ const int MAX_WIDTH_ALIGNED = 100;
 const int MIN_WIDTH_ALIGNED = 10;
 const int SMALL_ARRAY_MAX_LENGTH = 1300;
 const int ARRAY_MAX_LENGTH = 10000;
+
 const int REVISE_COUNT_MIN = 20;
 const int REVISE_COUNT_MAX = 1000;
 const int REVISE_COUNT_STEP = 20;

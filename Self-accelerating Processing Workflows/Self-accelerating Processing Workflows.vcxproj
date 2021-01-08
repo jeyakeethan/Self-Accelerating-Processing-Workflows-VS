@@ -17,7 +17,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{21E4705D-1910-4285-A78F-1AD1B620181D}</ProjectGuid>
     <RootNamespace>Self_accelerating_Processing_Workflows</RootNamespace>
-    <CudaToolkitCustomDir>..\..\..\NVIDIA GPU Computing Toolkit\CUDA\v11.0</CudaToolkitCustomDir>
+    <CudaToolkitCustomDir>
+    </CudaToolkitCustomDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">

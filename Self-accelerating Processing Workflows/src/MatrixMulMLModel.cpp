@@ -53,7 +53,7 @@ MatrixMulMLModel::MatrixMulMLModel() {
 	mlConfig.min_child_weight = 5;
 	mlConfig.max_bin = 100;
 	xgboost = new XGBoost(mlConfig);
-	trainModel();
+	// trainModel();
 	//document.parse(Logger::readFromFile("model.dump"));
 	//xgboost->LoadModelFromJson(document);
 }
@@ -64,7 +64,9 @@ void MatrixMulMLModel::trainModel() {
 
 	pandas::Dataset dataset = pandas::ReadCSV("../source/matrix_ml_data.csv", ',', -1, 1000);
 	xgboost->fit(dataset.features, dataset.labels);
-	cout << xgboost->SaveModelToString() << endl << endl;
+
+	// print model
+	// cout << xgboost.SaveModelToString() << endl << endl;
 
 	// dump model for future use
 	// Logger::writeToFile("model.dump", xgboost->SaveModelToString());
@@ -88,9 +90,8 @@ void MatrixMulMLModel::trainModelStatic() {
 	XGBoost xgboost = XGBoost(config);
 	pandas::Dataset dataset = pandas::ReadCSV("../../source/matrix_ml_data.csv", ',', -1, 1000);
 	// pandas::Dataset dataset = pandas::ReadCSV("../source/credit_card.csv", ',', 5000, 50);
-	//XGBoost xgboost = XGBoost(config);
+	// XGBoost xgboost = XGBoost(config);
 	xgboost.fit(dataset.features, dataset.labels);
-	cout << xgboost.SaveModelToString() << endl << endl;
 
 	// sump model for future use
 	// Logger::writeToFile("model.dump", xgboost->SaveModelToString());
@@ -110,7 +111,7 @@ void MatrixMulMLModel::trainModelStatic() {
 	cout << "KS: " << CalculateKS(dataset.labels, pvalues) << endl;
 	cout << "ACC: " << CalculateACC(dataset.labels, pvalues) << endl;
 
-	endTime = clock();
+	endTime = clock();F
 	cout << "Totle Time : " << (float)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
 
 	system("pause");
