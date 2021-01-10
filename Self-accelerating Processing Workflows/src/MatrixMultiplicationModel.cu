@@ -76,6 +76,7 @@ void MatrixMultiplicationModel<T>::GPUImplementation() {
 
 	//Copy back to Host array from Device array
 	cudaMemcpy(localC, dev_c, l3, cudaMemcpyDeviceToHost);
+
 	//Free the Device array memory
 	cudaFree(dev_a);
 	cudaFree(dev_b);
