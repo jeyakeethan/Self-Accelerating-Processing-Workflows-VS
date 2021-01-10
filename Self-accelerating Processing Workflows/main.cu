@@ -11,8 +11,6 @@
 
 #include <Constants.h>
 #include <ComputationalModel.h>
-#include <ArrayAdditionModel.h>
-#include <DotMultiplicationModel.h>
 #include <MatrixMultiplicationModel.h>
 #include <random>
 #include <string>
@@ -32,7 +30,7 @@ int main()
 {
 	// ComputationalModel::setOperationalMode(true);
 	LARGE_INTEGER start, stop, clockFreq;
-	ofstream outfile;
+	ofstream outfile("ML_train_data.csv");
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
 	int elapsedTimeCPU, elapsedTimeGPU;
@@ -41,12 +39,13 @@ int main()
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	int step = 32;
-	int levels = 1;
+	int levels = 8;
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
-	cout << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header
-	for (int l = step; l <= levels * step; l += step) {
-		for (int m = step; m <= levels * step; m += step) {
+	cout << "Dim\t" << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header
+	outfile << "x,y,z,prediction" << endl;		// print header
+	for (int m = step; m <= levels * step; m += step) {
+		for (int l = step; l <= levels * step; l += step) {
 			for (int n = step; n <= levels * step; n += step) {
 				lengthX = l * m;
 				lengthY = m * n;
@@ -78,14 +77,17 @@ int main()
 				string status = "Differ";
 				if (compareResults(matOut1, matOut2, lengthZ))
 					status = "Same";
-				cout << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;
+				cout << l << "," << m << "," << n << "\t" << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;
 
-				for (int t = 0; t < lengthZ; t++)
-					cout << matOut1[t] << ", " << matOut2[t] << endl;
+				//print results
+				// for (int t = 0; t < lengthZ; t++)
+				//	cout << matOut1[t] << ", " << matOut2[t] << endl;
+
+				outfile << l << "," << m << "," << n << "," << (elapsedTimeCPU < elapsedTimeGPU ? 0 : 1) << endl;
 
 				free(mat1);
-				free(matOut1);
 				free(mat2);
+				free(matOut1);
 				free(matOut2);
 			}
 		}
