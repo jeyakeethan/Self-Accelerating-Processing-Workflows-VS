@@ -104,6 +104,10 @@ int main()
 					//cout << "width: " << width << endl << endl;
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+					// if(iSmall)
+					//	selectedMatDim = matrixSpace[rand() % spaceLength];
+					// else
+					//	selectedMatDim = matrixSpace[rand() % spaceLength];
 					selectedMatDim = matrixSpace[rand() % spaceLength];
 					l1 = selectedMatDim->x * selectedMatDim->y, l2 = selectedMatDim->z * selectedMatDim->y, l3 = selectedMatDim->x * selectedMatDim->z;
 					iSmall = !iSmall;
@@ -244,6 +248,12 @@ int main()
 	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[x], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < spaceLength; x++) {
+			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+			matmulmodel.executeByML();
+		}
+		QueryPerformanceCounter(&stop);
 	}
 	else {
 		QueryPerformanceCounter(&start);
@@ -264,7 +274,7 @@ int main()
 		free(arraySet2[ex]);
 		free(matOut[ex]);
 		free(matrixSpace[ex]);
-		free(correspondingMatrixSpace[ex]);
+		//free(correspondingMatrixSpace[ex]);
 	}
 	free(matrixSpace);
 	free(matOut);
