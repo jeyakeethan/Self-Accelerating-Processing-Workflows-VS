@@ -178,6 +178,7 @@ int main()
 			break;
 	}
 
+	cout << endl << "Execution in GPU only started" << endl;
 	/*Mannual Execute only in GPU*/
 	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[5], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
@@ -202,6 +203,7 @@ int main()
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 	
 
+	cout << endl << "Execution in CPU only started" << endl;
 	/*Mannual Execute only in CPU*/
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
@@ -223,6 +225,8 @@ int main()
 	int elapsedTimeCPU = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
+
+	cout << endl << "Automated Hybrid Execution started" << endl;
 	/*Automated Hybrid*/
 	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[x], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
@@ -246,6 +250,7 @@ int main()
 	int elapsedAutoTime = int(delay * 1000);
 	matmulmodel.logExTime("\n\n"); // add new line in logging file
 
+	cout << endl << "Automated ML only Execution started" << endl;
 	// Automated ML only
 	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[x], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
