@@ -45,6 +45,7 @@ int main()
 	const int step = 32;
 	const int levels = 4;
 	const int spaceLength = pow(levels, 3);
+	int loop_length = spaceLength;
 	myDim3**matrixSpace = new myDim3*[spaceLength];
 
 	int lengthX, lengthY, lengthZ;
@@ -66,7 +67,7 @@ int main()
 	bool iSmall;
 	switch (INPUT_NATURE) {
 		case 1:
-			/*********Generate Aligned Binary Input Stream*********/
+			/*********Generate Binary Input Stream*********/
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			for (x = 0; x < spaceLength; x++) {
@@ -94,7 +95,7 @@ int main()
 			}
 			break;
 		case 2:
-			//  *********Generate Aligned Square Wave Input Stream*********
+			//  *********Generate Square Wave Input Stream*********
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			selectedMatDim = matrixSpace[rand() % spaceLength];
@@ -125,6 +126,7 @@ int main()
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
+			loop_length = EXPERIMENT_COUNT;
 			break;
 		case 3:
 			/*********Generate Odd Input Stream*********/
@@ -181,7 +183,7 @@ int main()
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.executeAndLogging(2);
 		}
@@ -189,7 +191,7 @@ int main()
 	}
 	else {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.execute(2);
 		}
@@ -203,7 +205,7 @@ int main()
 	/*Mannual Execute only in CPU*/
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.executeAndLogging(1);
 		}
@@ -211,7 +213,7 @@ int main()
 	}
 	else {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.execute(1);
 		}
@@ -226,7 +228,7 @@ int main()
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.executeAndLogging();
 		}
@@ -234,7 +236,7 @@ int main()
 	}
 	else {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.execute();
 		}
@@ -249,7 +251,7 @@ int main()
 	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.executeByML();
 		}
@@ -257,7 +259,7 @@ int main()
 	}
 	else {
 		QueryPerformanceCounter(&start);
-		for (x = 0; x < spaceLength; x++) {
+		for (x = 0; x < loop_length; x++) {
 			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 			matmulmodel.executeByML();
 		}
@@ -270,13 +272,17 @@ int main()
 	cout << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU  << "\tSelfFlow:\t" << elapsedAutoTime<< "\tML Flow:\t" << elapsedML << endl;
 
 	for (int ex = 0; ex < spaceLength; ex++) {
+		free(matrixSpace[ex]);
+	}
+	for (int ex = 0; ex < loop_length; ex++) {
 		free(arraySet1[ex]);
 		free(arraySet2[ex]);
 		free(matOut[ex]);
-		free(matrixSpace[ex]);
-		//free(correspondingMatrixSpace[ex]);
 	}
 	free(matrixSpace);
+	free(arraySet1);
+	free(arraySet2);
 	free(matOut);
+	free(correspondingMatrixSpace);
 	return 0;
 }

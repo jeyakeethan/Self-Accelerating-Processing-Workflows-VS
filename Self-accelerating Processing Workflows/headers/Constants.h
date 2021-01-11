@@ -7,7 +7,7 @@ typedef int numericalType1;
 const bool LOGGER_MODE_ON = true;
 
 // Test Data Generation
-const int INPUT_NATURE = 1;
+const int INPUT_NATURE = 2;
 const int N = 10000;
 const int EXPERIMENT_COUNT = 1000;
 const int MAX_WIDTH_ALIGNED = 100;
