@@ -182,8 +182,8 @@ int main()
 
 	cout << endl << "Execution in GPU only started" << endl;
 	/*Mannual Execute only in GPU*/
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[5], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
-	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+	matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < loop_length; x++) {
@@ -230,8 +230,8 @@ int main()
 
 	cout << endl << "Automated Hybrid Execution started" << endl;
 	/*Automated Hybrid*/
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[x], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
-	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+	matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < loop_length; x++) {
@@ -254,8 +254,8 @@ int main()
 
 	cout << endl << "Automated ML only Execution started" << endl;
 	// Automated ML only
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[x], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
-	matmulmodel.executeAndLogging(2);											// to initialise GPU to avoid initialization overhead
+	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+	matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
 	if (LOGGER_MODE_ON) {
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < loop_length; x++) {
@@ -274,7 +274,7 @@ int main()
 	}
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	int elapsedML = int(delay * 1000);
-	matmulmodel.logExTime("\n\n"); // add new line in logging file
+	matmulmodel.logExTime("\n\n");		// add new line in logging file
 
 	cout << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU  << "\tSelfFlow:\t" << elapsedAutoTime<< "\tML Flow:\t" << elapsedML << endl;
 
