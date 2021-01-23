@@ -39,11 +39,11 @@ int main()
 	// ---Random Seed Value---
 	srand(5);
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
+	MatrixMultiplicationModel<numericalType1> matmulmodel(1);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	const int step = 32;
-	const int levels = 4;
+	const int levels = 8;
 	const int spaceLength = pow(levels, 3);
 	int loop_length = spaceLength;
 	myDim3**matrixSpace = new myDim3*[spaceLength];
