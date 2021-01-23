@@ -67,19 +67,19 @@ int main()
 	bool iSmall;
 	switch (INPUT_NATURE) {
 		case 1:
-			/*********Generate Binary Input Stream*********/
+			cout << "/*********Generate Binary Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			for (x = 0; x < spaceLength; x++) {
 				if (++widthCount > width) {
-					//cout << "width: " << width << endl << endl;
+					cout << width << "__";
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
 					iSmall = !iSmall;
 				}
 				if (iSmall) dimension = matrixSpace[0];
 				else dimension = matrixSpace[4];
-				//cout << "length: " << length << endl;
+				cout << "length: " << length << endl;
 				l1 = matrixSpace[x]->x * matrixSpace[x]->y, l2 = matrixSpace[x]->z * matrixSpace[x]->y, l3 = matrixSpace[x]->x * matrixSpace[x]->z;
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
@@ -87,33 +87,29 @@ int main()
 				arraySet2[x] = temp2;
 				matOut[x] = new numericalType1[l3];
 				correspondingMatrixSpace[x] = matrixSpace[x];
-				for (k = 0; k < l1; k++) 
+				for (k = 0; k < l1; k++)
 					temp1[k] = rand() % RANGE_OF_INT_VALUES;
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
-			
+
 			}
 			break;
 		case 2:
-			//  *********Generate Square Wave Input Stream*********
+			cout << "/*********Generate Sqaure Wave Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			selectedMatDim = matrixSpace[rand() % spaceLength];
 			l1 = selectedMatDim->x * selectedMatDim->y, l2 = selectedMatDim->z * selectedMatDim->y, l3 = selectedMatDim->x * selectedMatDim->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
-					//cout << "width: " << width << endl << endl;
+					cout << width;
+					cout << "|" << selectedMatDim->x << "," << selectedMatDim->y << "," << selectedMatDim->z << "__";
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
-					// if(iSmall)
-					//	selectedMatDim = matrixSpace[rand() % spaceLength];
-					// else
-					//	selectedMatDim = matrixSpace[rand() % spaceLength];
 					selectedMatDim = matrixSpace[rand() % spaceLength];
 					l1 = selectedMatDim->x * selectedMatDim->y, l2 = selectedMatDim->z * selectedMatDim->y, l3 = selectedMatDim->x * selectedMatDim->z;
 					iSmall = !iSmall;
 				}
-				//cout << "length: " << length << endl;
 			
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
@@ -127,6 +123,7 @@ int main()
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
 			loop_length = EXPERIMENT_COUNT;
+			cout << endl;
 			break;
 		case 3:
 			/*********Generate Odd Input Stream*********/
