@@ -45,7 +45,7 @@ int main()
 	const int step = 32;
 	const int levels = 8;
 	const int spaceLength = pow(levels, 3);
-	int loop_length = spaceLength;
+	int loop_length = EXPERIMENT_COUNT;
 	myDim3**matrixSpace = new myDim3*[spaceLength];
 
 	int lengthX, lengthY, lengthZ;
@@ -58,56 +58,55 @@ int main()
 	numericalType1** arraySet2 = new numericalType1 * [EXPERIMENT_COUNT];
 	numericalType1** matOut = new numericalType1 * [EXPERIMENT_COUNT];
 	myDim3** correspondingMatrixSpace = new myDim3 * [EXPERIMENT_COUNT];
-	int x, k, fileNum, length, widthCount, width;
+	int x, k, fileNum, widthCount, width;
 	int l1, l2, l3;
 	int arrayLength[EXPERIMENT_COUNT];
-	myDim3* dimension; 
-	myDim3* selectedMatDim;
-	//numericalType1* mat1, * mat2;
+	myDim3 *dimension, *CPUSpecificMatDim, *GPUSpecificMatDim;
+	CPUSpecificMatDim = matrixSpace[0], GPUSpecificMatDim = matrixSpace[spaceLength-1];
 	bool iSmall;
 	switch (INPUT_NATURE) {
 		case 1:
 			cout << "/*********Generate Binary Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 			iSmall = true;
-			for (x = 0; x < spaceLength; x++) {
+			cout << CPUSpecificMatDim->x << "," << CPUSpecificMatDim->y << "," << CPUSpecificMatDim->z << "___" << GPUSpecificMatDim->x << "," << GPUSpecificMatDim->y << "," << GPUSpecificMatDim->z << "...." << endl;
+			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
 					cout << width << "__";
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
 					iSmall = !iSmall;
 				}
-				if (iSmall) dimension = matrixSpace[0];
-				else dimension = matrixSpace[4];
-				cout << "length: " << length << endl;
-				l1 = matrixSpace[x]->x * matrixSpace[x]->y, l2 = matrixSpace[x]->z * matrixSpace[x]->y, l3 = matrixSpace[x]->x * matrixSpace[x]->z;
+				if (iSmall) dimension = CPUSpecificMatDim;
+				else dimension = GPUSpecificMatDim;
+				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
 				arraySet2[x] = temp2;
 				matOut[x] = new numericalType1[l3];
-				correspondingMatrixSpace[x] = matrixSpace[x];
+				correspondingMatrixSpace[x] = dimension;
 				for (k = 0; k < l1; k++)
 					temp1[k] = rand() % RANGE_OF_INT_VALUES;
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
-
 			}
+			cout << endl << endl;
 			break;
 		case 2:
 			cout << "/*********Generate Sqaure Wave Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 			iSmall = true;
-			selectedMatDim = matrixSpace[rand() % spaceLength];
-			l1 = selectedMatDim->x * selectedMatDim->y, l2 = selectedMatDim->z * selectedMatDim->y, l3 = selectedMatDim->x * selectedMatDim->z;
+			dimension = matrixSpace[rand() % spaceLength];
+			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
 					cout << width;
-					cout << "|" << selectedMatDim->x << "," << selectedMatDim->y << "," << selectedMatDim->z << "__";
+					cout << "|" << dimension->x << "," << dimension->y << "," << dimension->z << " __ ";
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
-					selectedMatDim = matrixSpace[rand() % spaceLength];
-					l1 = selectedMatDim->x * selectedMatDim->y, l2 = selectedMatDim->z * selectedMatDim->y, l3 = selectedMatDim->x * selectedMatDim->z;
+					dimension = matrixSpace[rand() % spaceLength];
+					l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 					iSmall = !iSmall;
 				}
 			
@@ -116,62 +115,70 @@ int main()
 				arraySet1[x] = temp1;
 				arraySet2[x] = temp2;
 				matOut[x] = new numericalType1[l3];
-				correspondingMatrixSpace[x] = selectedMatDim;
+				correspondingMatrixSpace[x] = dimension;
 				for (k = 0; k < l1; k++)
 					temp1[k] = rand() % RANGE_OF_INT_VALUES;
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
-			loop_length = EXPERIMENT_COUNT;
-			cout << endl;
+			cout << endl << endl;
 			break;
 		case 3:
-			/*********Generate Odd Input Stream*********/
+			cout << "/*********Generate GPU Specific Input Stream*********/" << endl;
+			dimension = GPUSpecificMatDim;
+			cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
+			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
-				length = rand() % ARRAY_MAX_LENGTH + 1;
-				//cout << "length: " << length << endl;
-				arrayLength[x] = length;
-				numericalType1* temp1 = new numericalType1[length];
-				numericalType1* temp2 = new numericalType1[length];
+				numericalType1* temp1 = new numericalType1[l1];
+				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
 				arraySet2[x] = temp2;
-				for (k = 0; k < length; k++) {
+				matOut[x] = new numericalType1[l3];
+				correspondingMatrixSpace[x] = dimension;
+				for (k = 0; k < l1; k++)
 					temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
-				}
 			}
+			cout << endl << endl;
 			break;
 		case 4:
-			/*********Generate GPU Specific Input Stream*********/
+			cout << "/*********Generate CPU Specific Input Stream*********/" << endl;
+			dimension = CPUSpecificMatDim;
+			cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
+			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
-				length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
-				//cout << "length: " << length << endl;
-				arrayLength[x] = length;
-				numericalType1* temp1 = new numericalType1[length];
-				numericalType1* temp2 = new numericalType1[length];
+				numericalType1* temp1 = new numericalType1[l1];
+				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
 				arraySet2[x] = temp2;
-				for (k = 0; k < length; k++) {
+				matOut[x] = new numericalType1[l3];
+				correspondingMatrixSpace[x] = dimension;
+				for (k = 0; k < l1; k++)
 					temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
-				}
 			}
+			cout << endl << endl;
 			break;
 		case 5:
-			/*********Generate CPU Specific Input Stream*********/
+			cout << "/*********Generate Odd Input Stream*********/" << endl << "Dim Array: ";
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
-				length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-				//cout << "length: " << length << endl;
-				arrayLength[x] = length;
-				numericalType1* temp1 = new numericalType1[length];
-				numericalType1* temp2 = new numericalType1[length];
+				dimension = matrixSpace[ rand() % spaceLength ];
+				cout << dimension->x << "," << dimension->y << "," << dimension->z << "_";
+				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+				numericalType1* temp1 = new numericalType1[l1];
+				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
 				arraySet2[x] = temp2;
-				for (k = 0; k < length; k++) {
+				matOut[x] = new numericalType1[l3];
+				correspondingMatrixSpace[x] = dimension;
+				for (k = 0; k < l1; k++)
 					temp1[k] = rand() % RANGE_OF_INT_VALUES;
+				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
-				}
 			}
+			cout << endl << endl;
 			break;
 	}
 
