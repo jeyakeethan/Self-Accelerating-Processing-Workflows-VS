@@ -39,7 +39,7 @@ int main()
 	// ---Random Seed Value---
 	srand(5);
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(1);
+	MatrixMultiplicationModel<numericalType1> matmulmodel(6);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	const int step = 32;
