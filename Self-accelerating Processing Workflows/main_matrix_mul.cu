@@ -28,7 +28,7 @@
 using namespace std;
 int main()
 {
-	//MatrixMulMLModel::trainModelStatic();
+	freopen("console log.txt", "w", stdout);
 
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
@@ -94,7 +94,7 @@ int main()
 			cout << endl << endl;
 			break;
 		case 2:
-			cout << "/*********Generate Sqaure Wave Input Stream*********/" << endl;
+			cout << "/*********Generate Square Wave Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			dimension = matrixSpace[rand() % spaceLength];
