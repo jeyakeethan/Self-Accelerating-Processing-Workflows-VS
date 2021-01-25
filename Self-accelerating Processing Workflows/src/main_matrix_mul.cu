@@ -34,12 +34,11 @@ int main()
 	ofstream outfile;
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
-	int elapsedTime;
 
 	// ---Random Seed Value---
 	srand(5);
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(1);
+	MatrixMultiplicationModel<numericalType1> matmulmodel(6);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	const int step = 32;
@@ -57,7 +56,7 @@ int main()
 	numericalType1** arraySet2 = new numericalType1 * [EXPERIMENT_COUNT];
 	numericalType1** matOut = new numericalType1 * [EXPERIMENT_COUNT];
 	myDim3** correspondingMatrixSpace = new myDim3 * [EXPERIMENT_COUNT];
-	int x, k, fileNum, widthCount, width;
+	int x, k, widthCount, width;
 	int l1, l2, l3;
 	myDim3 *dimension, *CPUSpecificMatDim, *GPUSpecificMatDim;
 	CPUSpecificMatDim = matrixSpace[0], GPUSpecificMatDim = matrixSpace[spaceLength-1];

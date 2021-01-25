@@ -32,7 +32,6 @@ vector<float>* MatrixMultiplicationModel<T>::getAttributes() {
 
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation() {
-	if (CPUCores > 1) {
 		//implement using multi threads
 #pragma omp parallel num_threads(CPUCores)
 		{
@@ -48,18 +47,6 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 			}
 #pragma omp barrier
 		}
-	}
-	else {
-		for (int i = 0; i < localMD->x; i++) {
-			for (int j = 0; j < localMD->z; j++) {
-				T sum = 0;
-				for (int k = 0; k < localMD->y; k++) {
-					sum += localA[localMD->y * i + k] * localB[j + localMD->z * k];
-				}
-				localC[localMD->z * i + j] = sum;
-			}
-		}
-	}
 }
 
 template <class T>
