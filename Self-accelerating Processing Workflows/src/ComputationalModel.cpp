@@ -391,7 +391,9 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 	else {
 		outlier_count = 0;
 		for (int i = 0; i < prediction_empty_slot; i++) {
-			if (*cached_predictions[i] < *attr) {
+			if (std::equal(std::begin(*cached_predictions[i]), std::end(*cached_predictions[i]),
+				std::begin(*attr), std::end(*attr),
+				[](int a, int b)->bool {return a < b; })) {
 				*cached_predictions[i] = *attr;
 				return false;
 			}

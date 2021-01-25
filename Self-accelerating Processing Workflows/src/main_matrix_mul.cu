@@ -62,6 +62,112 @@ int main()
 	myDim3 *dimension, *CPUSpecificMatDim, *GPUSpecificMatDim;
 	CPUSpecificMatDim = matrixSpace[0], GPUSpecificMatDim = matrixSpace[spaceLength-1];
 	bool iSmall;
+	auto TestEachCase = [&]() {
+		cout << endl << "Execution in GPU only started" << endl;
+		/*Mannual Execute only in GPU*/
+		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
+		if (LOGGER_MODE_ON) {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.executeAndLogging(2);
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		else {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.execute(2);
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+		int elapsedTimeGPU = int(delay * 1000);
+		matmulmodel.logExTime("\n\n"); // add new line in logging file
+
+
+		cout << endl << "Execution in CPU only started" << endl;
+		/*Mannual Execute only in CPU*/
+		if (LOGGER_MODE_ON) {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.executeAndLogging(1);
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		else {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.execute(1);
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+		int elapsedTimeCPU = int(delay * 1000);
+		matmulmodel.logExTime("\n\n"); // add new line in logging file
+
+
+		cout << endl << "Automated Hybrid Execution started" << endl;
+		/*Automated Hybrid*/
+		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
+		if (LOGGER_MODE_ON) {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.executeAndLogging();
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		else {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.execute();
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+		int elapsedAutoTime = int(delay * 1000);
+		matmulmodel.logExTime("\n\n"); // add new line in logging file
+
+		cout << endl << "Automated ML only Execution started" << endl;
+		// Automated ML only
+		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
+		if (LOGGER_MODE_ON) {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.executeByML();
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		else {
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < loop_length; x++) {
+				matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.executeByML();
+			}
+			QueryPerformanceCounter(&stop);
+		}
+		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+		int elapsedML = int(delay * 1000);
+		matmulmodel.logExTime("\n\n");		// add new line in logging file
+
+		cout << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
+
+		for (int ex = 0; ex < loop_length; ex++) {
+			free(arraySet1[ex]);
+			free(arraySet2[ex]);
+			free(matOut[ex]);
+		}
+	};
+
 	switch (INPUT_NATURE) {
 		case 1:
 			cout << "/*********Generate Binary Input Stream*********/" << endl;
@@ -90,7 +196,7 @@ int main()
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
 			cout << endl << endl;
-			break;
+			TestEachCase();
 		case 2:
 			cout << "/*********Generate Square Wave Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
@@ -120,7 +226,7 @@ int main()
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
 			cout << endl << endl;
-			break;
+			TestEachCase();
 		case 3:
 			cout << "/*********Generate GPU Specific Input Stream*********/" << endl;
 			dimension = GPUSpecificMatDim;
@@ -139,7 +245,7 @@ int main()
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
 			cout << endl << endl;
-			break;
+			TestEachCase();
 		case 4:
 			cout << "/*********Generate CPU Specific Input Stream*********/" << endl;
 			dimension = CPUSpecificMatDim;
@@ -158,7 +264,7 @@ int main()
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
 			cout << endl << endl;
-			break;
+			TestEachCase();
 		case 5:
 			cout << "/*********Generate Odd Input Stream*********/" << endl << "Dim Array: ";
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
@@ -177,119 +283,20 @@ int main()
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
 			cout << endl << endl;
+			TestEachCase();
 			break;
 	}
-
-	cout << endl << "Execution in GPU only started" << endl;
-	/*Mannual Execute only in GPU*/
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
-	matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
-	if (LOGGER_MODE_ON) {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.executeAndLogging(2);
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	else {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.execute(2);
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	int elapsedTimeGPU = int(delay * 1000);
-	matmulmodel.logExTime("\n\n"); // add new line in logging file
-	
-
-	cout << endl << "Execution in CPU only started" << endl;
-	/*Mannual Execute only in CPU*/
-	if (LOGGER_MODE_ON) {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.executeAndLogging(1);
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	else {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.execute(1);
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	int elapsedTimeCPU = int(delay * 1000);
-	matmulmodel.logExTime("\n\n"); // add new line in logging file
-
-
-	cout << endl << "Automated Hybrid Execution started" << endl;
-	/*Automated Hybrid*/
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
-	matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
-	if (LOGGER_MODE_ON) {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.executeAndLogging();
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	else {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.execute();
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	int elapsedAutoTime = int(delay * 1000);
-	matmulmodel.logExTime("\n\n"); // add new line in logging file
-
-	cout << endl << "Automated ML only Execution started" << endl;
-	// Automated ML only
-	matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
-	matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
-	if (LOGGER_MODE_ON) {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.executeByML();
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	else {
-		QueryPerformanceCounter(&start);
-		for (x = 0; x < loop_length; x++) {
-			matmulmodel.setData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-			matmulmodel.executeByML();
-		}
-		QueryPerformanceCounter(&stop);
-	}
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	int elapsedML = int(delay * 1000);
-	matmulmodel.logExTime("\n\n");		// add new line in logging file
-
-	cout << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU  << "\tSelfFlow:\t" << elapsedAutoTime<< "\tML Flow:\t" << elapsedML << endl;
 
 	for (int ex = 0; ex < spaceLength; ex++) {
 		free(matrixSpace[ex]);
 	}
-	for (int ex = 0; ex < loop_length; ex++) {
-		free(arraySet1[ex]);
-		free(arraySet2[ex]);
-		free(matOut[ex]);
-	}
 	free(matrixSpace);
+
+	free(correspondingMatrixSpace);
+
 	free(arraySet1);
 	free(arraySet2);
 	free(matOut);
-	free(correspondingMatrixSpace);
+
 	return 0;
 }
