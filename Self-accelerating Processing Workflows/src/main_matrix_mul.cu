@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <xgboost/c_api.h>
 using namespace std;
+
 int main()
 {
 	freopen("console log.txt", "w", stdout);
@@ -170,7 +171,7 @@ int main()
 	switch (INPUT_NATURE) {
 		case 1:
 			cout << "/*********Generate Binary Input Stream*********/" << endl;
-			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
+			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED-MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			cout << CPUSpecificMatDim->x << "," << CPUSpecificMatDim->y << "," << CPUSpecificMatDim->z << "___" << GPUSpecificMatDim->x << "," << GPUSpecificMatDim->y << "," << GPUSpecificMatDim->z << "...." << endl;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
@@ -198,7 +199,7 @@ int main()
 			TestEachCase();
 		case 2:
 			cout << "/*********Generate Square Wave Input Stream*********/" << endl;
-			widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
+			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			dimension = matrixSpace[rand() % spaceLength];
 			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
