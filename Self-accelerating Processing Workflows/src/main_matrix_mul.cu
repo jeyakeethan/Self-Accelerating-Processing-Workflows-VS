@@ -16,6 +16,7 @@
 #include <MatrixMultiplicationModel.h>
 #include <random>
 #include <string>
+#include <sstring>
 #include <thread>
 #include <future>
 #include<cmath>
@@ -62,6 +63,8 @@ int main()
 	myDim3 *dimension, *CPUSpecificMatDim, *GPUSpecificMatDim;
 	CPUSpecificMatDim = matrixSpace[0], GPUSpecificMatDim = matrixSpace[spaceLength-1];
 	bool iSmall;
+	stringstream results;
+
 	auto TestEachCase = [&]() {
 		cout << endl << "Execution in GPU only started" << endl;
 		/*Mannual Execute only in GPU*/
@@ -160,6 +163,7 @@ int main()
 		matmulmodel.logExTime("\n\n");		// add new line in logging file
 
 		cout << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
+		results << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
 
 		for (int ex = 0; ex < loop_length; ex++) {
 			free(arraySet1[ex]);
@@ -286,7 +290,7 @@ int main()
 			TestEachCase();
 			break;
 	}
-
+	cout << results.str();
 	for (int ex = 0; ex < spaceLength; ex++) {
 		free(matrixSpace[ex]);
 	}
