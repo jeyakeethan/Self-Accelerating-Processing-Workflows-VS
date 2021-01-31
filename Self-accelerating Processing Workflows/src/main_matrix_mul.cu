@@ -16,7 +16,7 @@
 #include <MatrixMultiplicationModel.h>
 #include <random>
 #include <string>
-#include <sstring>
+#include <sstream>
 #include <thread>
 #include <future>
 #include<cmath>
