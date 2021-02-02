@@ -62,6 +62,8 @@ int main()
 	int l1, l2, l3;
 	myDim3 *dimension, *CPUSpecificMatDim, *GPUSpecificMatDim;
 	CPUSpecificMatDim = matrixSpace[0], GPUSpecificMatDim = matrixSpace[spaceLength-1];
+	int lmn = CPUSpecificMatDim->x * CPUSpecificMatDim->x * CPUSpecificMatDim->x;
+	int xyz = GPUSpecificMatDim->x * GPUSpecificMatDim->x * GPUSpecificMatDim->x;
 	bool iSmall;
 	stringstream results;
 
@@ -170,6 +172,10 @@ int main()
 			free(arraySet2[ex]);
 			free(matOut[ex]);
 		}
+		cout << endl << "number of executions in CPU: " << matmulmodel.executionCountCPU << endl;
+		cout << "number of executions in GPU: " << matmulmodel.executionCountGPU << endl;
+		matmulmodel.executionCountCPU = 0;
+		matmulmodel.executionCountGPU = 0;
 	};
 
 	switch (INPUT_NATURE) {
@@ -178,15 +184,22 @@ int main()
 			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED-MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			cout << CPUSpecificMatDim->x << "," << CPUSpecificMatDim->y << "," << CPUSpecificMatDim->z << "___" << GPUSpecificMatDim->x << "," << GPUSpecificMatDim->y << "," << GPUSpecificMatDim->z << "...." << endl;
+			
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
-					cout << width << "__";
+					//cout << width << "__";
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
 					iSmall = !iSmall;
 				}
-				if (iSmall) dimension = CPUSpecificMatDim;
-				else dimension = GPUSpecificMatDim;
+				if (iSmall) {
+					dimension = CPUSpecificMatDim; 
+					cout << lmn << ",";
+				}
+				else {
+					dimension = GPUSpecificMatDim;
+					cout << xyz << ",";
+				}
 				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];

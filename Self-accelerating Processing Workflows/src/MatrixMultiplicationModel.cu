@@ -47,6 +47,7 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 			}
 #pragma omp barrier
 		}
+		executionCountCPU++;
 }
 
 template <class T>
@@ -82,6 +83,7 @@ void MatrixMultiplicationModel<T>::GPUImplementation() {
 
 	//sychronize to confirm that results have been computed and copied back
 	cudaDeviceSynchronize();
+	executionCountGPU++;
 }
 
 #endif // _MATRIXMULTIPLICATIONMODEL_CPP_

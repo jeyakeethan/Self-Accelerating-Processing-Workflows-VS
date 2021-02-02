@@ -19,6 +19,8 @@ class ComputationalModel
 {
 public:
 	static bool operationalMode;
+	int executionCountCPU = 0;
+	int executionCountGPU = 0;
 	int countS, countL, reviseCount, alignedCount, processor, lastProcessor, revisePeriod;
 	// stringstream s;
 	Clock clocks;
