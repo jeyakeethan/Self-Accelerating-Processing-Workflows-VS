@@ -180,9 +180,6 @@ int main()
 			free(arraySet2[ex]);
 			free(matOut[ex]);
 		}
-
-		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
-		matmulmodel.CPUGPULOG.clear();
 	};
 
 	switch (INPUT_NATURE) {
@@ -224,20 +221,19 @@ int main()
 		case 2:
 			cout << "/*********Generate Square Wave Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
-			iSmall = true;
 			dimension = matrixSpace[rand() % spaceLength];
 			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+			lmn = dimension->x * dimension->y * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
-					cout << width;
-					cout << "|" << dimension->x << "," << dimension->y << "," << dimension->z << " __ ";
+					// cout << width << "|" << dimension->x << "," << dimension->y << "," << dimension->z << " __ ";
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
 					dimension = matrixSpace[rand() % spaceLength];
 					l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
-					iSmall = !iSmall;
+					lmn = dimension->x * dimension->y * dimension->z;
 				}
-			
+				cout << lmn << ",";
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
@@ -293,7 +289,8 @@ int main()
 			cout << "/*********Generate Odd Input Stream*********/" << endl << "Dim Array: ";
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				dimension = matrixSpace[ rand() % spaceLength ];
-				cout << dimension->x << "," << dimension->y << "," << dimension->z << "_";
+				// cout << dimension->x << "," << dimension->y << "," << dimension->z << "_";
+				cout << (dimension->x * dimension->y * dimension->z) << ",";
 				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
