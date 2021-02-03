@@ -122,7 +122,7 @@ int MatrixMulMLModel::predict(vector<float>* params) {
 	//vector<float> temp{ (*params)[1],(*params)[2],(*params)[3] };
 	float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
 
-	cout << ComputationalModel::attributeToString(params) << prediction << endl;
+	// cout << ComputationalModel::attributeToString(params) << prediction << endl;
 
 	return (int)round(prediction);
 }

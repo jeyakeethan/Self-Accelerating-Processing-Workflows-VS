@@ -62,6 +62,8 @@ int main()
 	int l1, l2, l3;
 	myDim3 *dimension, *CPUSpecificMatDim, *GPUSpecificMatDim;
 	CPUSpecificMatDim = matrixSpace[0], GPUSpecificMatDim = matrixSpace[spaceLength-1];
+	int lmn = CPUSpecificMatDim->x * CPUSpecificMatDim->x * CPUSpecificMatDim->x;
+	int xyz = GPUSpecificMatDim->x * GPUSpecificMatDim->x * GPUSpecificMatDim->x;
 	bool iSmall;
 	stringstream results;
 
@@ -89,6 +91,8 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedTimeGPU = int(delay * 1000);
 		matmulmodel.logExTime("\n\n"); // add new line in logging file
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.clear();
 
 
 		cout << endl << "Execution in CPU only started" << endl;
@@ -112,6 +116,8 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedTimeCPU = int(delay * 1000);
 		matmulmodel.logExTime("\n\n"); // add new line in logging file
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.clear();
 
 
 		cout << endl << "Automated Hybrid Execution started" << endl;
@@ -137,6 +143,8 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedAutoTime = int(delay * 1000);
 		matmulmodel.logExTime("\n\n"); // add new line in logging file
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.clear();
 
 		cout << endl << "Automated ML only Execution started" << endl;
 		// Automated ML only
@@ -161,6 +169,8 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedML = int(delay * 1000);
 		matmulmodel.logExTime("\n\n");		// add new line in logging file
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.clear();
 
 		cout << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
 		results << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
@@ -170,6 +180,9 @@ int main()
 			free(arraySet2[ex]);
 			free(matOut[ex]);
 		}
+
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.clear();
 	};
 
 	switch (INPUT_NATURE) {
@@ -178,15 +191,22 @@ int main()
 			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED-MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
 			iSmall = true;
 			cout << CPUSpecificMatDim->x << "," << CPUSpecificMatDim->y << "," << CPUSpecificMatDim->z << "___" << GPUSpecificMatDim->x << "," << GPUSpecificMatDim->y << "," << GPUSpecificMatDim->z << "...." << endl;
+			
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
-					cout << width << "__";
+					//cout << width << "__";
 					widthCount = 0;
 					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
 					iSmall = !iSmall;
 				}
-				if (iSmall) dimension = CPUSpecificMatDim;
-				else dimension = GPUSpecificMatDim;
+				if (iSmall) {
+					dimension = CPUSpecificMatDim; 
+					cout << lmn << ",";
+				}
+				else {
+					dimension = GPUSpecificMatDim;
+					cout << xyz << ",";
+				}
 				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];

@@ -377,13 +377,13 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 			return false;
 	}
 		if (mlModel->predict(attr) == 0) {
-			cout << "An outlier caught " << attributeToString(attr) << endl;
+			CPUGPULOG << "OC";// cout << "An outlier caught " << attributeToString(attr) << endl;
 			if (++outlier_count > MAX_OUTLIERS_LIMIT) {
 				processor = 2;
 				reviseCount = REVISE_COUNT_MIN;
 				alignedCount = 0;
 				countL = 1;
-				cout << "switched due to max caught" << endl;
+				CPUGPULOG << "SM";// cout << "switched due to max caught" << endl;
 				return true;
 			}
 		return true;
