@@ -180,6 +180,10 @@ int main()
 			free(arraySet2[ex]);
 			free(matOut[ex]);
 		}
+		cout << endl << "number of executions in CPU: " << matmulmodel.executionCountCPU << endl;
+		cout << "number of executions in GPU: " << matmulmodel.executionCountGPU << endl;
+		matmulmodel.executionCountCPU = 0;
+		matmulmodel.executionCountGPU = 0;
 	};
 
 	switch (INPUT_NATURE) {
