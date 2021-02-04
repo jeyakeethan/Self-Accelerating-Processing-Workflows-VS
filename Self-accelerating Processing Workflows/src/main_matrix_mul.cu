@@ -65,11 +65,11 @@ int main()
 	int lmn = CPUSpecificMatDim->x * CPUSpecificMatDim->x * CPUSpecificMatDim->x;
 	int xyz = GPUSpecificMatDim->x * GPUSpecificMatDim->x * GPUSpecificMatDim->x;
 	bool iSmall;
-	stringstream results0;
+	// stringstream cout;
 	stringstream results;
 
 	auto TestEachCase = [&]() {
-		results0 << endl << "Execution in GPU only started" << endl;
+		cout << endl << "Execution in GPU only started" << endl;
 		/*Mannual Execute only in GPU*/
 		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
@@ -92,11 +92,11 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedTimeGPU = int(delay * 1000);
 		matmulmodel.logExTime("\n\n"); // add new line in logging file
-		results0 << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
-		matmulmodel.CPUGPULOG.clear();
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.str("");
 
 
-		results0 << endl << "Execution in CPU only started" << endl;
+		cout << endl << "Execution in CPU only started" << endl;
 		/*Mannual Execute only in CPU*/
 		if (LOGGER_MODE_ON) {
 			QueryPerformanceCounter(&start);
@@ -117,11 +117,11 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedTimeCPU = int(delay * 1000);
 		matmulmodel.logExTime("\n\n"); // add new line in logging file
-		results0 << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
-		matmulmodel.CPUGPULOG.clear();
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.str("");
 
 
-		results0 << endl << "Automated Hybrid Execution started" << endl;
+		cout << endl << "Automated Hybrid Execution started" << endl;
 		/*Automated Hybrid*/
 		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
@@ -144,10 +144,10 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedAutoTime = int(delay * 1000);
 		matmulmodel.logExTime("\n\n"); // add new line in logging file
-		results0 << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
-		matmulmodel.CPUGPULOG.clear();
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.str("");
 
-		results0 << endl << "Automated ML only Execution started" << endl;
+		cout << endl << "Automated ML only Execution started" << endl;
 		// Automated ML only
 		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
@@ -170,10 +170,10 @@ int main()
 		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 		int elapsedML = int(delay * 1000);
 		matmulmodel.logExTime("\n\n");		// add new line in logging file
-		results0 << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
-		matmulmodel.CPUGPULOG.clear();
+		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
+		matmulmodel.CPUGPULOG.str("");
 
-		results0 << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
+		cout << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
 		results << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
 
 		for (int ex = 0; ex < loop_length; ex++) {
@@ -185,10 +185,10 @@ int main()
 
 	switch (INPUT_NATURE) {
 		case 1:
-			results0 << "/*********Generate Binary Input Stream*********/" << endl;
+			cout << "/*********Generate Binary Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED-MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
 			iSmall = true;
-			results0 << CPUSpecificMatDim->x << "," << CPUSpecificMatDim->y << "," << CPUSpecificMatDim->z << "___" << GPUSpecificMatDim->x << "," << GPUSpecificMatDim->y << "," << GPUSpecificMatDim->z << "...." << endl;
+			cout << CPUSpecificMatDim->x << "," << CPUSpecificMatDim->y << "," << CPUSpecificMatDim->z << "___" << GPUSpecificMatDim->x << "," << GPUSpecificMatDim->y << "," << GPUSpecificMatDim->z << "...." << endl;
 			
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
@@ -199,11 +199,11 @@ int main()
 				}
 				if (iSmall) {
 					dimension = CPUSpecificMatDim; 
-					results0 << lmn << ",";
+					cout << lmn << ",";
 				}
 				else {
 					dimension = GPUSpecificMatDim;
-					results0 << xyz << ",";
+					cout << xyz << ",";
 				}
 				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				numericalType1* temp1 = new numericalType1[l1];
@@ -217,10 +217,10 @@ int main()
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
-			results0 << endl << endl;
+			cout << endl << endl;
 			TestEachCase();
 		case 2:
-			results0 << "/*********Generate Square Wave Input Stream*********/" << endl;
+			cout << "/*********Generate Square Wave Input Stream*********/" << endl;
 			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
 			dimension = matrixSpace[rand() % spaceLength];
 			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
@@ -234,7 +234,7 @@ int main()
 					l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 					lmn = dimension->x * dimension->y * dimension->z;
 				}
-				results0 << lmn << ",";
+				cout << lmn << ",";
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
@@ -246,12 +246,12 @@ int main()
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
-			results0 << endl << endl;
+			cout << endl << endl;
 			TestEachCase();
 		case 3:
-			results0 << "/*********Generate GPU Specific Input Stream*********/" << endl;
+			cout << "/*********Generate GPU Specific Input Stream*********/" << endl;
 			dimension = GPUSpecificMatDim;
-			results0 << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
+			cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
 			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				numericalType1* temp1 = new numericalType1[l1];
@@ -265,12 +265,12 @@ int main()
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
-			results0 << endl << endl;
+			cout << endl << endl;
 			TestEachCase();
 		case 4:
-			results0 << "/*********Generate CPU Specific Input Stream*********/" << endl;
+			cout << "/*********Generate CPU Specific Input Stream*********/" << endl;
 			dimension = CPUSpecificMatDim;
-			results0 << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
+			cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
 			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				numericalType1* temp1 = new numericalType1[l1];
@@ -284,14 +284,14 @@ int main()
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
-			results0 << endl << endl;
+			cout << endl << endl;
 			TestEachCase();
 		case 5:
-			results0 << "/*********Generate Odd Input Stream*********/" << endl << "Dim Array: ";
+			cout << "/*********Generate Odd Input Stream*********/" << endl << "Dim Array: ";
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				dimension = matrixSpace[ rand() % spaceLength ];
 				// cout << dimension->x << "," << dimension->y << "," << dimension->z << "_";
-				results0 << (dimension->x * dimension->y * dimension->z) << ",";
+				cout << (dimension->x * dimension->y * dimension->z) << ",";
 				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
@@ -304,11 +304,11 @@ int main()
 				for (k = 0; k < l2; k++)
 					temp2[k] = rand() % RANGE_OF_INT_VALUES;
 			}
-			results0 << endl << endl;
+			cout << endl << endl;
 			TestEachCase();
 			break;
 	}
-	cout << results0.str();
+	cout << cout.str();
 	cout << results.str();
 	for (int ex = 0; ex < spaceLength; ex++) {
 		free(matrixSpace[ex]);
