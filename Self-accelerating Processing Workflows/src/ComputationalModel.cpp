@@ -34,15 +34,15 @@ ComputationalModel::ComputationalModel(int CPUCores_) :CPUCores(CPUCores_) {
 }
 
 inline void ComputationalModel::resetFlow() {
-	clocks = { 0, 0, 0.0, 0.0 };
+	clocks = { 0, 0 };
 	countS = 1;
 	countL = 1;
 	alignedCount = -1;
 	reviseCount = REVISE_COUNT_MIN;
 	revisePeriod = REVISE_PERIOD;
 	sampleMode = 2;
+	lastProcessor = processor;
 	processor = -1;
-	lastProcessor = -1;
 	// id_ = int(&*this);
 }
 
@@ -183,7 +183,7 @@ void ComputationalModel::execute() {
 		countS = 1;
 		countL = 1;
 		processor = -processor;
-		clocks = { 0, 0, 0.0, 0.0 };
+		clocks = { 0, 0 };
 		//            cout << endl;
 	}
 }
@@ -202,10 +202,12 @@ void ComputationalModel::executeAndLogging()
 			}
 			// cout << "Hello CPU" << endl;
 			CPUImplementation();
+			countL++;
 			break;
 		case 2:
 			// cout << "Hello GPU" << endl;
 			GPUImplementation();
+			countL++;
 			break;
 		case -1:
 			// catch ouliers and send them to the GPU to avoid severe letency 
@@ -299,12 +301,12 @@ void ComputationalModel::executeAndLogging()
 		countS = 1;
 		countL = 1;
 		processor = -processor;
-		clocks = { 0, 0, 0.0, 0.0 };
+		clocks = { 0, 0 };
 	}
 }
 
 void ComputationalModel::executeByML() {
-	if (mlModel->predict(getAttributes()) == 0) {
+	if (mlModel->predict(getAttributes()) == 1) {
 		CPUImplementation();
 	}
 	else {
@@ -316,7 +318,7 @@ void ComputationalModel::executeByMLAndLogging() {
 	stringstream s;
 	s << typeid(*this).name() << ",";
 	s << attributeToString(getAttributes());
-	if (mlModel->predict(getAttributes()) == 0) {
+	if (mlModel->predict(getAttributes()) == 1) {
 		s << 0 << ",";
 		QueryPerformanceCounter(&start);
 		CPUImplementation();
@@ -379,10 +381,17 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 		if (mlModel->predict(attr) == 0) {
 			CPUGPULOG << "OC";// cout << "An outlier caught " << attributeToString(attr) << endl;
 			if (++outlier_count > MAX_OUTLIERS_LIMIT) {
+
+				lastProcessor = processor;
 				processor = 2;
-				reviseCount = REVISE_COUNT_MIN;
-				alignedCount = 0;
+				clocks = { 0, 0 };
+				countS = 1;
 				countL = 1;
+				alignedCount = -1;
+				reviseCount = REVISE_COUNT_MIN;
+				revisePeriod = REVISE_PERIOD;
+				sampleMode = 0;
+
 				CPUGPULOG << "SM";// cout << "switched due to max caught" << endl;
 				return true;
 			}

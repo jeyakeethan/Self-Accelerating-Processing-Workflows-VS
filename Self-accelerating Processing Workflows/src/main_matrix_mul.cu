@@ -65,6 +65,7 @@ int main()
 	int lmn = CPUSpecificMatDim->x * CPUSpecificMatDim->x * CPUSpecificMatDim->x;
 	int xyz = GPUSpecificMatDim->x * GPUSpecificMatDim->x * GPUSpecificMatDim->x;
 	bool iSmall;
+	int index;
 	// stringstream cout;
 	stringstream results;
 
@@ -186,26 +187,34 @@ int main()
 	switch (INPUT_NATURE) {
 		case 1:
 			cout << "/*********Generate Binary Input Stream*********/" << endl;
-			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED-MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
 			iSmall = true;
+			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED_CPU - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+			// log nature of binary
 			cout << CPUSpecificMatDim->x << "," << CPUSpecificMatDim->y << "," << CPUSpecificMatDim->z << "___" << GPUSpecificMatDim->x << "," << GPUSpecificMatDim->y << "," << GPUSpecificMatDim->z << "...." << endl;
-			
+			dimension = CPUSpecificMatDim;
+			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
 					//cout << width << "__";
 					widthCount = 0;
-					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
 					iSmall = !iSmall;
+					if (iSmall) {
+						width = rand() % (MAX_WIDTH_ALIGNED_CPU - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+						dimension = CPUSpecificMatDim;
+						l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+					}
+					else {
+						width = rand() % (MAX_WIDTH_ALIGNED_GPU - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+						dimension = GPUSpecificMatDim;
+						l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+					}
 				}
 				if (iSmall) {
-					dimension = CPUSpecificMatDim; 
 					cout << lmn << ",";
 				}
 				else {
-					dimension = GPUSpecificMatDim;
 					cout << xyz << ",";
 				}
-				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
@@ -221,16 +230,29 @@ int main()
 			TestEachCase();
 		case 2:
 			cout << "/*********Generate Square Wave Input Stream*********/" << endl;
-			widthCount = 0, width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED + 1;
-			dimension = matrixSpace[rand() % spaceLength];
+			index = rand() % spaceLength;
+			dimension = matrixSpace[index];
+			if (index < spaceLength / 3) {
+				width = rand() % (MAX_WIDTH_ALIGNED_CPU - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+			}
+			else {
+				width = rand() % (MAX_WIDTH_ALIGNED_GPU - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+			}
 			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			lmn = dimension->x * dimension->y * dimension->z;
+			widthCount = 0;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
 				if (++widthCount > width) {
 					// cout << width << "|" << dimension->x << "," << dimension->y << "," << dimension->z << " __ ";
 					widthCount = 0;
-					width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
-					dimension = matrixSpace[rand() % spaceLength];
+					index = rand() % spaceLength;
+					dimension = matrixSpace[index];
+					if (index < spaceLength / 3) {
+						width = rand() % (MAX_WIDTH_ALIGNED_CPU - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+					}
+					else {
+						width = rand() % (MAX_WIDTH_ALIGNED_GPU - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
+					}
 					l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 					lmn = dimension->x * dimension->y * dimension->z;
 				}
@@ -308,7 +330,6 @@ int main()
 			TestEachCase();
 			break;
 	}
-	cout << cout.str();
 	cout << results.str();
 	for (int ex = 0; ex < spaceLength; ex++) {
 		free(matrixSpace[ex]);

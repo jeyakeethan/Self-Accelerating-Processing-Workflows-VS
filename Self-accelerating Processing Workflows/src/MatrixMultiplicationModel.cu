@@ -32,7 +32,10 @@ vector<float>* MatrixMultiplicationModel<T>::getAttributes() {
 
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation() {
-		//implement using multi threads
+	// log mode to see the flow of execution
+	CPUGPULOG << 0;
+	
+	//implement using multi threads
 #pragma omp parallel num_threads(CPUCores)
 		{
 #pragma omp for
@@ -47,11 +50,13 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 			}
 #pragma omp barrier
 		}
-		CPUGPULOG << 0;
 }
 
 template <class T>
 void MatrixMultiplicationModel<T>::GPUImplementation() {
+	// log mode to see the flow of execution
+	CPUGPULOG << 1;
+
 	//Device array
 	numericalType1 *dev_a, *dev_b, *dev_c;
 
@@ -83,7 +88,6 @@ void MatrixMultiplicationModel<T>::GPUImplementation() {
 
 	//sychronize to confirm that results have been computed and copied back
 	cudaDeviceSynchronize();
-	CPUGPULOG << 1;
 }
 
 #endif // _MATRIXMULTIPLICATIONMODEL_CPP_

@@ -14,13 +14,13 @@
 #include <future>
 using namespace std;
 
-struct Clock { LONGLONG CPU, GPU; float CPUmean, GPUmean; };
+struct Clock { LONGLONG CPU, GPU;};
 class ComputationalModel
 {
 public:
 	static bool operationalMode;
 	stringstream CPUGPULOG;
-	int countS, countL, reviseCount, alignedCount, processor, lastProcessor, revisePeriod;
+	int countS, countL, reviseCount, alignedCount, processor, lastProcessor = -1, revisePeriod;
 	// stringstream s;
 	Clock clocks;
 	int CPUCores;
