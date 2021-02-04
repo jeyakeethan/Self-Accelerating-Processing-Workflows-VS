@@ -26,7 +26,6 @@ public:
 	int CPUCores;
 	int sampleMode, model_id, obj_id, prediction_empty_slot = 0;
 	long long duration;
-	int* predictionBoundary;
 	int outlier_count = 0;
 	MatrixMulMLModel * mlModel;
 	LARGE_INTEGER start, stop, lastRevisedClock;
@@ -65,13 +64,15 @@ private:
 	* every subclass implementing this class must have to implement this virtual method
 	**/
 	virtual vector<float>* getAttributes() = 0;
+
+	/*
 	inline bool isBoundedTask() {
 		vector<float> *attr = getAttributes();
 		for (int i = 1; i <= (int)(*attr)[0]; i++)
-			if ((*attr)[i] > predictionBoundary[i])
+			if ((*attr)[i] > cached_predictions[i])
 				return false;
 		return true;
-	}
+	} */
 };
 
 #endif // COMPUTATIONALMODEL_H

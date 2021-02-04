@@ -70,6 +70,7 @@ int main()
 	stringstream results;
 
 	auto TestEachCase = [&]() {
+		matmulmodel.resetFlow();
 		cout << endl << "Execution in GPU only started" << endl;
 		/*Mannual Execute only in GPU*/
 		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
@@ -97,6 +98,7 @@ int main()
 		matmulmodel.CPUGPULOG.str("");
 
 
+		matmulmodel.resetFlow();
 		cout << endl << "Execution in CPU only started" << endl;
 		/*Mannual Execute only in CPU*/
 		if (LOGGER_MODE_ON) {
@@ -122,6 +124,7 @@ int main()
 		matmulmodel.CPUGPULOG.str("");
 
 
+		matmulmodel.resetFlow();
 		cout << endl << "Automated Hybrid Execution started" << endl;
 		/*Automated Hybrid*/
 		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
@@ -148,6 +151,8 @@ int main()
 		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
 		matmulmodel.CPUGPULOG.str("");
 
+
+		matmulmodel.resetFlow();
 		cout << endl << "Automated ML only Execution started" << endl;
 		// Automated ML only
 		matmulmodel.setData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead

@@ -34,15 +34,17 @@ ComputationalModel::ComputationalModel(int CPUCores_) :CPUCores(CPUCores_) {
 }
 
 inline void ComputationalModel::resetFlow() {
-	clocks = { 0, 0 };
 	countS = 1;
 	countL = 1;
-	alignedCount = -1;
 	reviseCount = REVISE_COUNT_MIN;
-	revisePeriod = REVISE_PERIOD;
-	sampleMode = 2;
+	alignedCount = -1;
 	lastProcessor = processor;
 	processor = -1;
+	revisePeriod = REVISE_PERIOD;
+	clocks = { 0, 0 };
+	prediction_empty_slot = 0;
+	sampleMode = 2;
+	outlier_count = 0;
 	// id_ = int(&*this);
 }
 
@@ -378,23 +380,23 @@ bool ComputationalModel::catchOutlier(vector<float>* attr) {
 			[](int a, int b)->bool {return a >= b; }))
 			return false;
 	}
-		if (mlModel->predict(attr) == 0) {
-			CPUGPULOG << "OC";// cout << "An outlier caught " << attributeToString(attr) << endl;
-			if (++outlier_count > MAX_OUTLIERS_LIMIT) {
+	if (mlModel->predict(attr) == 0) {
+		CPUGPULOG << "OC";// cout << "An outlier caught " << attributeToString(attr) << endl;
+		if (++outlier_count > MAX_OUTLIERS_LIMIT) {
+			outlier_count = 0;
+			lastProcessor = processor;
+			processor = 2;
+			clocks = { 0, 0 };
+			countS = 1;
+			countL = 1;
+			alignedCount = -1;
+			reviseCount = REVISE_COUNT_MIN;
+			revisePeriod = REVISE_PERIOD;
+			sampleMode = 0;
 
-				lastProcessor = processor;
-				processor = 2;
-				clocks = { 0, 0 };
-				countS = 1;
-				countL = 1;
-				alignedCount = -1;
-				reviseCount = REVISE_COUNT_MIN;
-				revisePeriod = REVISE_PERIOD;
-				sampleMode = 0;
-
-				CPUGPULOG << "SM";// cout << "switched due to max caught" << endl;
-				return true;
-			}
+			CPUGPULOG << "SM";// cout << "switched due to max caught" << endl;
+			return true;
+		}
 		return true;
 	}
 	else {

@@ -9,17 +9,17 @@ const bool LOGGER_MODE_ON = false;
 // Test Data Generation
 const int INPUT_NATURE = 1;
 const int N = 10000;
-const int EXPERIMENT_COUNT = 500;
+const int EXPERIMENT_COUNT = 5000;
 const int MAX_WIDTH_ALIGNED_CPU = 300;
-const int MAX_WIDTH_ALIGNED_GPU = 100;
-const int MIN_WIDTH_ALIGNED = 40;
+const int MAX_WIDTH_ALIGNED_GPU = 50;
+const int MIN_WIDTH_ALIGNED = 20;
 
 // vector addition consts
 const int SMALL_ARRAY_MAX_LENGTH = 1300;
 const int ARRAY_MAX_LENGTH = 10000;
 
 // Computational Model Constant
-const int REVISE_COUNT_MIN = 40;
+const int REVISE_COUNT_MIN = 20;
 const int REVISE_COUNT_MAX = 1000;
 const int REVISE_COUNT_STEP = 20;
 const int SAMPLE_COUNT = 5;

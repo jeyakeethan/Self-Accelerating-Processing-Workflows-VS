@@ -124,7 +124,6 @@ xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" 
     <ClCompile Include="src\tree.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\xgboost.cpp" />
-    <ClCompile Include="src\CurrentCPULoad.cpp" />
     <ClCompile Include="src\Logger.cpp" />
     <ClCompile Include="src\ComputationalModel.cpp" />
   </ItemGroup>
