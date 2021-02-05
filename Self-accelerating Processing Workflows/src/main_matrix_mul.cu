@@ -180,7 +180,7 @@ int main()
 		matmulmodel.CPUGPULOG.str("");
 
 		cout << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
-		results << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
+		results << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl;
 
 		for (int ex = 0; ex < loop_length; ex++) {
 			free(arraySet1[ex]);
@@ -277,10 +277,15 @@ int main()
 			TestEachCase();
 		case 3:
 			cout << "/*********Generate GPU Specific Input Stream*********/" << endl;
-			dimension = GPUSpecificMatDim;
-			cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
-			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+			//dimension = GPUSpecificMatDim;
+			//cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
+			//l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
+				index = rand() % (spaceLength - 20);
+				dimension = matrixSpace[index];
+				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+				lmn = dimension->x * dimension->y * dimension->z;
+				cout << lmn << ",";
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
@@ -296,10 +301,15 @@ int main()
 			TestEachCase();
 		case 4:
 			cout << "/*********Generate CPU Specific Input Stream*********/" << endl;
-			dimension = CPUSpecificMatDim;
-			cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
-			l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+			//dimension = CPUSpecificMatDim;
+			//cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
+			//l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
+				index = rand() % 20;
+				dimension = matrixSpace[index];
+				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
+				lmn = dimension->x * dimension->y * dimension->z;
+				cout << lmn << ",";
 				numericalType1* temp1 = new numericalType1[l1];
 				numericalType1* temp2 = new numericalType1[l2];
 				arraySet1[x] = temp1;
