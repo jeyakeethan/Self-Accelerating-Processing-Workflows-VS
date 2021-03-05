@@ -6,10 +6,11 @@
 #include <fstream>
 
 #include <Constants.h>
-#include <ComputationalModel.h>
 #include <BlurModel.h>
 
 #include <stdio.h>
+
+#include "lodepng.h"
 
 using namespace std;
 int main(int argc, char** argv) {
@@ -27,8 +28,8 @@ int main(int argc, char** argv) {
     unsigned int width, height;
 
     // Load the data
-    //unsigned error = lodepng::decode(in_image, width, height, input_file);
-    //if (error) cout << "decoder error " << error << ": " << lodepng_error_text(error) << endl;
+    unsigned error = lodepng::decode(in_image, width, height, input_file);
+    if (error) cout << "decoder error " << error << ": " << lodepng_error_text(error) << endl;
 
     // Prepare the data
     unsigned char* input_image = new unsigned char[(in_image.size() * 3) / 4];
@@ -43,7 +44,7 @@ int main(int argc, char** argv) {
     }
 
     // Run the filter on it
-   // filter(input_image, output_image, width, height);
+    BlurModel<float> blurModel(6);
 
     // Prepare data for output
     vector<unsigned char> out_image;
@@ -55,10 +56,10 @@ int main(int argc, char** argv) {
     }
 
     // Output the data
-    //error = lodepng::encode(output_file, out_image, width, height);
+    error = lodepng::encode(output_file, out_image, width, height);
 
     //if there's an error, display it
-    //if (error) std::cout << "encoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+    if (error) cout << "encoder error " << error << ": " << lodepng_error_text(error) << endl;
 
     delete[] input_image;
     delete[] output_image;

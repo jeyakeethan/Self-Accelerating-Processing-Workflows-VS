@@ -77,4 +77,10 @@ void BlurModel<T>::GPUImplementation() {
 	getError(cudaFree(dev_output));
 }
 
+template <class T>
+void BlurModel<T>::getError(cudaError_t err) {
+    if (err != cudaSuccess) {
+        cout << "Error " << cudaGetErrorString(err) << endl;
+    }
+}
 #endif // _BLURMODEL_CPP_

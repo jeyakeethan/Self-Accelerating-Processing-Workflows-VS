@@ -29,6 +29,7 @@ class BlurModel: public ComputationalModel
         virtual void CPUImplementation();
         virtual void GPUImplementation();
         virtual vector<float>* getAttributes();
+        void getError(cudaError_t err);
 };
 
 #include "BlurModel.cu"
