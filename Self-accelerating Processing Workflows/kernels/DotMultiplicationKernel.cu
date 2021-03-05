@@ -3,6 +3,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+
 __global__ void dot_product(int* a, int* b, int* res)
 {
 	__shared__ int products[THREADS_PER_BLOCK];
