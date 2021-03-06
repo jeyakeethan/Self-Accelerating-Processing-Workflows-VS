@@ -20,7 +20,7 @@ class BlurModel: public ComputationalModel
             output_image = output;
             width = widthT;
             height = heightT;
-            attr = new vector<float>{2, widthT, heightT};
+            //attr = new vector<float>{2, widthT+0.0, heightT+0.0};
             return;
         }
     protected:

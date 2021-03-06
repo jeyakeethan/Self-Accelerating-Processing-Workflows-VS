@@ -15,14 +15,15 @@
 using namespace std;
 int main(int argc, char** argv) {
 
-    if (argc != 3) {
+/*    if (argc != 3) {
         cout << "Run with input and output image filenames." << endl;
         return 0;
     }
+*/
 
     // Read the arguments
-    const char* input_file = argv[1];
-    const char* output_file = argv[2];
+    const char* input_file = "../source/Lenna.png";
+    const char* output_file = "../../output/output.png";
 
     vector<unsigned char> in_image;
     unsigned int width, height;
@@ -45,6 +46,8 @@ int main(int argc, char** argv) {
 
     // Run the filter on it
     BlurModel<float> blurModel(6);
+    blurModel.setData(input_image, output_image, 512, 512);
+    blurModel.execute(2);
 
     // Prepare data for output
     vector<unsigned char> out_image;
