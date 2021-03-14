@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 
     // Read the arguments
     const char* input_file = "../source/Lenna.png";
-    const char* output_file = "../../output/output.png";
+    const char* output_file = "../output/output.png";
 
     vector<unsigned char> in_image;
     unsigned int width, height;
@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
     if (error) cout << "decoder error " << error << ": " << lodepng_error_text(error) << endl;
 
     // Prepare the data
-    unsigned char* input_image = new unsigned char[(in_image.size() * 3) / 4];
-    unsigned char* output_image = new unsigned char[(in_image.size() * 3) / 4];
+    unsigned char *input_image = new unsigned char[(in_image.size() * 3) / 4];
+    unsigned char *output_image = new unsigned char[(in_image.size() * 3) / 4];
     int where = 0;
     for (int i = 0; i < in_image.size(); ++i) {
         if ((i + 1) % 4 != 0) {
@@ -45,13 +45,13 @@ int main(int argc, char** argv) {
     }
 
     // Run the filter on it
-    BlurModel<float> blurModel(6);
+    BlurModel<unsigned char> blurModel(6);
     blurModel.setData(input_image, output_image, 512, 512);
     blurModel.execute(2);
 
     // Prepare data for output
     vector<unsigned char> out_image;
-    for (int i = 0; i < in_image.size(); ++i) {
+    for (int i = 0; i < (in_image.size() * 3) / 4; ++i) {
         out_image.push_back(output_image[i]);
         if ((i + 1) % 3 == 0) {
             out_image.push_back(255);
