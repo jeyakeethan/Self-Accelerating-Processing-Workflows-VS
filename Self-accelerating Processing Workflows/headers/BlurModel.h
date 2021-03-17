@@ -4,6 +4,7 @@
 #include <ComputationalModel.h>
 #include <Constants.h>
 #include <vector>
+
 using namespace std;
 
 template <class T>
