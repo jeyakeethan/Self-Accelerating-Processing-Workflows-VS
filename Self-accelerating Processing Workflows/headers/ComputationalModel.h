@@ -20,23 +20,20 @@ class ComputationalModel
 public:
 	static bool operationalMode;
 	stringstream CPUGPULOG;
-	int countS, countL, reviseCount, alignedCount, processor, lastProcessor = -1, revisePeriod;
+	int processor, lastProcessor = -1, revisePeriod;
 	// stringstream s;
-	Clock clocks;
 	int CPUCores;
-	int sampleMode, model_id, obj_id, prediction_empty_slot = 0;
+	int model_id, obj_id, prediction_empty_slot = 0;
 	long long duration;
 	int outlier_count = 0;
 	MatrixMulMLModel * mlModel;
-	LARGE_INTEGER start, stop, lastRevisedClock;
+	LARGE_INTEGER start, stop;
 	vector<float> *cached_predictions[NUMBER_OF_PREDICTIONS_TO_BE_CACHED];
 	vector<float> cached_prediction_last;
 	ComputationalModel(int CPUCores);
 	virtual ~ComputationalModel();
 	static int m_id_counter() { static int m_id = 0; return m_id++; }
 	static int obj_id_counter() { static int obj_id = 0; return obj_id++; }
-	static void setOperationalMode(bool om);
-	static void resetOverPeriodIfBurst(ComputationalModel* cm);
 	string static attributeToString(vector<float>* attr);
 	void checkMLModel();
 	void trainML();
@@ -45,8 +42,6 @@ public:
 	void execute(int mode);
 	void executeAndLogging();
 	void executeAndLogging(int mode);
-	void executeByML();
-	void executeByMLAndLogging();
 	void setProcessor(int p);
 	void clearLogs();
 	void logExTime(string str);
@@ -54,7 +49,6 @@ public:
 protected:
 private:
 	thread resetOperator, mlTrainer;
-	//void logExTime(string str);
 	virtual void CPUImplementation() = 0;
 	virtual void GPUImplementation() = 0;
 
@@ -65,14 +59,6 @@ private:
 	**/
 	virtual vector<float>* getAttributes() = 0;
 
-	/*
-	inline bool isBoundedTask() {
-		vector<float> *attr = getAttributes();
-		for (int i = 1; i <= (int)(*attr)[0]; i++)
-			if ((*attr)[i] > cached_predictions[i])
-				return false;
-		return true;
-	} */
 };
 
 #endif // COMPUTATIONALMODEL_H

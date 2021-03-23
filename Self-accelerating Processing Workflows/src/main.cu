@@ -11,7 +11,7 @@
 
 #include <Constants.h>
 #include <ComputationalModel.h>
-#include <MatrixMultiplicationModel.h>
+#include <MatrixMulModel.h>
 #include <random>
 #include <string>
 #include <thread>

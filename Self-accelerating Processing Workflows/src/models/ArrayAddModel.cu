@@ -1,4 +1,4 @@
-#include <ArrayAdditionModel.h>
+#include <models/ArrayAdditionModel.h>
 #include <kernels.h>
 
 #include "cuda_runtime.h"

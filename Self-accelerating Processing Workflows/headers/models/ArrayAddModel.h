@@ -22,6 +22,6 @@ class ArrayAdditionModel : public ComputationalModel
         virtual void GPUImplementation();
 };
 
-#include "ArrayAdditionModel.cu"
+#include "../src/models/ArrayAddModel.cu"
 
 #endif // ARRAYADDITIONMODEL_H

@@ -1,4 +1,4 @@
-#include <MatrixMultiplicationModel.h>
+#include <models/MatrixMulModel.h>
 #include <kernels.h>
 #include <omp.h>
 

@@ -1,4 +1,4 @@
-#include <DotMultiplicationModel.h>
+#include <models/DotMultiplicationModel.h>
 #include <kernels.h>
 
 #include "cuda_runtime.h"

@@ -33,6 +33,6 @@ class BlurModel: public ComputationalModel
         void getError(cudaError_t err);
 };
 
-#include "BlurModel.cu"
+#include "../src/models/BlurModel.cu"
 
 #endif // BLURMODEL_H

@@ -6,22 +6,15 @@
 #include <fstream>
 
 #include <Constants.h>
-#include <BlurModel.h>
+#include <models/BlurModel.h>
 
 #include <stdio.h>
 
 #include "lodepng.h"
 
 using namespace std;
-int main(int argc, char** argv) {
-
-/*    if (argc != 3) {
-        cout << "Run with input and output image filenames." << endl;
-        return 0;
-    }
-*/
-
-    // Read the arguments
+int main() {
+    
     const char* input_file = "../source/Lenna.png";
     const char* output_file = "../output/output.png";
 

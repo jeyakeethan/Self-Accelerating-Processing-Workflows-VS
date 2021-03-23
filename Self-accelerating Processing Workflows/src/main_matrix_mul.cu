@@ -11,9 +11,7 @@
 
 #include <Constants.h>
 #include <ComputationalModel.h>
-#include <ArrayAdditionModel.h>
-#include <DotMultiplicationModel.h>
-#include <MatrixMultiplicationModel.h>
+#include <MatrixMulModel.h>
 #include <random>
 #include <string>
 #include <sstream>

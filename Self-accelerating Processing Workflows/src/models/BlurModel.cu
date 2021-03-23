@@ -1,4 +1,4 @@
-#include <BlurModel.h>
+#include <models/BlurModel.h>
 #include <kernels.h>
 #include <omp.h>
 

@@ -28,6 +28,6 @@ class MatrixMultiplicationModel: public ComputationalModel
         virtual vector<float>* getAttributes();
 };
 
-#include "MatrixMultiplicationModel.cu"
+#include "../src/models/MatrixMulModel.cu"
 
 #endif // MATRIXMULTIPLICATIONMODEL_H
