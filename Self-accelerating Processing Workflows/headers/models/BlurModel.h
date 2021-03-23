@@ -16,7 +16,7 @@ class BlurModel: public ComputationalModel
         vector<float> * attr;
         BlurModel(int CPUCores);
         ~BlurModel();
-        inline void setData(unsigned char *input, unsigned char *output, int widthT, int heightT){
+        inline void invoke(unsigned char *input, unsigned char *output, int widthT, int heightT){
             input_image = input;
             output_image = output;
             width = widthT;

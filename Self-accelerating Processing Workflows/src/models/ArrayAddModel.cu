@@ -1,4 +1,4 @@
-#include <models/ArrayAdditionModel.h>
+#include <models/ArrayAddModel.h>
 #include <kernels.h>
 
 #include "cuda_runtime.h"
@@ -7,13 +7,13 @@
 #include <Constants.h>
 #include <iostream>
 
-#ifndef _ARRAYADDITIONMODEL_CPP_
-#define _ARRAYADDITIONMODEL_CPP_
+#ifndef _ARRAYADDMODEL_CPP_
+#define _ARRAYADDMODEL_CPP_
 
 using namespace std;
 
 template <class T>
-ArrayAdditionModel<T>::ArrayAdditionModel(int CPUCores): ComputationalModel(CPUCores) {
+ArrayAdditionModel<T>::ArrayAdditionModel(int CPUCores): ComputationalModel(CPUCores, "Array-Addition") {
 }
 
 template <class T>
@@ -49,4 +49,4 @@ void ArrayAdditionModel<T>::GPUImplementation(){
     cudaFree (dev_c);
 }
 
-#endif // ARRAYADDITIONMODEL_CPP
+#endif // ARRAYADDMODEL_CPP

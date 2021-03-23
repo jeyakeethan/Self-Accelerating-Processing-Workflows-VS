@@ -1,5 +1,5 @@
-#ifndef MATRIXMULMLMODEL_H
-#define MATRIXMULMLMODEL_H
+#ifndef MLMODEL_H
+#define MLMODEL_H
 #include <Windows.h>
 #include <iostream>
 #include <sstream>
@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <xgboost/c_api.h>
-#include <MatrixMulMLModel.h>
+#include <MLModel.h>
 
 #include <time.h>
 #include "config.h"
@@ -27,12 +27,13 @@ using namespace rapidjson;
 using namespace std;
 using namespace xgboost;
 
-class MatrixMulMLModel {
+class MLModel {
 public:
 	size_t prediction;
 	XGBoost * xgboost;
-	MatrixMulMLModel();
-	inline ~MatrixMulMLModel() { };
+	string model_name;
+	MLModel(string name);
+	inline ~MLModel() { };
 
 	int predict(vector<float>* params);
 	/*inline mat intArrToMat(int* params) {
@@ -45,7 +46,7 @@ public:
 		return paramsMat;
 	}*/
 	void trainModel();
-	static void trainModelStatic();
+	void loadModel();
 };
 
-#endif //MATRIXMULMLMODEL_H
+#endif //MLMODEL_H

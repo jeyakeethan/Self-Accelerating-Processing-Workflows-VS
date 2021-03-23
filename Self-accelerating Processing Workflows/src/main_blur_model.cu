@@ -39,7 +39,7 @@ int main() {
 
     // Run the filter on it
     BlurModel<unsigned char> blurModel(6);
-    blurModel.setData(input_image, output_image, 512, 512);
+    blurModel.invoke(input_image, output_image, 512, 512);
     blurModel.execute(1);
 
     // Prepare data for output

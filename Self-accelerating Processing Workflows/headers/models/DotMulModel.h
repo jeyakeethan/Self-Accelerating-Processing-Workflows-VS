@@ -12,7 +12,7 @@ class DotMultiplicationModel : public ComputationalModel
         int localL;
         DotMultiplicationModel(int CPUCores);
         virtual ~DotMultiplicationModel();
-        inline void setData(int *in1, int *in2, int *out, int length){
+        inline void invoke(int *in1, int *in2, int *out, int length){
             localA = in1; localB = in2; localC = out; localL = length;
             return;
         }

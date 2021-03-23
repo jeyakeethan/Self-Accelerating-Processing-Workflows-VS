@@ -7,7 +7,7 @@
 #include <Constants.h>
 #include <stdio.h>
 
-DotMultiplicationModel::DotMultiplicationModel(int CPUCores): ComputationalModel(CPUCores) {}
+DotMultiplicationModel::DotMultiplicationModel(int CPUCores): ComputationalModel(CPUCores, "Dot-Multiplication") {}
 DotMultiplicationModel::~DotMultiplicationModel() {}
 
 void DotMultiplicationModel::CPUImplementation(){

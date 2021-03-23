@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include <ComputationalModel.h>
-#include <MatrixMulMLModel.h>
+#include <MLModel.h>
 #include <Logger.h>
 //for time measure
 #include <windows.h>
@@ -20,11 +20,11 @@ using namespace std;
 
 __int64 currentTimeMillis();
 
-ComputationalModel::ComputationalModel(int CPUCores_) :CPUCores(CPUCores_) {
+ComputationalModel::ComputationalModel(int CPUCores_, string model_name):CPUCores(CPUCores_) {
 	obj_id = obj_id_counter();
 	resetFlow();
 	// ml related codes
-	mlModel = new MatrixMulMLModel();
+	mlModel = new MLModel(model_name);
 	mlTrainer = thread([this] {checkMLModel();});
 	mlTrainer.detach();
 }
@@ -125,7 +125,7 @@ void ComputationalModel::checkMLModel() {
 		mlTrainerReadFile >> lastUpdatedTime;
 		mlTrainerReadFile.close();
 		if (lastUpdatedTime != 0 && currentTimeMillis() - lastUpdatedTime > MONTH) {
-			trainML();
+			trainMLModel();
 		}
 		ofstream mlTrainerWriteFile(file_ml);
 		mlTrainerWriteFile << currentTimeMillis() << endl;
@@ -134,7 +134,7 @@ void ComputationalModel::checkMLModel() {
 	}
 }
 
-void ComputationalModel::trainML() {
+void ComputationalModel::trainMLModel() {
 	mlModel->trainModel();
 }
 

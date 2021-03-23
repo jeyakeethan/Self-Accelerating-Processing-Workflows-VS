@@ -4,7 +4,7 @@
 #include <windows.h>
 
 #include <Constants.h>
-#include <MatrixMulMLModel.h>
+#include <MLModel.h>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -26,17 +26,16 @@ public:
 	int model_id, obj_id, prediction_empty_slot = 0;
 	long long duration;
 	int outlier_count = 0;
-	MatrixMulMLModel * mlModel;
+	MLModel * mlModel;
 	LARGE_INTEGER start, stop;
 	vector<float> *cached_predictions[NUMBER_OF_PREDICTIONS_TO_BE_CACHED];
 	vector<float> cached_prediction_last;
-	ComputationalModel(int CPUCores);
+	ComputationalModel(int CPUCores, string model_name);
 	virtual ~ComputationalModel();
 	static int m_id_counter() { static int m_id = 0; return m_id++; }
 	static int obj_id_counter() { static int obj_id = 0; return obj_id++; }
 	string static attributeToString(vector<float>* attr);
 	void checkMLModel();
-	void trainML();
 	void resetFlow();
 	void execute();
 	void execute(int mode);
@@ -45,7 +44,7 @@ public:
 	void setProcessor(int p);
 	void clearLogs();
 	void logExTime(string str);
-	bool catchOutlier(vector<float>* attr);
+	void trainMLModel();
 protected:
 private:
 	thread resetOperator, mlTrainer;

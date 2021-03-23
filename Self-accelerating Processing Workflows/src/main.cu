@@ -60,14 +60,14 @@ int main()
 				for (int b = 0; b < lengthY; b++)
 					mat2[b] = rand() % RANGE_OF_INT_VALUES;
 
-				matmulmodel.setData(mat1, mat2, matOut1, new myDim3(l, m, n));
+				matmulmodel.invoke(mat1, mat2, matOut1, new myDim3(l, m, n));
 				QueryPerformanceCounter(&start);
 				matmulmodel.executeAndLogging(1);
 				QueryPerformanceCounter(&stop);
 				delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 				elapsedTimeCPU = int(delay * 1000);
 
-				matmulmodel.setData(mat1, mat2, matOut2, new myDim3(l, m, n));
+				matmulmodel.invoke(mat1, mat2, matOut2, new myDim3(l, m, n));
 				QueryPerformanceCounter(&start);
 				matmulmodel.executeAndLogging(2);
 				QueryPerformanceCounter(&stop);

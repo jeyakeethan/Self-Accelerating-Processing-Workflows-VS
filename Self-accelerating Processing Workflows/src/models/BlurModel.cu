@@ -14,7 +14,7 @@
 using namespace std;
 
 template <class T>
-BlurModel<T>::BlurModel(int CPUCores):ComputationalModel(CPUCores) {
+BlurModel<T>::BlurModel(int CPUCores):ComputationalModel(CPUCores, "Blur-Image") {
 	//super(CPUCores);
 }
 

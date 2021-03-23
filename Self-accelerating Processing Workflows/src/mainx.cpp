@@ -30,7 +30,7 @@ int main()
 	numericalType1 mat1[6] = { 1, 3, 7,8,4,3 };
 	numericalType1 mat2[6] = { 1, 3, 7,8,3,2 };
 	numericalType1 out[4];
-	matmulmodel.setData(mat1, mat2, out, new myDim3(2, 3, 2));
+	matmulmodel.invoke(mat1, mat2, out, new myDim3(2, 3, 2));
 	matmulmodel.execute(1);
 	for (int t = 0; t < 4; t++)
 		cout << out[t] << endl;
@@ -176,7 +176,7 @@ int main()
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
 		numericalType1* output = new numericalType1[len];
-		arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
+		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
 		arrayAdditionModel.execute();
 		//for(int i=0; i<len; i++)
 		//   cout << output[i] << ", ";
@@ -191,7 +191,7 @@ int main()
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
 		numericalType1* output = new numericalType1[len];
-		arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
+		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
 		arrayAdditionModel.execute(1);
 		//for (int i = 0; i < len; i++)
 		//    cout << output[i] << ", ";
@@ -207,7 +207,7 @@ int main()
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
 		numericalType1* output = new numericalType1[len];
-		arrayAdditionModel.setData(arraySet1[x], arraySet2[x], output, len);
+		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
 		arrayAdditionModel.execute(2);
 		//for (int i = 0; i < len; i++)
 		//    cout << output[i] << ", ";
@@ -237,7 +237,7 @@ int main()
 			inputB[k] = rand() % RANGE_OF_INT_VALUES;
 		}
 
-		arrayAdditionModel.setData(inputA, inputB, output, N);
+		arrayAdditionModel.invoke(inputA, inputB, output, N);
 		arrayAdditionModel.execute();
 		// for(int i=0; i<N; i++)
 		//    cout << output[i] << ", ";
@@ -260,7 +260,7 @@ int main()
 			inputB[k] = rand() % RANGE_OF_INT_VALUES;
 		}
 
-		dotMultiplicationModel.setData(inputA, inputB, &out, N);
+		dotMultiplicationModel.invoke(inputA, inputB, &out, N);
 		dotMultiplicationModel.execute(1);
 		//cout << out << endl;
 	}
