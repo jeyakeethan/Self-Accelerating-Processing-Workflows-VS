@@ -31,7 +31,7 @@ class MLModel {
 public:
 	size_t prediction;
 	XGBoost * xgboost;
-	string model_name;
+	string model_name, file_path;
 	MLModel(string name);
 	inline ~MLModel() { };
 
@@ -46,6 +46,7 @@ public:
 		return paramsMat;
 	}*/
 	void trainModel();
+	void dumpModel();
 	void loadModel();
 };
 

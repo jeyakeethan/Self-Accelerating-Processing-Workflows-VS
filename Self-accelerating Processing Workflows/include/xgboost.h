@@ -25,7 +25,7 @@ namespace xgboost {
 		const Config config;
 		float pred_0;
 		std::string SaveModelToString();
-		Tree* LoadModelFromJson(const rapidjson::Value &doc);
+		Tree* LoadTreeFromJson(const rapidjson::Value &doc);
 
 	private:
 		std::vector<float> grad;

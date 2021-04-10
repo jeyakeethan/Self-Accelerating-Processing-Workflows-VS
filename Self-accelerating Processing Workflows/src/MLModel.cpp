@@ -23,12 +23,21 @@
 #include "utils.h"
 #include "numpy.h"
 #include <list>
+
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/istreamwrapper.h""
+#include <filesystem>
+namespace fs = std::filesystem;
+
 using namespace std;
 using namespace xgboost;
 using namespace pandas;
 using namespace numpy;
 
 using namespace std;
+using namespace rapidjson;
 
 
 #define safe_xgboost(call) {                                            \
@@ -42,9 +51,16 @@ int err = (call);                                                       \
 
 MLModel::MLModel(string name) {
 	model_name = name;
-	loadModel();
-	//document.parse(Logger::readFromFile("model.dump"));
-	//xgboost->LoadModelFromJson(document);
+	file_path = "../ml-models/" + model_name + ".json";
+
+	if (fs::exists(file_path)) {
+		loadModel();
+	}
+	else {
+		trainModel();
+		cout << "ML model is being trained! please wait for a moment..." << endl;
+		dumpModel();
+	}
 }
 
 void MLModel::trainModel() {
@@ -63,17 +79,50 @@ void MLModel::trainModel() {
 
 	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/" + model_name + ".csv", ',', -1, 1000);
 	xgboost->fit(dataset.features, dataset.labels);
+}
 
-	// print model
-	// cout << xgboost.SaveModelToString() << endl << endl;
-
-	// dump model for future use
-	// Logger::writeToFile("model.dump", xgboost->SaveModelToString());
+void MLModel::dumpModel() {
+	ofstream ofs(file_path);
+	ofs << xgboost->SaveModelToString().c_str();
+	ofs.close();
 }
 
 void MLModel::loadModel() {
-	cout << "To do load model" << endl;
-	// xgboost = "../ml-models/" + model_name + ".dump"
+	ifstream ifs(file_path);
+	IStreamWrapper isw(ifs);
+
+	Document doc;
+	doc.ParseStream(isw);
+
+	Config mlConfig;
+
+	if (doc.HasMember("Param")) {
+		const Value& Param = doc["Param"];
+		mlConfig.n_estimators = Param["n_estimators"].GetInt();
+		mlConfig.max_depth = Param["max_depth"].GetInt();
+		mlConfig.learning_rate = Param["learning_rate"].GetFloat();
+		mlConfig.min_samples_split = Param["min_samples_split"].GetInt();
+		mlConfig.min_data_in_leaf = Param["min_data_in_leaf"].GetInt();
+		mlConfig.min_child_weight = Param["min_child_weight"].GetFloat();
+		mlConfig.colsample_bytree = Param["colsample_bytree"].GetFloat();
+		mlConfig.reg_gamma = Param["reg_gamma"].GetFloat();
+		mlConfig.reg_lambda = Param["reg_lambda"].GetFloat();
+		mlConfig.max_bin = Param["max_bin"].GetInt();
+	}
+
+	xgboost = new XGBoost(mlConfig);
+
+	if (doc.HasMember("Trees")) {
+		const rapidjson::Value& trees = doc["Trees"];
+
+		int counter = 0;
+
+		for (rapidjson::Value::ConstValueIterator itr = trees.Begin(); itr != trees.End(); ++itr)
+		{
+			const rapidjson::Value& tree = *itr;
+			xgboost->trees.push_back(xgboost->LoadTreeFromJson(tree));
+		}
+	}
 }
 
 int MLModel::predict(vector<float>* params) {

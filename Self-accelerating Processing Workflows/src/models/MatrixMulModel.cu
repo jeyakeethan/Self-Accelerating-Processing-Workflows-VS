@@ -14,7 +14,7 @@
 using namespace std;
 
 template <class T>
-MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores):ComputationalModel(CPUCores, "Matrix-Multiplication") {
+MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores):ComputationalModel(CPUCores, "matrix-multiplication") {
 	//super(CPUCores);
 }
 

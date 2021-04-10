@@ -11,24 +11,22 @@
 
 #include <Constants.h>
 #include <ComputationalModel.h>
-#include <MatrixMulModel.h>
+#include <models/MatrixMulModel.h>
 #include <random>
 #include <string>
 #include <sstream>
 #include <thread>
 #include <future>
 #include<cmath>
-#include <MatrixMulMLModel.h>
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <xgboost/c_api.h>
 using namespace std;
 
 int main()
 {
-	freopen("console log.txt", "w", stdout);
+	freopen(CONSOLE_LOG_FILE_NAME.c_str(), "w", stdout);
 
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream outfile;
@@ -42,7 +40,7 @@ int main()
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	const int step = 32;
-	const int levels = 8;
+	const int levels = 4;
 	const int spaceLength = pow(levels, 3);
 	int loop_length = EXPERIMENT_COUNT;
 	myDim3**matrixSpace = new myDim3*[spaceLength];
@@ -149,36 +147,11 @@ int main()
 		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
 		matmulmodel.CPUGPULOG.str("");
 
-
-		matmulmodel.resetFlow();
-		cout << endl << "Automated ML only Execution started" << endl;
-		// Automated ML only
-		matmulmodel.invoke(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
-		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
-		if (LOGGER_MODE_ON) {
-			QueryPerformanceCounter(&start);
-			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-				matmulmodel.executeByML();
-			}
-			QueryPerformanceCounter(&stop);
-		}
-		else {
-			QueryPerformanceCounter(&start);
-			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
-				matmulmodel.executeByML();
-			}
-			QueryPerformanceCounter(&stop);
-		}
-		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-		int elapsedML = int(delay * 1000);
-		matmulmodel.logExTime("\n\n");		// add new line in logging file
 		cout << endl << "Code: " << matmulmodel.CPUGPULOG.str() << endl;
 		matmulmodel.CPUGPULOG.str("");
-
-		cout << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl << endl << endl;
-		results << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tSelfFlow:\t" << elapsedAutoTime << "\tML Flow:\t" << elapsedML << endl;
+	
+		cout << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tML Flow:" << elapsedAutoTime << endl << endl << endl;
+		results << endl << "CPU:\t" << elapsedTimeCPU << "\tGPU:\t" << elapsedTimeGPU << "\tML Flow:" << elapsedAutoTime << endl;
 
 		for (int ex = 0; ex < loop_length; ex++) {
 			free(arraySet1[ex]);
@@ -231,6 +204,7 @@ int main()
 			}
 			cout << endl << endl;
 			TestEachCase();
+			break;
 		case 2:
 			cout << "/*********Generate Square Wave Input Stream*********/" << endl;
 			index = rand() % spaceLength;
@@ -279,7 +253,7 @@ int main()
 			//cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
 			//l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
-				index = rand() % (spaceLength - 20);
+				index = rand() % (spaceLength - 1);
 				dimension = matrixSpace[index];
 				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				lmn = dimension->x * dimension->y * dimension->z;
@@ -303,7 +277,7 @@ int main()
 			//cout << dimension->x << "," << dimension->y << "," << dimension->z << "_________....";
 			//l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 			for (x = 0; x < EXPERIMENT_COUNT; x++) {
-				index = rand() % 20;
+				index = rand() % min(20, spaceLength);
 				dimension = matrixSpace[index];
 				l1 = dimension->x * dimension->y, l2 = dimension->z * dimension->y, l3 = dimension->x * dimension->z;
 				lmn = dimension->x * dimension->y * dimension->z;

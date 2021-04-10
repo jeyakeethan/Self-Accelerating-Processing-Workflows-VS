@@ -14,7 +14,6 @@ using namespace rapidjson;
 namespace xgboost {
 	XGBoost::XGBoost(Config conf) :config(conf) {};
 	XGBoost::~XGBoost() {};
-
 	void XGBoost::fit(const vector<vector<float>>& features, const vector<int>& labels) {
 		float mean = accumulate(labels.begin(), labels.end(), 0) / (float)labels.size();
 		pred_0 = 0.5 * log((1 + mean) / (1 - mean));
@@ -93,7 +92,8 @@ namespace xgboost {
 		return ss + "}";
 	}
 
-	Tree* XGBoost::LoadModelFromJson(const rapidjson::Value &doc) {
+
+	Tree* XGBoost::LoadTreeFromJson(const rapidjson::Value &doc) {
 		xgboost::Tree *tree = new Tree();
 		if (doc.HasMember("leaf_value")) {
 			tree->leaf_value = doc["leaf_value"].GetFloat();
@@ -105,11 +105,12 @@ namespace xgboost {
 		tree->internal_value = doc["internal_value"].GetFloat();
 
 		if (doc.HasMember("tree_left")) {
-			tree->tree_left = LoadModelFromJson(doc["tree_left"]);
+			tree->tree_left = LoadTreeFromJson(doc["tree_left"]);
 		}
 		if (doc.HasMember("tree_right")) {
-			tree->tree_right = LoadModelFromJson(doc["tree_right"]);
+			tree->tree_right = LoadTreeFromJson(doc["tree_right"]);
 		}
 		return tree;
 	}
+
 }

@@ -87,7 +87,7 @@ XGB_DLL int BoosterLoadModelFromString(char *input_str, Booster *booster) {
 	rapidjson::Value &tree_list = doc["Trees"];
 	if (tree_list.IsArray()) {
 		for (size_t i = 0; i < tree_list.Size(); ++i) {
-			model->trees.push_back(model->LoadModelFromJson(tree_list[i]));
+			model->trees.push_back(model->LoadTreeFromJson(tree_list[i]));
 		}
 	}
 	*booster = model;
