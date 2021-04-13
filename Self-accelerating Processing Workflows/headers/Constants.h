@@ -12,6 +12,7 @@ const int N = 10000;
 const int EXPERIMENT_COUNT = 5000;
 const int MAX_WIDTH_ALIGNED_CPU = 200;
 const int MAX_WIDTH_ALIGNED_GPU = 100;
+const int MAX_WIDTH_ALIGNED = 100;
 const int MIN_WIDTH_ALIGNED = 20;
 
 // vector addition consts

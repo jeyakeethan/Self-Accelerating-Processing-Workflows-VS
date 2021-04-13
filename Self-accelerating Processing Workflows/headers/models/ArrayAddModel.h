@@ -20,6 +20,7 @@ class ArrayAdditionModel : public ComputationalModel
     private:
         virtual void CPUImplementation();
         virtual void GPUImplementation();
+        virtual vector<float>* getAttributes();
 };
 
 #include "../src/models/ArrayAddModel.cu"

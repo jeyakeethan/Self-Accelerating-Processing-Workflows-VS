@@ -49,4 +49,9 @@ void ArrayAdditionModel<T>::GPUImplementation(){
     cudaFree (dev_c);
 }
 
+template <class T>
+vector<float>* ArrayAdditionModel<T>::getAttributes(){
+    return new vector<float>{ 1, 100 };
+}
+
 #endif // ARRAYADDMODEL_CPP
