@@ -1,6 +1,8 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+#include "random_array_generator.cpp"
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -18,241 +20,119 @@
 using namespace std;
 int main()
 {
+	freopen(("Array_addtion_" + CONSOLE_LOG_FILE_NAME).c_str(), "w", stdout);	// write logs into file
+
 	LARGE_INTEGER start, stop, clockFreq;
-	ofstream outfile;
+	ofstream input_nature_file;
+	ofstream time_log_file;
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
 	int elapsedTime;
+	int fileNum;
 
-	ArrayAdditionModel<numericalType1> arrayAdditionModel(1);
+
+	/*------- Write Input Nature into File -------*/
+	string inputNatureFile = "../logs/Array_addition_Input Nature.csv"; fileNum = 0;
+	while (FILE* file = fopen(inputNatureFile.c_str(), "r")) {
+		fclose(file);
+		inputNatureFile = "../logs/Array_addition_Input Nature_" + to_string(++fileNum) + ".csv";
+	}
+	input_nature_file.open(inputNatureFile);
+
+	string timeLogFile = "../logs/Array_addition_Time.txt"; fileNum = 0;
+	while (FILE* file = fopen(timeLogFile.c_str(), "r")) {
+		fclose(file);
+		timeLogFile = "../logs/Array_addition_Time_" + to_string(++fileNum) + ".txt";
+	}
+	time_log_file.open(timeLogFile);
+
+/*------------- Single dimension vector addition ------------*/
+cout << "One Dimension experiments started" << endl;
+input_nature_file << "One Dimension experiments started" << endl;
+time_log_file << "One Dimension experiments started" << endl;
+
+	ArrayAdditionModel<numericalType1> arrayAdditionModel(6);
 
 	numericalType1** arraySet1 = new numericalType1 * [EXPERIMENT_COUNT];
 	numericalType1** arraySet2 = new numericalType1 * [EXPERIMENT_COUNT];
 	int* arrayLength = new int[EXPERIMENT_COUNT];
-	int x, k, length, fileNum;
+	int x, k, length;
 
-	/*---Random Seed Value---*/
-	srand(5);
+	srand(5);		// Random Seed Value
 
-	if (INPUT_NATURE == 1) {
-		/*********Generate Aligned Square Wave Input Stream*********/
-		int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1, arrayMaxLength = ARRAY_MAX_LENGTH, smallArrayMaxLength = SMALL_ARRAY_MAX_LENGTH;
-		bool iSmall = true;
-		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			if (++widthCount > width) {
-				//cout << "width: " << width << endl << endl;
-				widthCount = 0;
-				width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
-				iSmall = !iSmall;
-				if (iSmall) smallArrayMaxLength = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
-				else arrayMaxLength = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-			}
-			if (iSmall) length = rand() % smallArrayMaxLength + 1;
-			else length = rand() % (arrayMaxLength - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
-			//cout << "length: " << length << endl;
-			arrayLength[x] = length;
-			numericalType1* temp1 = new numericalType1[length];
-			numericalType1* temp2 = new numericalType1[length];
-			arraySet1[x] = temp1;
-			arraySet2[x] = temp2;
-			for (k = 0; k < length; k++) {
-				temp1[k] = rand() % RANGE_OF_INT_VALUES;
-				temp2[k] = rand() % RANGE_OF_INT_VALUES;
-			}
-		}
-	}
-	else if (INPUT_NATURE == 2) {
-		/*********Generate Aligned Binary Input Stream*********/
-		int widthCount = 0, width = rand() % MAX_WIDTH_ALIGNED + 1;
-		bool iSmall = true;
-		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			if (++widthCount > width) {
-				//cout << "width: " << width << endl << endl;
-				widthCount = 0;
-				width = rand() % (MAX_WIDTH_ALIGNED - MIN_WIDTH_ALIGNED) + MIN_WIDTH_ALIGNED;
-				iSmall = !iSmall;
-			}
-			if (iSmall) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-			else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
-			//cout << "length: " << length << endl;
-			arrayLength[x] = length;
-			numericalType1* temp1 = new numericalType1[length];
-			numericalType1* temp2 = new numericalType1[length];
-			arraySet1[x] = temp1;
-			arraySet2[x] = temp2;
-			for (k = 0; k < length; k++) {
-				temp1[k] = rand() % RANGE_OF_INT_VALUES;
-				temp2[k] = rand() % RANGE_OF_INT_VALUES;
-			}
-		}
-	}
-	else if (INPUT_NATURE == 3) {
-		/*********Generate Odd Input Stream*********/
-		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			length = rand() % ARRAY_MAX_LENGTH + 1;
-			//cout << "length: " << length << endl;
-			arrayLength[x] = length;
-			numericalType1* temp1 = new numericalType1[length];
-			numericalType1* temp2 = new numericalType1[length];
-			arraySet1[x] = temp1;
-			arraySet2[x] = temp2;
-			for (k = 0; k < length; k++) {
-				temp1[k] = rand() % RANGE_OF_INT_VALUES;
-				temp2[k] = rand() % RANGE_OF_INT_VALUES;
-			}
-		}
-	}
-	else if (INPUT_NATURE == 4) {
-		/*********Generate GPU Specific Input Stream*********/
-		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
-			//cout << "length: " << length << endl;
-			arrayLength[x] = length;
-			numericalType1* temp1 = new numericalType1[length];
-			numericalType1* temp2 = new numericalType1[length];
-			arraySet1[x] = temp1;
-			arraySet2[x] = temp2;
-			for (k = 0; k < length; k++) {
-				temp1[k] = rand() % RANGE_OF_INT_VALUES;
-				temp2[k] = rand() % RANGE_OF_INT_VALUES;
-			}
-		}
-	}
-	else if (INPUT_NATURE == 5) {
-		/*********Generate CPU Specific Input Stream*********/
-		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-			//cout << "length: " << length << endl;
-			arrayLength[x] = length;
-			numericalType1* temp1 = new numericalType1[length];
-			numericalType1* temp2 = new numericalType1[length];
-			arraySet1[x] = temp1;
-			arraySet2[x] = temp2;
-			for (k = 0; k < length; k++) {
-				temp1[k] = rand() % RANGE_OF_INT_VALUES;
-				temp2[k] = rand() % RANGE_OF_INT_VALUES;
-			}
-		}
-	}
-
-	/************Write Input Nature into File************/
-	string inputNatureFile = "Input Nature.csv"; fileNum = 0;
-	while (FILE* file = fopen(inputNatureFile.c_str(), "r")) {
-		fclose(file);
-		inputNatureFile = "Input Nature_" + to_string(++fileNum) + ".csv";
-	}
-	outfile.open(inputNatureFile);
-
+	int widthCount = 0;
+	bool iSmall = true;
+	short int favor;
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		int len = arrayLength[x];
-		outfile << len << endl;
-		//for (y = 0; y < len/100+1; y++)
-		//    cout << "-";
-		//cout << endl;
+		favor = rand() % 2;
+		if (favor == 0) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
+		else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+		arrayLength[x] = length;
+		arraySet1[x] = generate_1d_array(length);
+		arraySet2[x] = generate_1d_array(length);
+
+		input_nature_file << length << "," << endl;		// log input nature
 	}
-	outfile.close();
 
-	string timeLogFile = "Time.log"; fileNum = 0;
-	while (FILE* file = fopen(timeLogFile.c_str(), "r")) {
-		fclose(file);
-		timeLogFile = "Time_" + to_string(++fileNum) + ".log";
-	}
-	outfile.open(timeLogFile);
-
-
-	/**********Self flow experiment - ArrayAdditionModel**********/
+	numericalType1* output;
+	/*-------- Framework - ArrayAdditionModel --------*/
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
-		numericalType1* output = new numericalType1[len];
+		output = new numericalType1[len];
 		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
 		arrayAdditionModel.execute();
-		//for(int i=0; i<len; i++)
-		//   cout << output[i] << ", ";
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
-	cout << "Self Flow Time: " << elapsedTime << " ms" << endl << endl;
-	outfile << "Self Flow Time: " << elapsedTime << " ms" << endl << endl;
+	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
+	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
+	/*-------- CPU Time - ArrayAdditionModel --------*/
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
-		numericalType1* output = new numericalType1[len];
+		output = new numericalType1[len];
 		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
 		arrayAdditionModel.execute(1);
-		//for (int i = 0; i < len; i++)
-		//    cout << output[i] << ", ";
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
-	cout << "CPU Only Time: " << elapsedTime << " ms" << endl << endl;
-	outfile << "CPU Only Time: " << elapsedTime << " ms" << endl << endl;
+	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
+	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
-
+	/*-------- GPU Time - ArrayAdditionModel --------*/
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
-		numericalType1* output = new numericalType1[len];
+		output = new numericalType1[len];
 		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
 		arrayAdditionModel.execute(2);
-		//for (int i = 0; i < len; i++)
-		//    cout << output[i] << ", ";
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
-	cout << "GPU Only Time: " << elapsedTime << " ms" << endl << endl;
-	outfile << "GPU Only Time: " << elapsedTime << " ms" << endl << endl;
-	outfile.close();
+	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
+	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 
 	/*************Free Host Memory**************/
 	delete[] arraySet1;
 	delete[] arraySet2;
 
-	/*
 
-	int inputA[N];
-	int inputB[N];
-	int output[N];
-
-	ArrayAdditionModel<int> arrayAdditionModel;
-
-	for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
-		for (int k = 0; k < N; k++) {
-			inputA[k] = rand() % RANGE_OF_INT_VALUES;
-			inputB[k] = rand() % RANGE_OF_INT_VALUES;
-		}
-
-		arrayAdditionModel.invoke(inputA, inputB, output, N);
-		arrayAdditionModel.execute();
-		// for(int i=0; i<N; i++)
-		//    cout << output[i] << ", ";
-	}
-	QueryPerformanceCounter(&stop);
-	double delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	int elapsedTime = int(delay * 1000);
-	cout << "CPU Time: " << elapsedTime << " ms" << endl;
+/*------------- Two dimension vector addition ------------*/
+cout << "Two Dimension experiments started" << endl;
+input_nature_file << "Two Dimension experiments started" << endl;
+time_log_file << "Two Dimension experiments started" << endl;
 
 
-	int inputA[N];
-	int inputB[N];
 
-	DotMultiplicationModel dotMultiplicationModel;
 
-	for (int exp = 0; exp < EXPERIMENT_COUNT; exp++) {
-		int out = 0;
-		for (int k = 0; k < N; k++) {
-			inputA[k] = rand() % RANGE_OF_INT_VALUES;
-			inputB[k] = rand() % RANGE_OF_INT_VALUES;
-		}
 
-		dotMultiplicationModel.invoke(inputA, inputB, &out, N);
-		dotMultiplicationModel.execute(1);
-		//cout << out << endl;
-	}
-	*/
+	input_nature_file.close();
+	time_log_file.close();
+
 	return 0;
 }

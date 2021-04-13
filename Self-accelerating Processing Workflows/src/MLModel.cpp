@@ -64,6 +64,7 @@ MLModel::MLModel(string name) {
 	}
 	else {
 		cout << "Neither ML model nor training dataset exists!" << endl;
+		exit;
 	}
 }
 
@@ -131,7 +132,9 @@ void MLModel::loadModel() {
 
 int MLModel::predict(vector<float>* params) {
 	//vector<float> temp{ (*params)[1],(*params)[2],(*params)[3] };
-	float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
-
-	return (int)round(prediction);
+	//float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
+	float prediction = xgboost->PredictProba(*params)[0];
+	int pre = (int)round(prediction);
+	cout << pre;
+	return pre;
 }
