@@ -1,5 +1,6 @@
 #include <models/ArrayAddModel.h>
 #include <kernels.h>
+#include <omp.h>
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -21,9 +22,14 @@ ArrayAdditionModel<T>::~ArrayAdditionModel() {}
 
 template <class T>
 void ArrayAdditionModel<T>::CPUImplementation(){
+#pragma omp parallel num_threads(CPUCores)
+    {
+#pragma omp for
     for(int x = 0; x < localL; x++){
         //cout << localA[x] << "," << localB[x] << ",";
         localC[x] = localA[x] + localB[x];
+    }
+#pragma omp barrier
     }
 }
 
@@ -40,7 +46,7 @@ void ArrayAdditionModel<T>::GPUImplementation(){
     cudaMemcpy (dev_b , localB , localL *sizeof(int) , cudaMemcpyHostToDevice);
     // Execute the kernel
 
-    Vector_Addition <<< localL / THREADS_PER_BLOCK, THREADS_PER_BLOCK >>> (dev_a, dev_b, dev_c);
+    Vector_Addition <<< (localL / THREADS_PER_BLOCK), THREADS_PER_BLOCK >>> (dev_a, dev_b, dev_c);
     //Copy back to Host array from Device array
     cudaMemcpy(localC , dev_c , localL *sizeof(int) , cudaMemcpyDeviceToHost);
     //Free the Device array memory
@@ -54,4 +60,4 @@ vector<float>* ArrayAdditionModel<T>::getAttributes(){
     return new vector<float>{ 1, 100 };
 }
 
-#endif // ARRAYADDMODEL_CPP
+#endif //ARRAYADDMODEL_CPP
