@@ -31,7 +31,7 @@ class MLModel {
 public:
 	size_t prediction;
 	XGBoost * xgboost;
-	string model_name, file_path;
+	string model_name, model_path, dataset_path;
 	MLModel(string name);
 	inline ~MLModel() { };
 

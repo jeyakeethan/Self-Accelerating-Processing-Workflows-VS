@@ -51,15 +51,19 @@ int err = (call);                                                       \
 
 MLModel::MLModel(string name) {
 	model_name = name;
-	file_path = "../ml-models/" + model_name + ".json";
+	model_path = "../ml-models/" + model_name + ".json";
+	dataset_path = "../ml-datasets/" + model_name + ".csv";
 
-	if (fs::exists(file_path)) {
+	if (fs::exists(model_path)) {
 		loadModel();
 	}
-	else {
+	else if(fs::exists(dataset_path)){
 		trainModel();
 		cout << "ML model is being trained! please wait for a moment..." << endl;
 		dumpModel();
+	}
+	else {
+		cout << "Neither ML model nor training dataset exists!" << endl;
 	}
 }
 
@@ -82,13 +86,13 @@ void MLModel::trainModel() {
 }
 
 void MLModel::dumpModel() {
-	ofstream ofs(file_path);
+	ofstream ofs(model_path);
 	ofs << xgboost->SaveModelToString().c_str();
 	ofs.close();
 }
 
 void MLModel::loadModel() {
-	ifstream ifs(file_path);
+	ifstream ifs(model_path);
 	IStreamWrapper isw(ifs);
 
 	Document doc;
