@@ -37,7 +37,13 @@ const int ML_TRAIN_CHECK_PERIOD = DAY;			// in seconds
 const int RESET_COUNT = 19;
 
 const std::string LOG_FILE_NAME = "../logs/statistics.txt";
-const std::string CONSOLE_LOG_FILE_NAME = "../logs/console log.txt";
+const std::string CONSOLE_LOG_FILE_NAME = "console log.txt";
+
+struct myDim2 {
+	short x, y;
+	myDim2() :x(1), y(1) {}
+	myDim2(short x_, short y_):x(x_), y(y_) {}
+};
 
 struct myDim3 {
 	short x, y, z;

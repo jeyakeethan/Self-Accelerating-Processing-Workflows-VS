@@ -21,16 +21,18 @@ template <class T>
 ArrayAddition2DModel<T>::~ArrayAddition2DModel() {}
 
 template <class T>
-void ArrayAddition2DModel<T>::CPUImplementation(){
+void ArrayAddition2DModel<T>::CPUImplementation() {
 #pragma omp parallel num_threads(CPUCores)
     {
 #pragma omp for
-    for(int x = 0; x < localRow; x++){
-        for(int y = 0; x < localCol; y++){ 
-        //cout << localA[x] << "," << localB[x] << ",";
-        localC[x][y] = localA[x][y] + localB[x][y];
-    }
+        for (int x = 0; x < localRow; x++) {
+            for (int y = 0; x < localCol; y++) {
+                //cout << localA[x] << "," << localB[x] << ",";
+                int m = x * y;
+                localC[m] = localA[m] + localB[m];
+            }
 #pragma omp barrier
+        }
     }
 }
 
@@ -38,7 +40,7 @@ template <class T>
 void ArrayAddition2DModel<T>::GPUImplementation(){
     //Device array
     int *dev_a , *dev_b, *dev_c;
-    int localSize = localRow*localCol
+    int localSize = localRow * localCol;
     //Allocate the memory on the GPU
     cudaMalloc((void **)&dev_a , localSize *sizeof(int));
     cudaMalloc((void **)&dev_b , localSize *sizeof(int));
@@ -59,7 +61,7 @@ void ArrayAddition2DModel<T>::GPUImplementation(){
 
 template <class T>
 vector<float>* ArrayAddition2DModel<T>::getAttributes(){
-    return new vector<float>{ 1, 100 };
+    return new vector<float>{ (float)localRow, (float)localCol};
 }
 
 #endif //ARRAYADD2DMODEL_CPP

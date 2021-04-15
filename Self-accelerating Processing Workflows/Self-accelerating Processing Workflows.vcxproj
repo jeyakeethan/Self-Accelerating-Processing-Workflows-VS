@@ -110,10 +110,12 @@ xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" 
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="kernels\ArrayAdditional2DKernel.cu" />
     <CudaCompile Include="kernels\ArrayAdditionKernel.cu" />
     <CudaCompile Include="kernels\BlurKernel.cu" />
     <CudaCompile Include="kernels\DotMultiplicationKernel.cu" />
     <CudaCompile Include="kernels\MatrixMultiplicationKernel.cu" />
+    <CudaCompile Include="src\models\ArrayAdd2DModel.cu" />
     <CudaCompile Include="src\models\ArrayAddModel.cu" />
     <CudaCompile Include="src\models\BlurModel.cu" />
     <CudaCompile Include="src\models\MatrixMulModel.cu" />
@@ -138,6 +140,7 @@ xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" 
     <ClCompile Include="src\ComputationalModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\models\ArrayAdd2DModel.h" />
     <ClInclude Include="headers\models\ArrayAddModel.h" />
     <ClInclude Include="headers\models\BlurModel.h" />
     <ClInclude Include="headers\ComputationalModel.h" />
