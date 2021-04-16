@@ -16,8 +16,8 @@ const int MAX_WIDTH_ALIGNED = 100;
 const int MIN_WIDTH_ALIGNED = 20;
 
 // vector addition consts
-const int SMALL_ARRAY_MAX_LENGTH = 1300;
-const int ARRAY_MAX_LENGTH = 10000;
+const int SMALL_ARRAY_MAX_LENGTH = 400000;
+const int ARRAY_MAX_LENGTH = 500000;
 
 // Computational Model Constant
 const int REVISE_COUNT_MIN = 20;
