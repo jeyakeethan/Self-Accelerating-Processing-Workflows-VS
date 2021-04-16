@@ -58,29 +58,30 @@ time_log_file << "One Dimension experiments started" << endl;
 
 	ArrayAdditionModel<numericalType1> arrayAdditionModel(6);
 
-	numericalType1** arraySet1 = new numericalType1 * [EXPERIMENT_COUNT];
-	numericalType1** arraySet2 = new numericalType1 * [EXPERIMENT_COUNT];
-	int* arrayLength = new int[EXPERIMENT_COUNT];
+	const int BOUNDARY_POINT = 100000;
+	numericalType1* arraySet1[EXPERIMENT_COUNT];
+	numericalType1* arraySet2[EXPERIMENT_COUNT];
+	numericalType1* outputs[EXPERIMENT_COUNT];
+	int arrayLength[EXPERIMENT_COUNT];
 	int x, y, z, k, length;
 
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;
-		if (favor == 0) length = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-		else length = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+		if (favor == 0) length = rand() % BOUNDARY_POINT + 1;
+		else length = rand() % BOUNDARY_POINT + BOUNDARY_POINT + 1;
 		arrayLength[x] = length;
 		arraySet1[x] = generate_1d_array(length);
 		arraySet2[x] = generate_1d_array(length);
+		outputs[x] = new numericalType1[length];
 
-		input_nature_file << length << "," << endl;		// log input nature
+		input_nature_file << length << ",";		// log input nature
 	}
 
-	numericalType1* output;
-	/*-------- Framework - ArrayAdditionModel --------*/
+	// -------- Framework - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
-		output = new numericalType1[len];
-		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
+		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], len);
 		arrayAdditionModel.execute();
 	}
 	QueryPerformanceCounter(&stop);
@@ -89,12 +90,11 @@ time_log_file << "One Dimension experiments started" << endl;
 	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
-	/*-------- CPU Time - ArrayAdditionModel --------*/
+	// -------- CPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
-		output = new numericalType1[len];
-		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
+		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], len);
 		arrayAdditionModel.execute(1);
 	}
 	QueryPerformanceCounter(&stop);
@@ -103,12 +103,11 @@ time_log_file << "One Dimension experiments started" << endl;
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
-	/*-------- GPU Time - ArrayAdditionModel --------*/
+	// -------- GPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		int len = arrayLength[x];
-		output = new numericalType1[len];
-		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], output, len);
+		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], len);
 		arrayAdditionModel.execute(2);
 	}
 	QueryPerformanceCounter(&stop);
@@ -117,15 +116,12 @@ time_log_file << "One Dimension experiments started" << endl;
 	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 
-	/*************Free Host Memory**************/
+	// *************Free Host Memory**************
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		delete[] arraySet1[x];
 		delete[] arraySet2[x];
+		delete[] outputs[x];
 	}
-	delete[] arraySet1;
-	delete[] arraySet2;
-	delete[] arrayLength;
-
 
 /*------------- Two dimension vector addition ------------*/
 cout << "Two Dimension experiments started" << endl;
@@ -134,20 +130,27 @@ time_log_file << "Two Dimension experiments started" << endl;
 
 	ArrayAddition2DModel<numericalType1> arrayAddition2DModel(6);
 
-	numericalType1** arraySetB1 = new numericalType1 * [EXPERIMENT_COUNT];
-	numericalType1** arraySetB2 = new numericalType1 * [EXPERIMENT_COUNT];
-	myDim2* dim_space = new myDim2[EXPERIMENT_COUNT];	//todo
-	myDim2* dimensions = new myDim2[EXPERIMENT_COUNT];
+	numericalType1* arraySetB1[EXPERIMENT_COUNT];
+	numericalType1* arraySetB2[EXPERIMENT_COUNT];
+
+	// load related dimesion spaces
+	const int dim_space_len_2d = 10;
+	
+	myDim2 cpu_dim_space_2d[dim_space_len_2d];
+	myDim2 gpu_dim_space_2d[dim_space_len_2d];
+	//TO DO
+
+	myDim2 dimensions[EXPERIMENT_COUNT];
 	numericalType1** outputB;
 	int dim_index;
 	myDim2 dimension;
 
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;
-		if (favor == 0) dim_index = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-		else dim_index = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
+		dim_index = rand() % dim_space_len_2d;
+		if (favor == 0) dimension = cpu_dim_space_2d[dim_index];
+		else dimension = gpu_dim_space_2d[dim_index];
 
-		dimension = dim_space[dim_index];
 		dimensions[x] = dimension;
 		length = dimension.x * dimension.y;
 		arraySetB1[x] = generate_1d_array(length);
@@ -157,7 +160,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 		input_nature_file << "[" << dimension.x << "," << dimension.y << "]" << ", " << endl;		// log input nature
 	}
 
-	/*-------- Framework - ArrayAdditionModel --------*/
+	// -------- Framework - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		arrayAddition2DModel.invoke(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
@@ -169,7 +172,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
-	/*-------- CPU Time - ArrayAdditionModel --------*/
+	// -------- CPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		arrayAddition2DModel.invoke(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
@@ -181,7 +184,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
-	/*-------- GPU Time - ArrayAdditionModel --------*/
+	// -------- GPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		arrayAddition2DModel.invoke(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
@@ -193,7 +196,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 
-	/*************Free Host Memory**************/
+	// ************Free Host Memory**************
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		delete[] arraySetB1[x];
 		delete[] arraySetB2[x];
@@ -203,34 +206,43 @@ time_log_file << "Two Dimension experiments started" << endl;
 	delete[] arraySetB2;
 	delete[] outputB;
 	delete[] dimensions;
-	delete[] dim_space;
+	delete[] cpu_dim_space_2d;
+	delete[] gpu_dim_space_2d;
 
 
-/*
-
-//------------- THree dimension vector addition ------------
+/*------------- THree dimension vector addition ------------
 cout << "Three Dimension experiments started" << endl;
 input_nature_file << "Three Dimension experiments started" << endl;
 time_log_file << "Three Dimension experiments started" << endl;
 
-	ArrayAdditionModel3D<numericalType1> arrayAdditionModel3D(6);
+	ArrayAddition3DModel<numericalType1> arrayAddition3DModel(6);
 
-	numericalType1**** arraySetC1 = new numericalType1 ***[EXPERIMENT_COUNT];
-	numericalType1**** arraySetC2 = new numericalType1 ***[EXPERIMENT_COUNT];
-	myDim3* dim_space_3d = new myDim3[EXPERIMENT_COUNT];	//todo
-	myDim3* dimensions_3d = new myDim3[EXPERIMENT_COUNT];
+	numericalType1* arraySetC1[EXPERIMENT_COUNT];
+	numericalType1* arraySetC2 [EXPERIMENT_COUNT];
+
+	// load related dimesion spaces
+	const int dim_space_len_3d = 10;
+
+	myDim3 cpu_dim_space_3d[dim_space_len_3d];
+	myDim3 gpu_dim_space_3d[dim_space_len_3d];
+	//TO DO
+
+	myDim3 dimensions_3d[EXPERIMENT_COUNT];
 	myDim3 dimension_3d;
 
-	short int favor;
+
+	numericalType1** outputB;
+
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;
-		if (favor == 0) dim_index = rand() % SMALL_ARRAY_MAX_LENGTH + 1;
-		else dim_index = rand() % (ARRAY_MAX_LENGTH - SMALL_ARRAY_MAX_LENGTH) + SMALL_ARRAY_MAX_LENGTH + 1;
-
-		dimension_3d = dim_space_3d[dim_index];
+		dim_index = rand() % dim_space_len_3d;
+		if (favor == 0) dimension_3d = cpu_dim_space_3d[dim_index];
+		else dimension_3d = gpu_dim_space_3d[dim_index];
 		dimensions_3d[x] = dimension_3d;
-		arraySetC1[x] = generate_3d_array(dimension_3d.x, dimension_3d.y, dimension_3d.z);
-		arraySetC2[x] = generate_3d_array(dimension_3d.x, dimension_3d.y, dimension_3d.z);
+
+		length = dimension_3d.x * dimension_3d.y * dimension_3d.z;
+		arraySetC1[x] = generate_1d_array(length);
+		arraySetC2[x] = generate_1d_array(length);
 
 		input_nature_file << "[" << dimension_3d.x << "," << dimension_3d.y <<  "," << dimension_3d.z <<"]" << ", " << endl;		// log input nature
 	}
@@ -248,8 +260,8 @@ time_log_file << "Three Dimension experiments started" << endl;
 	//-------- Framework - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAdditionModel3D.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
-		arrayAdditionModel3D.execute();
+		arrayAddition3DModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
+		arrayAddition3DModel.execute();
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -260,8 +272,8 @@ time_log_file << "Three Dimension experiments started" << endl;
 	//-------- CPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAdditionModel3D.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
-		arrayAdditionModel3D.execute(1);
+		arrayAddition3DModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
+		arrayAddition3DModel.execute(1);
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -272,8 +284,8 @@ time_log_file << "Three Dimension experiments started" << endl;
 	//-------- GPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAdditionModel3D.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
-		arrayAdditionModel3D.execute(2);
+		arrayAddition3DModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
+		arrayAddition3DModel.execute(2);
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -283,11 +295,6 @@ time_log_file << "Three Dimension experiments started" << endl;
 
 	//*************Free Host Memory**************
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		for (y = 0; y < dimensions_3d[x].x; y++) {
-			delete[] arraySetC1[x][y];
-			delete[] arraySetC2[x][y];
-			delete[] outputC[x][y];
-		}
 		delete[] arraySetC1[x];
 		delete[] arraySetC2[x];
 		delete[] outputC[x];
@@ -296,10 +303,75 @@ time_log_file << "Three Dimension experiments started" << endl;
 	delete[] arraySetC2;
 	delete[] outputC;
 	delete[] dimensions_3d;
-	delete[] dim_space_3d;
+	delete[] cpu_dim_space_3d;
+	delete[] gpu_dim_space_3d;
+*/
+
+
+
+/*------------- Size based experiments started ------------*/
+cout << "Size based experiments started" << endl;
+input_nature_file << "Size based experiments started" << endl;
+time_log_file << "Size based experiments started" << endl;
+
+	const int start_len = 10000, len_step = 10000;	// BOUNDARY_POINT = 100000; above
+	for (length = 0; length < BOUNDARY_POINT * 2; length += len_step) {
+		input_nature_file << length << endl;		// log input nature
+
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			arraySet1[x] = generate_1d_array(length);
+			arraySet2[x] = generate_1d_array(length);
+			outputs[x] = new numericalType1(length);
+		}
+
+		// -------- Framework - ArrayAdditionModel --------
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.execute();
+		}
+		QueryPerformanceCounter(&stop);
+		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+		elapsedTime = int(delay * 1000);
+		cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
+		time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
+
+		// -------- CPU Time - ArrayAdditionModel --------
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.execute(1);
+		}
+		QueryPerformanceCounter(&stop);
+		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+		elapsedTime = int(delay * 1000);
+		cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
+		time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
+
+		// -------- GPU Time - ArrayAdditionModel --------
+		QueryPerformanceCounter(&start);
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.execute(2);
+		}
+		QueryPerformanceCounter(&stop);
+		delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+		elapsedTime = int(delay * 1000);
+		cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
+		time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
+
+		//************Free Host Memory**************
+		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+			delete[] arraySet1[x];
+			delete[] arraySet2[x];
+			delete[] outputs[x];
+		}
+	}
+
 
 	input_nature_file.close();
 	time_log_file.close();
-	*/
+
+
 	return 0;
 }
