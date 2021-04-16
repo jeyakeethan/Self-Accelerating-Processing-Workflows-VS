@@ -54,7 +54,7 @@ int main()
 	BlurModel <unsigned char> blurModel(6);
 
 	const int experiment_count = 5;
-	const int levels = 2;
+	const int levels = 12;
 	const int number_entries = levels * levels;
 	const int value_range = 256;
 	const int step = 100;
@@ -84,8 +84,21 @@ int main()
 			//time_log_file << "CPU Time: " << delayCPU << ", ";
 
 
+			/*-------- GPU Time - ArrayAdditionModel --------*/
+			QueryPerformanceCounter(&start);
+			for (x = 0; x < experiment_count; x++) {
+				blurModel.invoke(arraySet1[x], outputs[x], width, height);
+				blurModel.execute(2);
+			}
+			QueryPerformanceCounter(&stop);
+			delayGPU = (double)(stop.QuadPart - start.QuadPart);
+			//cout << "GPU Time: " << delayGPU << ", " << endl;
+			//time_log_file << "GPU Time: " << delayGPU << ", " << endl;
 
-			/*----------- Save experimented images ------------*/
+			dataset_file << width << "," << height << "," << (delayGPU > delayCPU ? 0 : 1) << endl;
+
+
+			/*----------- Save experimented images ------------
 			for (x = 0; x < experiment_count; x++) {
 				// Prepare data for output
 				vector<unsigned char> out_image;
@@ -103,21 +116,7 @@ int main()
 				//if there's an error, display it
 				if (error) cout << "encoder error " << error << ": " << lodepng_error_text(error) << endl;
 			}
-
-
-
-			/*-------- GPU Time - ArrayAdditionModel --------*/
-			QueryPerformanceCounter(&start);
-			for (x = 0; x < experiment_count; x++) {
-				blurModel.invoke(arraySet1[x], outputs[x], width, height);
-				blurModel.execute(2);
-			}
-			QueryPerformanceCounter(&stop);
-			delayGPU = (double)(stop.QuadPart - start.QuadPart);
-			//cout << "GPU Time: " << delayGPU << ", " << endl;
-			//time_log_file << "GPU Time: " << delayGPU << ", " << endl;
-
-			dataset_file << width << "," << height << "," << (delayGPU > delayCPU ? 0 : 1) << endl;
+			*/
 
 			/*************Free Host Memory**************/
 			for (x = 0; x < experiment_count; x++) {
