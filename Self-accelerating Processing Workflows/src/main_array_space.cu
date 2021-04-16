@@ -21,7 +21,7 @@
 using namespace std;
 int main()
 {
-	//string console_log_name = "../logs/Array_addtion_" + CONSOLE_LOG_FILE_NAME;
+	//string console_log_name = "../logs/array_addtion_" + CONSOLE_LOG_FILE_NAME;
 	//freopen(console_log_name.c_str(), "w", stdout);	// write logs into file
 
 	srand(5);		// Random Seed Value
