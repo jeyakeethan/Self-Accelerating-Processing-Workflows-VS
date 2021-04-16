@@ -3,6 +3,7 @@
 
 #include "random_array_generator.cpp"
 
+#include "pandas.h"
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -136,10 +137,21 @@ time_log_file << "Two Dimension experiments started" << endl;
 	// load related dimesion spaces
 	const int dim_space_len_2d = 10;
 	
+	int index_g;
+
 	myDim2 cpu_dim_space_2d[dim_space_len_2d];
 	myDim2 gpu_dim_space_2d[dim_space_len_2d];
-	//TO DO
+	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/Array-Addition2D.csv", ',', -1, 1000);
+	for (x = 0; x < dim_space_len_2d; x++) {
+		len_dataset = dataset.labels.size();
 
+		cpu_dim_space_2d[x].x = dataset.features.at(x).at(0);
+		cpu_dim_space_2d[x].y = dataset.features.at(x).at(1);
+
+		index_g = len_dataset - dim_space_len_2d + len_dataset
+		gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
+		gpu_dim_space_2d[x].y = dataset.features.at(index_g).at(1);
+	}
 	myDim2 dimensions[EXPERIMENT_COUNT];
 	numericalType1** outputB;
 	int dim_index;

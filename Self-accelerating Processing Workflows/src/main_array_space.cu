@@ -41,10 +41,10 @@ int main()
 	string inputNatureFile = "../ml-datasets/Array-Addition.csv";
 	dataset_file.open(inputNatureFile, ios_base::out);
 
-	string timeLogFile = "../logs/Array_addition_Time.txt"; fileNum = 0;
+	string timeLogFile = "../logs/Array_addition_dataset_Time.txt"; fileNum = 0;
 	while (FILE* file = fopen(timeLogFile.c_str(), "r")) {
 		fclose(file);
-		timeLogFile = "../logs/Array_addition_Time_" + to_string(++fileNum) + ".txt";
+		timeLogFile = "../logs/Array_addition_dataset_Time" + to_string(++fileNum) + ".txt";
 	}
 	time_log_file.open(timeLogFile);
 
@@ -101,6 +101,7 @@ int main()
 			delete[] outputs[x];
 		}
 	}
-
+	dataset_file.close();
+	time_log_file.close();
 	return 0;
 }

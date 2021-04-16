@@ -38,6 +38,7 @@ namespace pandas {
 				features.push_back(vect_line);
 			}
 		}
+		ifs.close();
 
 		dataset = { features, labels };
 		return dataset;
