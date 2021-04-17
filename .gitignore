@@ -339,4 +339,7 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
+# logs
+logs/
+
 Self-accelerating Processing Workflows/Self-accelerating Processing Workflows.vcxproj
