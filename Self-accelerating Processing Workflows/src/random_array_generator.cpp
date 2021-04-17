@@ -34,4 +34,23 @@ numericalType1*** generate_3d_array(int x, int y, int z) {
 	}
 	return arr;
 }
+
+
+unsigned char* generate_1d_array_char(int length) {
+	unsigned char* arr = new unsigned char[length];
+	for (int i = 0; i < length; i++) {
+		arr[i] = (unsigned char)rand() % RANGE_OF_INT_VALUES;
+	}
+	return arr;
+}
+
+unsigned char* generate_1d_array_char(int length, int range_of_values) {
+	unsigned char* arr = new unsigned char[length];
+	for (int i = 0; i < length; i++) {
+		arr[i] = (unsigned char)rand() % range_of_values;
+	}
+	return arr;
+}
+
+
 #endif
