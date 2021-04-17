@@ -50,7 +50,10 @@ void ArrayAddition2DModel<T>::GPUImplementation(){
     cudaMemcpy (dev_b , localB , localSize *sizeof(int) , cudaMemcpyHostToDevice);
     // Execute the kernel
 
-    Vector_Addition2D <<< (localSize / THREADS_PER_BLOCK), THREADS_PER_BLOCK >>> (dev_a, dev_b, dev_c);
+    dim3 blockDims(THREADS_PER_BLOCK, 1, 1);
+    dim3 gridDims((unsigned int)ceil((double)(localSize / blockDims.x)), 1, 1);
+    Vector_Addition2D << < blockDims, gridDims >> > (dev_a, dev_b, dev_c);
+
     //Copy back to Host array from Device array
     cudaMemcpy(localC , dev_c , localSize *sizeof(int) , cudaMemcpyDeviceToHost);
     //Free the Device array memory

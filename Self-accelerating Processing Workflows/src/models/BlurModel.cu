@@ -76,7 +76,7 @@ void BlurModel<T>::GPUImplementation() {
 
 	getError(cudaMalloc((void**)&dev_output, size * sizeof(unsigned char)));
 
-	dim3 blockDims(512, 1, 1);
+	dim3 blockDims(THREADS_PER_BLOCK, 1, 1);
 	dim3 gridDims((unsigned int)ceil((double)(size / blockDims.x)), 1, 1);
 
 	blur_image << <gridDims, blockDims >> > (dev_input, dev_output, width, height);

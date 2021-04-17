@@ -27,7 +27,7 @@ const int SAMPLE_COUNT = 5;
 const int RANGE_OF_INT_VALUES = 32;
 
 
-const int THREADS_PER_BLOCK = 1024;
+const int THREADS_PER_BLOCK = 256;
 
 const int DAY = 86400;
 const int MONTH = 86400*30;
