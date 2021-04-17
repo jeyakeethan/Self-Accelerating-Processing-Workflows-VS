@@ -54,7 +54,7 @@ int main()
 
 	ArrayAdditionModel<numericalType1> arrayAdditionModel(6);
 
-	const int number_entries = 50;
+	const int number_entries = 1000;
 	numericalType1* arraySet1 [experiment_count];
 	numericalType1* arraySet2 [experiment_count];
 	numericalType1* outputs [experiment_count];
@@ -78,7 +78,7 @@ int main()
 		}
 		QueryPerformanceCounter(&stop);
 		delayCPU = (double)(stop.QuadPart - start.QuadPart);
-		//cout << "CPU Time: " << delayCPU << ", ";
+		cout << "CPU Time: " << delayCPU << ", ";
 		//time_log_file << "CPU Time: " << delayCPU << ", ";
 
 		/*-------- GPU Time - ArrayAdditionModel --------*/
@@ -89,7 +89,7 @@ int main()
 		}
 		QueryPerformanceCounter(&stop);
 		delayGPU = (double)(stop.QuadPart - start.QuadPart);
-		//cout << "GPU Time: " << delayGPU << ", " << endl;
+		cout << "GPU Time: " << delayGPU << ", " << endl;
 		//time_log_file << "GPU Time: " << delayGPU << ", " << endl;
 
 		dataset_file << length << "," << (delayGPU > delayCPU ? 0 : 1) << endl;

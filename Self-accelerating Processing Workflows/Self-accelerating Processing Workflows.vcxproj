@@ -131,6 +131,7 @@ xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" 
     <ClCompile Include="src\random_array_generator.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\main_matrix_mul_algo.cu" />
     <ClCompile Include="src\tree.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\xgboost.cpp" />
