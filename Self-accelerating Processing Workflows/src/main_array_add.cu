@@ -148,7 +148,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 		cpu_dim_space_2d[x].x = dataset.features.at(x).at(0);
 		cpu_dim_space_2d[x].y = dataset.features.at(x).at(1);
 
-		index_g = len_dataset - dim_space_len_2d + len_dataset
+		index_g = len_dataset - dim_space_len_2d + len_dataset;
 		gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
 		gpu_dim_space_2d[x].y = dataset.features.at(index_g).at(1);
 	}
