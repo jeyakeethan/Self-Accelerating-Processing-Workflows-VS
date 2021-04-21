@@ -1,4 +1,4 @@
-``#include "cuda_runtime.h"
+#include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
 #include "random_array_generator.cpp"
@@ -52,9 +52,9 @@ int main()
 	time_log_file.open(timeLogFile);
 
 /*------------- Two dimension vector addition ------------*/
-cout << "Two Dimension experiments started" << endl;
-input_nature_file << "Two Dimension experiments started" << endl;
-time_log_file << "Two Dimension experiments started" << endl;
+cout << "Blur experiments" << endl;
+input_nature_file << "Blur experiments" << endl;
+time_log_file << "Blur experiments" << endl;
 
 	BlurModel<numericalType1> blurModel(6);
 	
@@ -72,16 +72,16 @@ time_log_file << "Two Dimension experiments started" << endl;
 	myDim2 cpu_dim_space_2d[dim_space_len_2d];
 	myDim2 gpu_dim_space_2d[dim_space_len_2d];
 	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/blur.csv", ',', -1, 1000);
-	for (int x = 0; x < dim_space_len_2d; x++) {
-		len_dataset = dataset.labels.size();
+	len_dataset = dataset.labels.size();
+	if (len_dataset > 20)
+		for (int x = 0; x < dim_space_len_2d; x++) {
+			cpu_dim_space_2d[x].x = dataset.features.at(x).at(0);
+			cpu_dim_space_2d[x].y = dataset.features.at(x).at(1);
 
-		cpu_dim_space_2d[x].x = dataset.features.at(x).at(0);
-		cpu_dim_space_2d[x].y = dataset.features.at(x).at(1);
-
-		index_g = len_dataset - dim_space_len_2d + len_dataset;
-		gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
-		gpu_dim_space_2d[x].y = dataset.features.at(index_g).at(1);
-	}
+			index_g = len_dataset - dim_space_len_2d + x;
+			gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
+			gpu_dim_space_2d[x].y = dataset.features.at(index_g).at(1);
+		}
 
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;

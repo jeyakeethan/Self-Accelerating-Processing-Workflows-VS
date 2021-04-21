@@ -93,12 +93,12 @@ int main()
 		}
 
 		numericalType1**** outputC;
-		for (x = 0; x < EXPERIMENT_COUNT; x++) {
+		for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 			myDim3 dim_3d = dimensions_3d[x];
 			outputC[x] = new numericalType1 **[dim_3d.x];
-			for (y = 0; y < dim_3d.x; y++) {
+			for (int y = 0; y < dim_3d.x; y++) {
 				outputC[x][y] = new numericalType1 * [dim_3d.y];
-				for (z = 0; z < dim_3d.y; z++)
+				for (int z = 0; z < dim_3d.y; z++)
 					outputC[x][y][z] = new numericalType1[dim_3d.z];
 			}
 		}
