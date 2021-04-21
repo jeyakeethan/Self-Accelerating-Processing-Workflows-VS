@@ -135,6 +135,6 @@ int MLModel::predict(vector<float>* params) {
 	//float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
 	float prediction = xgboost->PredictProba(*params)[0];
 	int pre = (int)round(prediction);
-	cout << pre;
+	//cout << pre;
 	return pre;
 }
