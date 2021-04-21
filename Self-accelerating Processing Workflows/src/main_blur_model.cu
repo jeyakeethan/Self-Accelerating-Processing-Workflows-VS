@@ -98,7 +98,7 @@ time_log_file << "Blur experiments" << endl;
 		input_nature_file << "[" << dimension.x << "," << dimension.y << "]" << ", " << endl;		// log input nature
 	}
 
-	// -------- Framework - ArrayAdditionModel --------
+	// -------- Framework --------
 	QueryPerformanceCounter(&start);
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
@@ -110,7 +110,7 @@ time_log_file << "Blur experiments" << endl;
 	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
-	// -------- CPU Time - ArrayAdditionModel --------
+	// -------- CPU Time --------
 	QueryPerformanceCounter(&start);
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
@@ -122,7 +122,7 @@ time_log_file << "Blur experiments" << endl;
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
-	// -------- GPU Time - ArrayAdditionModel --------
+	// -------- GPU Time --------
 	QueryPerformanceCounter(&start);
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
@@ -139,10 +139,6 @@ time_log_file << "Blur experiments" << endl;
 		delete[] arraySet1[x];
 		delete[] outputs[x];
 	}
-	delete[] dimensions;
-	delete[] cpu_dim_space_2d;
-	delete[] gpu_dim_space_2d;
-
 
 	input_nature_file.close();
 	time_log_file.close();

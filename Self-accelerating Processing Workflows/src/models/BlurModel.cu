@@ -90,9 +90,9 @@ void BlurModel<T>::GPUImplementation() {
 
 template <class T>
 void BlurModel<T>::getError(cudaError_t err) {
-    if (err != cudaSuccess) {
+    /*if (err != cudaSuccess) {
         cout << "Error " << cudaGetErrorString(err) << endl;
-    }
+    }*/
 }
 
 
