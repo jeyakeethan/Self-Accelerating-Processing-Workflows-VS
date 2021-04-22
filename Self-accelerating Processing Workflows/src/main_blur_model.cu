@@ -77,10 +77,13 @@ time_log_file << "Blur experiments" << endl;
 		for (int x = 0; x < dim_space_len_2d; x++) {
 			cpu_dim_space_2d[x].x = dataset.features.at(x).at(0);
 			cpu_dim_space_2d[x].y = dataset.features.at(x).at(1);
+			cout << "[" << cpu_dim_space_2d[x].x << "," << cpu_dim_space_2d[x].y << "]" << " = " << dataset.labels.at(x) << ", " << blurModel.mlModel->predict(new vector<float>{(float)cpu_dim_space_2d[x].x, (float)cpu_dim_space_2d[x].y}) << endl;
 
 			index_g = len_dataset - dim_space_len_2d + x;
 			gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_2d[x].y = dataset.features.at(index_g).at(1);
+			cout << "[" << gpu_dim_space_2d[x].x << "," << gpu_dim_space_2d[x].y << "]" << " = " << dataset.labels.at(index_g) << ", " << blurModel.mlModel->predict(new vector<float>{(float)gpu_dim_space_2d[x].x, (float)gpu_dim_space_2d[x].y}) << endl;
+
 		}
 
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
