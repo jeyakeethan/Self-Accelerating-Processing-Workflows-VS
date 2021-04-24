@@ -25,8 +25,16 @@ ComputationalModel::ComputationalModel(int CPUCores_, string model_name):CPUCore
 	resetFlow();
 	// ml related codes
 	mlModel = new MLModel(model_name);
-	mlTrainer = thread([this] {checkMLModel();});
-	mlTrainer.detach();
+	//mlTrainer = thread([this] {checkMLModel();});
+	//mlTrainer.detach();
+}
+
+ComputationalModel::~ComputationalModel() {
+
+	//mlTrainer.~thread();
+	Logger::close();
+	delete mlModel;
+	//TO DO; log present values for using next boot
 }
 
 inline void ComputationalModel::resetFlow() {
@@ -36,11 +44,6 @@ inline void ComputationalModel::resetFlow() {
 	// id_ = int(&*this);
 }
 
-ComputationalModel::~ComputationalModel() {
-	mlTrainer.~thread();
-	Logger::close();
-	//TO DO; log present values for using next boot
-}
 
 // Mannual mode execution
 void ComputationalModel::execute(int mode) {

@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include <string>
+#include <config.h>
 typedef int numericalType1;
 
 const bool LOGGER_MODE_ON = false;
