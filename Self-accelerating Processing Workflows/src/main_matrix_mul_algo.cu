@@ -62,9 +62,9 @@ int main()
 
 	MatrixMultiplicationModel<numericalType1> matrixMultiplicationModel(6);
 
-	unsigned char* arraySet1[EXPERIMENT_COUNT];
-	unsigned char* arraySet2[EXPERIMENT_COUNT];
-	unsigned char* outputs[EXPERIMENT_COUNT];
+	numericalType1* arraySet1[EXPERIMENT_COUNT];
+	numericalType1* arraySet2[EXPERIMENT_COUNT];
+	numericalType1* outputs[EXPERIMENT_COUNT];
 	myDim3 dimensions[EXPERIMENT_COUNT];
 	myDim3 dimension;
 
@@ -83,11 +83,13 @@ int main()
 			cpu_dim_space_3d[x].x = dataset.features.at(x).at(0);
 			cpu_dim_space_3d[x].y = dataset.features.at(x).at(1);
 			cpu_dim_space_3d[x].z = dataset.features.at(x).at(2);
+			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << cpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z }) << endl;
 
 			index_g = len_dataset - dim_space_len_3d + x;
 			gpu_dim_space_3d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_3d[x].y = dataset.features.at(index_g).at(1);
 			gpu_dim_space_3d[x].z = dataset.features.at(index_g).at(2);
+			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << gpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z }) << endl;
 		}
 
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
@@ -101,9 +103,9 @@ int main()
 		length1 = dimension.x * dimension.y;
 		length2 = dimension.y * dimension.z;
 		length3 = dimension.x * dimension.z;
-		arraySet1[x] = generate_1d_array_char(length1, value_range);
-		arraySet2[x] = generate_1d_array_char(length2, value_range);
-		outputs[x] = new unsigned char[length3];
+		arraySet1[x] = generate_1d_array(length1);
+		arraySet2[x] = generate_1d_array(length2);
+		outputs[x] = new numericalType1[length3];
 
 		//input_nature_file << "[" << dimension.x << "," << dimension.y << "]" << ", " << endl;		// log input nature
 	}
@@ -111,7 +113,7 @@ int main()
 	// -------- Framework --------
 	QueryPerformanceCounter(&start);
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
 		matrixMultiplicationModel.execute();
 	}
 	QueryPerformanceCounter(&stop);
@@ -123,8 +125,8 @@ int main()
 	// -------- CPU Time --------
 	QueryPerformanceCounter(&start);
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
-		blurModel.execute(1);
+		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.execute(1);
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -135,8 +137,8 @@ int main()
 	// -------- GPU Time --------
 	QueryPerformanceCounter(&start);
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
-		blurModel.execute(2);
+		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.execute(2);
 	}
 	QueryPerformanceCounter(&stop);
 	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
