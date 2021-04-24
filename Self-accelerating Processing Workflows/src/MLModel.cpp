@@ -48,7 +48,6 @@ int err = (call);                                                       \
     }                                                                       \
 }
 
-
 MLModel::MLModel(string name) {
 	model_name = name;
 	model_path = "../ml-models/" + model_name + ".json";
@@ -57,7 +56,7 @@ MLModel::MLModel(string name) {
 	/*if (fs::exists(model_path)) {
 		loadModel();
 	}
-	else*/ 
+	else*/
 		if(fs::exists(dataset_path)){
 		trainModel();
 		cout << "ML model is being trained! please wait for a moment..." << endl;
@@ -67,6 +66,10 @@ MLModel::MLModel(string name) {
 		cout << "Neither ML model nor training dataset exists!" << endl;
 		exit;
 	}
+}
+
+MLModel::~MLModel() {
+	delete xgboost;
 }
 
 void MLModel::trainModel() {
@@ -81,9 +84,10 @@ void MLModel::trainModel() {
 	mlConfig.colsample_bytree = 0.8f;
 	mlConfig.min_child_weight = 5;
 	mlConfig.max_bin = 100;
+
 	xgboost = new XGBoost(mlConfig);
 
-	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/" + model_name + ".csv", ',', -1, 1000);
+	pandas::Dataset dataset = pandas::ReadCSV(dataset_path, ',', -1, 1000);
 	xgboost->fit(dataset.features, dataset.labels);
 }
 
@@ -100,20 +104,33 @@ void MLModel::loadModel() {
 	Document doc;
 	doc.ParseStream(isw);
 
+	ifs.close();
+
 	Config mlConfig;
 
 	if (doc.HasMember("Param")) {
 		const Value& Param = doc["Param"];
 		mlConfig.n_estimators = Param["n_estimators"].GetInt();
-		mlConfig.max_depth = Param["max_depth"].GetInt();
 		mlConfig.learning_rate = Param["learning_rate"].GetFloat();
+		mlConfig.max_depth = Param["max_depth"].GetInt();
 		mlConfig.min_samples_split = Param["min_samples_split"].GetInt();
 		mlConfig.min_data_in_leaf = Param["min_data_in_leaf"].GetInt();
 		mlConfig.min_child_weight = Param["min_child_weight"].GetFloat();
-		mlConfig.colsample_bytree = Param["colsample_bytree"].GetFloat();
 		mlConfig.reg_gamma = Param["reg_gamma"].GetFloat();
 		mlConfig.reg_lambda = Param["reg_lambda"].GetFloat();
+		mlConfig.colsample_bytree = Param["colsample_bytree"].GetFloat();
 		mlConfig.max_bin = Param["max_bin"].GetInt();
+		
+		/*cout << Param["n_estimators"].GetInt() << endl;
+		cout << Param["learning_rate"].GetFloat() << endl;
+		cout << Param["max_depth"].GetInt() << endl;
+		cout << Param["min_samples_split"].GetInt() << endl;
+		cout << Param["min_data_in_leaf"].GetInt() << endl;
+		cout << Param["reg_gamma"].GetFloat() << endl;
+		cout << Param["reg_lambda"].GetFloat() << endl;
+		cout << Param["colsample_bytree"].GetFloat() << endl;
+		cout << Param["min_child_weight"].GetFloat() << endl;
+		cout << Param["max_bin"].GetInt() << endl;*/
 	}
 
 	xgboost = new XGBoost(mlConfig);
@@ -121,12 +138,10 @@ void MLModel::loadModel() {
 	if (doc.HasMember("Trees")) {
 		const rapidjson::Value& trees = doc["Trees"];
 
-		int counter = 0;
-
 		for (rapidjson::Value::ConstValueIterator itr = trees.Begin(); itr != trees.End(); ++itr)
 		{
-			const rapidjson::Value& tree = *itr;
-			xgboost->trees.push_back(xgboost->LoadTreeFromJson(tree));
+			// const rapidjson::Value& tree = *itr;
+			xgboost->trees.push_back(xgboost->LoadTreeFromJson(*itr));
 		}
 	}
 }

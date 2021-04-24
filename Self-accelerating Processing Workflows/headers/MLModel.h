@@ -33,7 +33,7 @@ public:
 	XGBoost * xgboost;
 	string model_name, model_path, dataset_path;
 	MLModel(string name);
-	inline ~MLModel() { };
+	~MLModel();
 
 	int predict(vector<float>* params);
 	/*inline mat intArrToMat(int* params) {
