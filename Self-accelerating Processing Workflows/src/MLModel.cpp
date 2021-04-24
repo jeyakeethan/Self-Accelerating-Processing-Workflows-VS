@@ -54,10 +54,11 @@ MLModel::MLModel(string name) {
 	model_path = "../ml-models/" + model_name + ".json";
 	dataset_path = "../ml-datasets/" + model_name + ".csv";
 
-	if (fs::exists(model_path)) {
+	/*if (fs::exists(model_path)) {
 		loadModel();
 	}
-	else if(fs::exists(dataset_path)){
+	else*/ 
+		if(fs::exists(dataset_path)){
 		trainModel();
 		cout << "ML model is being trained! please wait for a moment..." << endl;
 		dumpModel();
@@ -71,13 +72,13 @@ MLModel::MLModel(string name) {
 void MLModel::trainModel() {
 	Config mlConfig;
 	mlConfig.n_estimators = 10;
-	mlConfig.learning_rate = 0.1;
+	mlConfig.learning_rate = 0.1f;
 	mlConfig.max_depth = 6;
 	mlConfig.min_samples_split = 10;
 	mlConfig.min_data_in_leaf = 10;
-	mlConfig.reg_gamma = 0.3;
-	mlConfig.reg_lambda = 0.3;
-	mlConfig.colsample_bytree = 0.8;
+	mlConfig.reg_gamma = 0.3f;
+	mlConfig.reg_lambda = 0.3f;
+	mlConfig.colsample_bytree = 0.8f;
 	mlConfig.min_child_weight = 5;
 	mlConfig.max_bin = 100;
 	xgboost = new XGBoost(mlConfig);
