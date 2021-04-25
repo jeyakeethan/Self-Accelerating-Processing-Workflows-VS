@@ -11,7 +11,7 @@
 
 #include <Constants.h>
 #include <ComputationalModel.h>
-#include <MatrixMulModel.h>
+#include <models/MatrixMulModel.h>
 #include <random>
 #include <string>
 #include <thread>
@@ -33,7 +33,9 @@ int main()
 	ofstream outfile("ML_train_data.csv");
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
-	int elapsedTimeCPU, elapsedTimeGPU;
+	double elapsedTimeCPU, elapsedTimeGPU;
+
+	const int experiment_count = 5;
 
 	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
@@ -60,19 +62,24 @@ int main()
 				for (int b = 0; b < lengthY; b++)
 					mat2[b] = rand() % RANGE_OF_INT_VALUES;
 
-				matmulmodel.invoke(mat1, mat2, matOut1, new myDim3(l, m, n));
-				QueryPerformanceCounter(&start);
-				matmulmodel.executeAndLogging(1);
-				QueryPerformanceCounter(&stop);
-				delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-				elapsedTimeCPU = int(delay * 1000);
+				elapsedTimeCPU = 0;
+				for (int l = 0; l < experiment_count; l++) {
+					QueryPerformanceCounter(&start);
+					matmulmodel.invoke(mat1, mat2, matOut1, new myDim3(l, m, n));
+					matmulmodel.execute(1);
+					QueryPerformanceCounter(&stop);
+					elapsedTimeCPU += (stop.QuadPart - start.QuadPart);
+				}
 
-				matmulmodel.invoke(mat1, mat2, matOut2, new myDim3(l, m, n));
-				QueryPerformanceCounter(&start);
-				matmulmodel.executeAndLogging(2);
-				QueryPerformanceCounter(&stop);
-				delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-				elapsedTimeGPU = int(delay * 1000);
+
+				elapsedTimeGPU = 0;
+				for (int l = 0; l < experiment_count; l++) {
+					QueryPerformanceCounter(&start);
+					matmulmodel.invoke(mat1, mat2, matOut1, new myDim3(l, m, n));
+					matmulmodel.execute(2);
+					QueryPerformanceCounter(&stop);
+					elapsedTimeGPU += (stop.QuadPart - start.QuadPart);
+				}
 
 				string status = "Differ";
 				if (compareResults(matOut1, matOut2, lengthZ))
