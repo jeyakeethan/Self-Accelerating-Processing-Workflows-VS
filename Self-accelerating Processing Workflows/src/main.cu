@@ -30,7 +30,7 @@ int main()
 {
 	// ComputationalModel::setOperationalMode(true);
 	LARGE_INTEGER start, stop, clockFreq;
-	ofstream outfile("ML_train_data.csv");
+	ofstream outfile("ml-datasets/matrix-multiplication.csv");
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
 	double elapsedTimeCPU, elapsedTimeGPU;
@@ -63,7 +63,7 @@ int main()
 					mat2[b] = rand() % RANGE_OF_INT_VALUES;
 
 				elapsedTimeCPU = 0;
-				for (int l = 0; l < experiment_count; l++) {
+				for (int k = 0; k < experiment_count; k++) {
 					QueryPerformanceCounter(&start);
 					matmulmodel.invoke(mat1, mat2, matOut1, new myDim3(l, m, n));
 					matmulmodel.execute(1);
@@ -73,9 +73,9 @@ int main()
 
 
 				elapsedTimeGPU = 0;
-				for (int l = 0; l < experiment_count; l++) {
+				for (int k = 0; k < experiment_count; k++) {
 					QueryPerformanceCounter(&start);
-					matmulmodel.invoke(mat1, mat2, matOut1, new myDim3(l, m, n));
+					matmulmodel.invoke(mat1, mat2, matOut2, new myDim3(l, m, n));
 					matmulmodel.execute(2);
 					QueryPerformanceCounter(&stop);
 					elapsedTimeGPU += (stop.QuadPart - start.QuadPart);
