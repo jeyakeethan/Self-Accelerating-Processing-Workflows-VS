@@ -21,6 +21,8 @@ class DotMultiplicationModel : public ComputationalModel
     private:
         virtual void CPUImplementation();
         virtual void GPUImplementation();
+        virtual void getAttributesBatch();
+        virtual void getAttributes();
 };
 
 #endif // DOTMULTIPLICATIONMODEL_H

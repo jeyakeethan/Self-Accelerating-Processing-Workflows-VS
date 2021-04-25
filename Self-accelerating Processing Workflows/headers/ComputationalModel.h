@@ -38,6 +38,7 @@ public:
 	void checkMLModel();
 	void resetFlow();
 	void execute();
+	void executeBatch();
 	void execute(int mode);
 	void executeAndLogging();
 	void executeAndLogging(int mode);
@@ -57,6 +58,7 @@ private:
 	* every subclass implementing this class must have to implement this virtual method
 	**/
 	virtual vector<float>* getAttributes() = 0;
+	virtual vector<float>* getAttributesBatch() = 0;
 
 };
 

@@ -92,11 +92,11 @@ void ComputationalModel::executeAndLogging(int mode)
 }
 
 void ComputationalModel::execute() {
-	if (mlModel->predict(getAttributes()) == 1) {
-		CPUImplementation();
+	if (mlModel->predictGPU(getAttributes())) {
+		GPUImplementation();
 	}
 	else {
-		GPUImplementation();
+		CPUImplementation();
 	}
 }
 

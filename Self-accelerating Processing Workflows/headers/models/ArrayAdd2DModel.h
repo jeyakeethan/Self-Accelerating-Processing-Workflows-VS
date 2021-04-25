@@ -22,6 +22,7 @@ private:
     virtual void CPUImplementation();
     virtual void GPUImplementation();
     virtual vector<float>* getAttributes();
+    virtual vector<float>* getAttributesBatch();
 };
 
 #include "../src/models/ArrayAdd2DModel.cu"

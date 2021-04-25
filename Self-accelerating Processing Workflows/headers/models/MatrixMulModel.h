@@ -26,6 +26,7 @@ class MatrixMultiplicationModel: public ComputationalModel
         virtual void CPUImplementation();
         virtual void GPUImplementation();
         virtual vector<float>* getAttributes();
+        virtual vector<float>* getAttributesBatch();
 };
 
 #include "../src/models/MatrixMulModel.cu"

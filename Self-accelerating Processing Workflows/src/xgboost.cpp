@@ -65,6 +65,16 @@ namespace xgboost {
 		return res;
 	}
 
+	float XGBoost::PredictProbability(const vector<float>& features) {
+		float pred = pred_0;
+		float p_0;
+		for (Tree *tree : trees) {
+			pred += config.learning_rate * tree->PredictLeafValue(features);
+		}
+		p_0 = 1.0 / (1 + exp(2 * pred));
+		return p_0;
+	}
+
 	std::string XGBoost::SaveModelToString() {
 		std::string ss;
 		//Trees

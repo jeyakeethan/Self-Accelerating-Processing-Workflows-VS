@@ -36,6 +36,7 @@ public:
 	~MLModel();
 
 	int predict(vector<float>* params);
+	bool predictGPU(vector<float>* params);
 	/*inline mat intArrToMat(int* params) {
 		stringstream s;
 		s << "\"";

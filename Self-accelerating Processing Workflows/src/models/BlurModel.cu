@@ -102,4 +102,8 @@ vector<float>* BlurModel<T>::getAttributes() {
     return attr;
 }
 
+template <class T>
+vector<float>* BlurModel<T>::getAttributesBatch() {
+    return attr;
+}
 #endif // _BLURMODEL_CPP_

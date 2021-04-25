@@ -154,3 +154,10 @@ int MLModel::predict(vector<float>* params) {
 	//cout << pre;
 	return pre;
 }
+
+bool MLModel::predictGPU(vector<float>* params) {
+	//vector<float> temp{ (*params)[1],(*params)[2],(*params)[3] };
+	//float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
+	float prediction = xgboost->PredictProbability(*params);
+	return prediction <= 0.5;
+}

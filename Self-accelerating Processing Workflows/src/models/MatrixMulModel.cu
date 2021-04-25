@@ -22,14 +22,6 @@ template <class T>
 MatrixMultiplicationModel<T>::~MatrixMultiplicationModel() {}
 
 
-// retrive influenced attributes
-template <class T>
-vector<float>* MatrixMultiplicationModel<T>::getAttributes() {
-	//if (attr == null)
-		//return new vector<float>{ 3, 0, 0, 0 };
-	return attr;
-}
-
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation() {
 	// log mode to see the flow of execution
@@ -90,4 +82,15 @@ void MatrixMultiplicationModel<T>::GPUImplementation() {
 	cudaDeviceSynchronize();
 }
 
+
+// retrive attributes
+template <class T>
+vector<float>* MatrixMultiplicationModel<T>::getAttributes() {
+	return attr;
+}
+
+template <class T>
+vector<float>* MatrixMultiplicationModel<T>::getAttributesBatch() {
+	return attr;
+}
 #endif // _MATRIXMULTIPLICATIONMODEL_CPP_

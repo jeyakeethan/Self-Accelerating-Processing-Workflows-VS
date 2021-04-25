@@ -37,7 +37,7 @@ int main()
 
 	const int experiment_count = 5;
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
+	MatrixMultiplicationModel<numericalType1> matmulmodel(6);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	int step = 32;
