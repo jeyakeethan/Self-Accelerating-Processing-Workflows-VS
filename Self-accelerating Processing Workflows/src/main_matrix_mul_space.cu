@@ -30,7 +30,7 @@ int main()
 {
 	// ComputationalModel::setOperationalMode(true);
 	LARGE_INTEGER start, stop, clockFreq;
-	ofstream outfile("ml-datasets/matrix-multiplication.csv");
+	ofstream outfile("../ml-datasets/matrix-multiplication.csv");
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
 	double elapsedTimeCPU, elapsedTimeGPU;
