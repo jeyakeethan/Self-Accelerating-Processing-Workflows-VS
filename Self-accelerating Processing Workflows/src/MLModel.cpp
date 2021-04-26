@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <numeric>
 
 #include <Logger.h>
 
@@ -18,10 +19,10 @@
 #include <time.h>
 #include "config.h"
 #include "pandas.h"
+#include "numpy.h"
 #include "xgboost.h"
 #include "tree.h"
 #include "utils.h"
-#include "numpy.h"
 #include <list>
 
 #include "rapidjson/document.h"
@@ -32,11 +33,9 @@
 namespace fs = std::filesystem;
 
 using namespace std;
+using namespace numpy;
 using namespace xgboost;
 using namespace pandas;
-using namespace numpy;
-
-using namespace std;
 using namespace rapidjson;
 
 
@@ -50,8 +49,10 @@ int err = (call);                                                       \
 
 MLModel::MLModel(string name) {
 	model_name = name;
-	model_path = "../ml-models/" + model_name + ".json";
-	dataset_path = "../ml-datasets/" + model_name + ".csv";
+	model_path = "../ml-models/" + name + ".json";
+	dataset_path = "../ml-datasets/" + name + ".csv";
+
+	caching = new vector<float>[2 * SIZE_OF_CACHE];
 
 	/*if (fs::exists(model_path)) {
 		loadModel();
@@ -158,6 +159,25 @@ int MLModel::predict(vector<float>* params) {
 bool MLModel::predictGPU(vector<float>* params) {
 	//vector<float> temp{ (*params)[1],(*params)[2],(*params)[3] };
 	//float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
+
+	short i = accumulate(params->begin(), params->end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
+	if (!caching[i].empty() && caching[i] == *params)
+		return false;
+
+	short j = i + SIZE_OF_CACHE;												// detemine the hash value for cache replacement of GPU
+	if (!caching[j].empty() && caching[j] == *params)
+		return true;
+
 	float prediction = xgboost->PredictProbability(*params);
-	return prediction <= 0.5;
+
+	bool decision = prediction <= 0.5;
+
+	if (decision) {
+		caching[j] = *params;
+	}
+	else {
+		caching[i] = *params;
+	}
+
+	return decision;
 }

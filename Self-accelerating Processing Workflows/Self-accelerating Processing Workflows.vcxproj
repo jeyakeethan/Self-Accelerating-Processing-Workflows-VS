@@ -115,7 +115,7 @@ xcopy /y "C:\mlpack\mlpack\packages\OpenBLAS.0.2.14.1\lib\native\bin\x64\*.dll" 
     <CudaCompile Include="kernels\BlurKernel.cu" />
     <CudaCompile Include="kernels\DotMultiplicationKernel.cu" />
     <CudaCompile Include="kernels\MatrixMultiplicationKernel.cu" />
-    <CudaCompile Include="src\main.cu" />
+    <CudaCompile Include="src\main_matrix_mul_space.cu" />
     <CudaCompile Include="src\models\ArrayAdd2DModel.cu" />
     <CudaCompile Include="src\models\ArrayAddModel.cu" />
     <CudaCompile Include="src\models\BlurModel.cu" />

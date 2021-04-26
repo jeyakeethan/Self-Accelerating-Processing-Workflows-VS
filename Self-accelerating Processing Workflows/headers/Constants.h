@@ -55,7 +55,12 @@ struct myDim3 {
 // ML part
 const short NUMBER_OF_PREDICTIONS_TO_BE_CACHED = 5;
 const int MAX_OUTLIERS_LIMIT = 5;
+// Caching
+const short SIZE_OF_CACHE = 9;
 
+
+// Dataset generation
+const float CPU_TIME_MARGIN = 0.75f;
 
 #endif // CONSTANTS_H
 
