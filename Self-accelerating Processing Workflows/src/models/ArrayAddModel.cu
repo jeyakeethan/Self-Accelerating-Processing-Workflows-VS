@@ -59,11 +59,11 @@ void ArrayAdditionModel<T>::GPUImplementation(){
 
 template <class T>
 vector<float>* ArrayAdditionModel<T>::getAttributes(){
-    return new vector<float>{ 1, float(localL) };
+    return new vector<float>{ float(localL) };
 }
 
 template <class T>
 vector<float>* ArrayAdditionModel<T>::getAttributesBatch() {
-    return attr;
+    return new vector<float>{ float(localL) };
 }
 #endif //ARRAYADDMODEL_CPP
