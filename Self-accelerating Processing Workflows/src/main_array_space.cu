@@ -73,7 +73,7 @@ int main()
 		/*-------- CPU Time - ArrayAdditionModel --------*/
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < experiment_count; x++) {
-			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], length);
 			arrayAdditionModel.execute(1);
 		}
 		QueryPerformanceCounter(&stop);
@@ -84,7 +84,7 @@ int main()
 		/*-------- GPU Time - ArrayAdditionModel --------*/
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < experiment_count; x++) {
-			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], length);
 			arrayAdditionModel.execute(2);
 		}
 		QueryPerformanceCounter(&stop);

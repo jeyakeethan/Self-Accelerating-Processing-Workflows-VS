@@ -22,7 +22,7 @@ namespace xgboost {
 		std::vector<Tree*> trees;
 		void fit(const std::vector<std::vector<float>>& features, const std::vector<int>& labels);
 		std::vector<float> PredictProba(const std::vector<float>& features);
-		float PredictProbability(const std::vector<float>& features);
+		bool predict(const std::vector<float>& features);
 		const Config config;
 		float pred_0;
 		std::string SaveModelToString();

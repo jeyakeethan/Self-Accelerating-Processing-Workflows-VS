@@ -78,15 +78,15 @@ time_log_file << "Blur experiments" << endl;
 			cpu_dim_space_2d[x].x = dataset.features.at(x).at(0);
 			cpu_dim_space_2d[x].y = dataset.features.at(x).at(1);
 			vector<float> cpu{ (float)cpu_dim_space_2d[x].x, (float)cpu_dim_space_2d[x].y };
-			int pre_cpu = blurModel.mlModel->predict(&cpu);
-			cout << "[" << cpu_dim_space_2d[x].x << "," << cpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu == 0 ? 1 : 0) << endl;
+			bool pre_cpu = blurModel.mlModel->predict_logic(&cpu);
+			cout << "[" << cpu_dim_space_2d[x].x << "," << cpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
 
 			index_g = len_dataset - dim_space_len_2d + x;
 			gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_2d[x].y = dataset.features.at(index_g).at(1);
 			vector<float> gpu{ (float)gpu_dim_space_2d[x].x, (float)gpu_dim_space_2d[x].y };
-			int pre_gpu = blurModel.mlModel->predict(&gpu);
-			cout << "[" << gpu_dim_space_2d[x].x << "," << gpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu == 0 ? 1 : 0) << endl;
+			bool pre_gpu = blurModel.mlModel->predict_logic(&gpu);
+			cout << "[" << gpu_dim_space_2d[x].x << "," << gpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
 
 		}
 	}
@@ -107,37 +107,40 @@ time_log_file << "Blur experiments" << endl;
 	}
 
 	// -------- Framework --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		QueryPerformanceCounter(&start);
 		blurModel.execute();
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- CPU Time --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		QueryPerformanceCounter(&start);
 		blurModel.execute(1);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- GPU Time --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		QueryPerformanceCounter(&start);
 		blurModel.execute(2);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;

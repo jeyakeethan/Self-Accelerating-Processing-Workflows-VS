@@ -75,7 +75,7 @@ int main()
 			/*-------- CPU Time - ArrayAdditionModel --------*/
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < experiment_count; x++) {
-				blurModel.invoke(arraySet1[x], outputs[x], width, height);
+				blurModel.SetData(arraySet1[x], outputs[x], width, height);
 				blurModel.execute(1);
 			}
 			QueryPerformanceCounter(&stop);
@@ -87,7 +87,7 @@ int main()
 			/*-------- GPU Time - ArrayAdditionModel --------*/
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < experiment_count; x++) {
-				blurModel.invoke(arraySet1[x], outputs[x], width, height);
+				blurModel.SetData(arraySet1[x], outputs[x], width, height);
 				blurModel.execute(2);
 			}
 			QueryPerformanceCounter(&stop);

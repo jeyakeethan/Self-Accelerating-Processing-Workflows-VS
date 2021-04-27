@@ -92,7 +92,7 @@ void ComputationalModel::executeAndLogging(int mode)
 }
 
 void ComputationalModel::execute() {
-	if (mlModel->predictGPU(getAttributes())) {
+	if (mlModel->predict_logic(getAttributes())) {
 		GPUImplementation();
 	}
 	else {
@@ -105,7 +105,7 @@ void ComputationalModel::executeAndLogging() {
 	s << typeid(*this).name() << ",";
 	s << attributeToString(getAttributes());
 	s << 0 << ",";
-	if (mlModel->predict(getAttributes()) == 1) {
+	if (mlModel->predict_logic(getAttributes()) == 1) {
 		QueryPerformanceCounter(&start);
 		CPUImplementation();
 		QueryPerformanceCounter(&stop);

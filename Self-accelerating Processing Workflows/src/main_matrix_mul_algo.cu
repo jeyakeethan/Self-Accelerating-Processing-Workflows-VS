@@ -83,17 +83,19 @@ int main()
 			cpu_dim_space_3d[x].x = dataset.features.at(x).at(0);
 			cpu_dim_space_3d[x].y = dataset.features.at(x).at(1);
 			cpu_dim_space_3d[x].z = dataset.features.at(x).at(2);
-			//cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << cpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z }) << endl;
 
-			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << cpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z }) << endl;
-
+			vector<float> cpu{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
+			bool pre_cpu = matrixMultiplicationModel.mlModel->predict_logic(&cpu);
+			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
+			
 			index_g = len_dataset - dim_space_len_3d + x;
 			gpu_dim_space_3d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_3d[x].y = dataset.features.at(index_g).at(1);
 			gpu_dim_space_3d[x].z = dataset.features.at(index_g).at(2);
-			//cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << gpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z }) << endl;
 
-			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << gpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(index_g) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z }) << endl;
+			vector<float> gpu{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
+			bool pre_gpu = matrixMultiplicationModel.mlModel->predict_logic(&gpu);
+			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
 		}
 
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
@@ -115,37 +117,40 @@ int main()
 	}
 
 	// -------- Framework --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.execute();
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- CPU Time --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.execute(1);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- GPU Time --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.execute(2);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
@@ -159,103 +164,5 @@ int main()
 	input_nature_file.close();
 	time_log_file.close();
 
-
 	return 0;
-
-	//	numericalType1* arraySetC1[EXPERIMENT_COUNT];
-	//	numericalType1* arraySetC2 [EXPERIMENT_COUNT];
-
-	//	// load related dimesion spaces
-	//	const int dim_space_len_3d = 10;
-
-	//	myDim3 cpu_dim_space_3d[dim_space_len_3d];
-	//	myDim3 gpu_dim_space_3d[dim_space_len_3d];
-	//	//TO DO
-
-	//	myDim3 dimensions_3d[EXPERIMENT_COUNT];
-	//	myDim3 dimension_3d;
-
-
-	//	numericalType1** outputB;
-
-	//	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-	//		favor = rand() % 2;
-	//		dim_index = rand() % dim_space_len_3d;
-	//		if (favor == 0) dimension_3d = cpu_dim_space_3d[dim_index];
-	//		else dimension_3d = gpu_dim_space_3d[dim_index];
-	//		dimensions_3d[x] = dimension_3d;
-
-	//		length = dimension_3d.x * dimension_3d.y * dimension_3d.z;
-	//		arraySetC1[x] = generate_1d_array(length);
-	//		arraySetC2[x] = generate_1d_array(length);
-
-	//		input_nature_file << "[" << dimension_3d.x << "," << dimension_3d.y <<  "," << dimension_3d.z <<"]" << ", " << endl;		// log input nature
-	//	}
-
-	//	numericalType1**** outputC;
-	//	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-	//		myDim3 dim_3d = dimensions_3d[x];
-	//		outputC[x] = new numericalType1 **[dim_3d.x];
-	//		for (int y = 0; y < dim_3d.x; y++) {
-	//			outputC[x][y] = new numericalType1 * [dim_3d.y];
-	//			for (int z = 0; z < dim_3d.y; z++)
-	//				outputC[x][y][z] = new numericalType1[dim_3d.z];
-	//		}
-	//	}
-	//	//-------- Framework - ArrayAdditionModel --------
-	//	QueryPerformanceCounter(&start);
-	//	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-	//		matrixMultiplicationModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
-	//		matrixMultiplicationModel.execute();
-	//	}
-	//	QueryPerformanceCounter(&stop);
-	//	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	//	elapsedTime = int(delay * 1000);
-	//	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
-	//	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
-
-	//	//-------- CPU Time - ArrayAdditionModel --------
-	//	QueryPerformanceCounter(&start);
-	//	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-	//		matrixMultiplicationModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
-	//		matrixMultiplicationModel.execute(1);
-	//	}
-	//	QueryPerformanceCounter(&stop);
-	//	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	//	elapsedTime = int(delay * 1000);
-	//	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
-	//	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
-
-	//	//-------- GPU Time - ArrayAdditionModel --------
-	//	QueryPerformanceCounter(&start);
-	//	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-	//		matrixMultiplicationModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
-	//		matrixMultiplicationModel.execute(2);
-	//	}
-	//	QueryPerformanceCounter(&stop);
-	//	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	//	elapsedTime = int(delay * 1000);
-	//	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
-	//	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
-
-	//	//*************Free Host Memory**************
-	//	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-	//		delete[] arraySetC1[x];
-	//		delete[] arraySetC2[x];
-	//		delete[] outputC[x];
-	//	}
-	//	delete[] arraySetC1;
-	//	delete[] arraySetC2;
-	//	delete[] outputC;
-	//	delete[] dimensions_3d;
-	//	delete[] cpu_dim_space_3d;
-	//	delete[] gpu_dim_space_3d;
-	//
-
-
-	//input_nature_file.close();
-	//time_log_file.close();
-
-
-	//return 0;
 }

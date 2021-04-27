@@ -41,6 +41,7 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 				}
 			}
 		}
+#pragma omp barrier
 }
 
 template <class T>

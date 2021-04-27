@@ -1,0 +1,4 @@
+Why caching is useful?
+practical problems are associated with some standards.
+for examples, 1280x720, 1024x768
+Same attributes sets are frequently coming. Therefore, caching would reduce the prediction time.
