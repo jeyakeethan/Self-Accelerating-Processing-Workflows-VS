@@ -30,6 +30,7 @@ using namespace rapidjson;
 class MLModel {
 private:
 	vector<float> *caching;
+	bool *caching_pred;
 
 public:
 	size_t prediction;

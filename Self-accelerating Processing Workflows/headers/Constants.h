@@ -60,7 +60,7 @@ struct myDim3 {
 const short NUMBER_OF_PREDICTIONS_TO_BE_CACHED = 5;
 const int MAX_OUTLIERS_LIMIT = 5;
 // Caching
-const short SIZE_OF_CACHE = 9;
+const short SIZE_OF_CACHE = 19;
 
 
 // Dataset generation

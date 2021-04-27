@@ -54,7 +54,8 @@ MLModel::MLModel(string name) {
 	model_path = "../ml-models/" + name + ".json";
 	dataset_path = "../ml-datasets/" + name + ".csv";
 
-	caching = new vector<float>[2 * SIZE_OF_CACHE];
+	caching = new vector<float>[SIZE_OF_CACHE];
+	caching_pred = new bool[SIZE_OF_CACHE];
 
 	/*if (fs::exists(model_path)) {
 		loadModel();
@@ -165,23 +166,20 @@ int MLModel::predict(vector<float>* params) {
 }
 
 bool MLModel::predict_logic(vector<float>* params) {
-	
-	short i = accumulate(params->begin(), params->end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
-	if (!caching[i].empty() && caching[i] == *params)
-		return false;
+	float sum = 0;
+	for (int i = 0; i < params->size(); i++) {
+		sum += params->at(i);
+	}
 
-	short j = i + SIZE_OF_CACHE;												// detemine the hash value for cache replacement of GPU
-	if (!caching[j].empty() && caching[j] == *params)
-		return true;
+	int i = int(sum) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
+	vector<float>* cache = &caching[i];
+	if (!cache->empty() && *cache == *params)
+		return caching_pred[i];
 
 	bool decision = model->predict(*params);
 
-	if (decision) {
-		caching[j] = *params;
-	}
-	else {
-		caching[i] = *params;
-	}
+	caching[i] = *params;
+	caching_pred[i] = decision;
 	
 	return decision;
 }
