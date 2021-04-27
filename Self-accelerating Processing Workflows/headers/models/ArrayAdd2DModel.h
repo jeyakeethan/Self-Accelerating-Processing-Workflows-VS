@@ -12,7 +12,7 @@ public:
     int localRow, localCol;
     ArrayAddition2DModel(int CPUCores);
     ~ArrayAddition2DModel();
-    inline void invoke(T* in1, T* in2, T* out, int row, int col) {
+    inline void SetData(T* in1, T* in2, T* out, int row, int col) {
         localA = in1; localB = in2; localC = out; localRow = row; localCol = col;
         return;
     }

@@ -117,7 +117,7 @@ int main()
 	// -------- Framework --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
 		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.execute();
 		QueryPerformanceCounter(&stop);
@@ -130,7 +130,7 @@ int main()
 	// -------- CPU Time --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
 		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.execute(1);
 		QueryPerformanceCounter(&stop);
@@ -143,7 +143,7 @@ int main()
 	// -------- GPU Time --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.invoke(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
 		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.execute(2);
 		QueryPerformanceCounter(&stop);

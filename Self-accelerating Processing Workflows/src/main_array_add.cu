@@ -81,7 +81,7 @@ time_log_file << "One Dimension experiments started" << endl;
 	// -------- Framework - ArrayAdditionModel --------
 	delay = 0;
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
+		arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
 		QueryPerformanceCounter(&start);
 		arrayAdditionModel.execute();
 		QueryPerformanceCounter(&stop);
@@ -94,7 +94,7 @@ time_log_file << "One Dimension experiments started" << endl;
 	// -------- CPU Time - ArrayAdditionModel --------
 	delay = 0;
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
+		arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
 		QueryPerformanceCounter(&start);
 		arrayAdditionModel.execute(1);
 		QueryPerformanceCounter(&stop);
@@ -107,7 +107,7 @@ time_log_file << "One Dimension experiments started" << endl;
 	// -------- GPU Time - ArrayAdditionModel --------
 	delay = 0;
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
+		arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
 		QueryPerformanceCounter(&start);
 		arrayAdditionModel.execute(2);
 		QueryPerformanceCounter(&stop);
@@ -175,7 +175,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 	// -------- Framework - ArrayAdditionModel --------
 	delay = 0;
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAddition2DModel.invoke(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
+		arrayAddition2DModel.SetData(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
 		QueryPerformanceCounter(&start);
 		arrayAddition2DModel.execute();
 		QueryPerformanceCounter(&stop);
@@ -188,7 +188,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 	// -------- CPU Time - ArrayAdditionModel --------
 	delay = 0;
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAddition2DModel.invoke(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
+		arrayAddition2DModel.SetData(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
 		QueryPerformanceCounter(&start);
 		arrayAddition2DModel.execute(1);
 		QueryPerformanceCounter(&stop);
@@ -201,7 +201,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 	// -------- GPU Time - ArrayAdditionModel --------
 	delay = 0;
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAddition2DModel.invoke(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
+		arrayAddition2DModel.SetData(arraySetB1[x], arraySetB2[x], outputB[x], dimensions[x].x, dimensions[x].y);
 		QueryPerformanceCounter(&start);
 		arrayAddition2DModel.execute(2);
 		QueryPerformanceCounter(&stop);
@@ -275,7 +275,7 @@ time_log_file << "Three Dimension experiments started" << endl;
 	//-------- Framework - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAddition3DModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
+		arrayAddition3DModel.SetData(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
 		arrayAddition3DModel.execute();
 	}
 	QueryPerformanceCounter(&stop);
@@ -287,7 +287,7 @@ time_log_file << "Three Dimension experiments started" << endl;
 	//-------- CPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAddition3DModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
+		arrayAddition3DModel.SetData(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
 		arrayAddition3DModel.execute(1);
 	}
 	QueryPerformanceCounter(&stop);
@@ -299,7 +299,7 @@ time_log_file << "Three Dimension experiments started" << endl;
 	//-------- GPU Time - ArrayAdditionModel --------
 	QueryPerformanceCounter(&start);
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAddition3DModel.invoke(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
+		arrayAddition3DModel.SetData(arraySetC1[x], arraySetC2[x], outputC[x], dimensions_3d[x]);
 		arrayAddition3DModel.execute(2);
 	}
 	QueryPerformanceCounter(&stop);
@@ -342,7 +342,7 @@ time_log_file << "Size based experiments started" << endl;
 		// -------- Framework - ArrayAdditionModel --------
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], length);
 			arrayAdditionModel.execute();
 		}
 		QueryPerformanceCounter(&stop);
@@ -354,7 +354,7 @@ time_log_file << "Size based experiments started" << endl;
 		// -------- CPU Time - ArrayAdditionModel --------
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], length);
 			arrayAdditionModel.execute(1);
 		}
 		QueryPerformanceCounter(&stop);
@@ -366,7 +366,7 @@ time_log_file << "Size based experiments started" << endl;
 		// -------- GPU Time - ArrayAdditionModel --------
 		QueryPerformanceCounter(&start);
 		for (x = 0; x < EXPERIMENT_COUNT; x++) {
-			arrayAdditionModel.invoke(arraySet1[x], arraySet2[x], outputs[x], length);
+			arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], length);
 			arrayAdditionModel.execute(2);
 		}
 		QueryPerformanceCounter(&stop);

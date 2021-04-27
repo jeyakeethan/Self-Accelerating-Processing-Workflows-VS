@@ -109,7 +109,7 @@ time_log_file << "Blur experiments" << endl;
 	// -------- Framework --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
 		QueryPerformanceCounter(&start);
 		blurModel.execute();
 		QueryPerformanceCounter(&stop);
@@ -122,7 +122,7 @@ time_log_file << "Blur experiments" << endl;
 	// -------- CPU Time --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
 		QueryPerformanceCounter(&start);
 		blurModel.execute(1);
 		QueryPerformanceCounter(&stop);
@@ -135,7 +135,7 @@ time_log_file << "Blur experiments" << endl;
 	// -------- GPU Time --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
 		QueryPerformanceCounter(&start);
 		blurModel.execute(2);
 		QueryPerformanceCounter(&stop);

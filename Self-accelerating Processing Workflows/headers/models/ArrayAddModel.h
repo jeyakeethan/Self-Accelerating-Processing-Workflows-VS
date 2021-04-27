@@ -11,7 +11,7 @@ class ArrayAdditionModel : public ComputationalModel
         int localL;
         ArrayAdditionModel(int CPUCores);
         ~ArrayAdditionModel();
-        inline void invoke(T *in1, T *in2, T *out, int length){
+        inline void SetData(T *in1, T *in2, T *out, int length){
             localA = in1; localB = in2; localC = out; localL = length;
             return;
         }

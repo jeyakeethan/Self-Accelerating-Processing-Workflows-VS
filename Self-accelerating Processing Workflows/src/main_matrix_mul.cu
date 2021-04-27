@@ -69,12 +69,12 @@ int main()
 		matmulmodel.resetFlow();
 		cout << endl << "Execution in GPU only started" << endl;
 		/*Mannual Execute only in GPU*/
-		matmulmodel.invoke(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+		matmulmodel.SetData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
 		if (LOGGER_MODE_ON) {
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.SetData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 				matmulmodel.executeAndLogging(2);
 			}
 			QueryPerformanceCounter(&stop);
@@ -82,7 +82,7 @@ int main()
 		else {
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.SetData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 				matmulmodel.execute(2);
 			}
 			QueryPerformanceCounter(&stop);
@@ -100,7 +100,7 @@ int main()
 		if (LOGGER_MODE_ON) {
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.SetData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 				matmulmodel.executeAndLogging(1);
 			}
 			QueryPerformanceCounter(&stop);
@@ -108,7 +108,7 @@ int main()
 		else {
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.SetData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 				matmulmodel.execute(1);
 			}
 			QueryPerformanceCounter(&stop);
@@ -123,12 +123,12 @@ int main()
 		matmulmodel.resetFlow();
 		cout << endl << "Automated Hybrid Execution started" << endl;
 		/*Automated Hybrid*/
-		matmulmodel.invoke(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
+		matmulmodel.SetData(arraySet1[0], arraySet2[0], matOut[0], correspondingMatrixSpace[0]);	// to initialise GPU to avoid initialization overhead
 		matmulmodel.execute(2);																		// to initialise GPU to avoid initialization overhead
 		if (LOGGER_MODE_ON) {
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.SetData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 				matmulmodel.executeAndLogging();
 			}
 			QueryPerformanceCounter(&stop);
@@ -136,7 +136,7 @@ int main()
 		else {
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < loop_length; x++) {
-				matmulmodel.invoke(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
+				matmulmodel.SetData(arraySet1[x], arraySet2[x], matOut[x], correspondingMatrixSpace[x]);
 				matmulmodel.execute();
 			}
 			QueryPerformanceCounter(&stop);
