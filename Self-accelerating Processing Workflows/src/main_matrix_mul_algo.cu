@@ -83,7 +83,6 @@ int main()
 			cpu_dim_space_3d[x].x = dataset.features.at(x).at(0);
 			cpu_dim_space_3d[x].y = dataset.features.at(x).at(1);
 			cpu_dim_space_3d[x].z = dataset.features.at(x).at(2);
-
 			vector<float> cpu{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
 			bool pre_cpu = matrixMultiplicationModel.mlModel->predict_logic(&cpu);
 			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
@@ -92,7 +91,6 @@ int main()
 			gpu_dim_space_3d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_3d[x].y = dataset.features.at(index_g).at(1);
 			gpu_dim_space_3d[x].z = dataset.features.at(index_g).at(2);
-
 			vector<float> gpu{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
 			bool pre_gpu = matrixMultiplicationModel.mlModel->predict_logic(&gpu);
 			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
@@ -119,8 +117,9 @@ int main()
 	// -------- Framework --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
 		QueryPerformanceCounter(&start);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		
 		matrixMultiplicationModel.execute();
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -132,8 +131,9 @@ int main()
 	// -------- CPU Time --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
 		QueryPerformanceCounter(&start);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		
 		matrixMultiplicationModel.execute(1);
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -145,8 +145,9 @@ int main()
 	// -------- GPU Time --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
 		QueryPerformanceCounter(&start);
+		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
+		
 		matrixMultiplicationModel.execute(2);
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
