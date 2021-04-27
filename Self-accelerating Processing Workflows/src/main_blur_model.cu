@@ -107,37 +107,40 @@ time_log_file << "Blur experiments" << endl;
 	}
 
 	// -------- Framework --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		QueryPerformanceCounter(&start);
 		blurModel.execute();
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "\nAuto Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- CPU Time --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		QueryPerformanceCounter(&start);
 		blurModel.execute(1);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- GPU Time --------
-	QueryPerformanceCounter(&start);
+	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		blurModel.invoke(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		QueryPerformanceCounter(&start);
 		blurModel.execute(2);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
-	QueryPerformanceCounter(&stop);
-	delay = (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	elapsedTime = int(delay * 1000);
 	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;

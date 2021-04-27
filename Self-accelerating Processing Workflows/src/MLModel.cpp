@@ -79,7 +79,6 @@ void MLModel::trainModel() {
 
 	pandas::Dataset dataset = pandas::ReadCSV(dataset_path, ',', -1, 1000);
 
-	// xgboost model
 	xgboost::Config mlConfig;
 	mlConfig.n_estimators = 10;
 	mlConfig.learning_rate = 0.1f;

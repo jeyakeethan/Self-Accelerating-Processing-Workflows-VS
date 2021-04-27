@@ -6,7 +6,7 @@
 #include <xgboost.h>
 #include <logistics.h>
 
-typedef int numericalType1;
+typedef float numericalType1;
 typedef xgboost::XGBoost ML_Algo;
 
 const bool LOGGER_MODE_ON = false;
