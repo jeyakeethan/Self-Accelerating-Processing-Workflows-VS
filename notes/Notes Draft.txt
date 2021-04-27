@@ -1,0 +1,38 @@
+Meta params of XgBoost
+	mlConfig.n_estimators = 10;
+	mlConfig.learning_rate = 0.1f;
+	mlConfig.max_depth = 6;
+	mlConfig.min_samples_split = 10;
+	mlConfig.min_data_in_leaf = 10;
+	mlConfig.reg_gamma = 0.3f;
+	mlConfig.reg_lambda = 0.3f;
+	mlConfig.colsample_bytree = 0.8f;
+	mlConfig.min_child_weight = 5;
+	mlConfig.max_bin = 100;
+
+ML model accuracy
+Generalize ML model
+    1. Number of Attributes
+    2. Range of values of the attributes
+    # auto config meta params based on above
+Reduce prediction time
+    Caching √
+       18 entries; 9 CPU and 9GPU
+       cache replacement policy:
+           #hashing
+           i = sum(*attr)% CACHE_SIZE ;
+           j = i + CACHE_SIZE
+Include additional features
+    like sys load etc.
+	
+To achieve gain,
+    1. Insert a time margin when generate dataset
+    2. Execute in a server where more time gain CPU over GPU
+    3. Portion (frequency) of CPU and GPU favor problems
+	
+Issues:
+	measuring time whether includes or except data setting time (setData)
+	GPU sleeps when time gaps for Auto mode
+	will there be float type attributes for ML prediction
+	Server facility may have gain
+	Correct predictions but no gain
