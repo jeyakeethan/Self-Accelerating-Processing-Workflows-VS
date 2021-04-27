@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <xgboost/c_api.h>
-#include <MLModel.h>
+#include <vector>
 
 #include <time.h>
 #include "config.h"
@@ -23,15 +23,20 @@
 #include <list>
 #include "rapidjson/document.h"
 
-using namespace rapidjson;
 using namespace std;
+using namespace numpy;
+using namespace rapidjson;
 using namespace xgboost;
 
 class MLModel {
+private:
+	vector<float> *caching;
+
 public:
 	size_t prediction;
 	XGBoost * xgboost;
 	string model_name, model_path, dataset_path;
+
 	MLModel(string name);
 	~MLModel();
 

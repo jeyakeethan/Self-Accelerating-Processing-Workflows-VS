@@ -40,7 +40,6 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 					localC[localMD->z * i + j] = sum;
 				}
 			}
-#pragma omp barrier
 		}
 }
 

@@ -83,22 +83,17 @@ int main()
 			cpu_dim_space_3d[x].x = dataset.features.at(x).at(0);
 			cpu_dim_space_3d[x].y = dataset.features.at(x).at(1);
 			cpu_dim_space_3d[x].z = dataset.features.at(x).at(2);
-			vector<float> cpu{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
-			int pre_cpu = matrixMultiplicationModel.mlModel->predict(&cpu);
-			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu == 0 ? 1 : 0) << endl;
-			
+			//cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << cpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z }) << endl;
 
-			//cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z }) << endl;
+			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << cpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z }) << endl;
 
 			index_g = len_dataset - dim_space_len_3d + x;
 			gpu_dim_space_3d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_3d[x].y = dataset.features.at(index_g).at(1);
 			gpu_dim_space_3d[x].z = dataset.features.at(index_g).at(2);
-			vector<float> gpu{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
-			int pre_gpu = matrixMultiplicationModel.mlModel->predict(&gpu);
-			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu == 0 ? 1 : 0) << endl;
+			//cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << gpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(x) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z }) << endl;
 
-			//cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << gpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(index_g) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z }) << endl;
+			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << gpu_dim_space_3d[x].z << "]" << " = " << dataset.labels.at(index_g) << ", " << matrixMultiplicationModel.mlModel->predict(new vector<float>{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z }) << endl;
 		}
 
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {

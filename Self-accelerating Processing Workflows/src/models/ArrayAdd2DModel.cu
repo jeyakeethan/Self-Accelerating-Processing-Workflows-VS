@@ -69,6 +69,6 @@ vector<float>* ArrayAddition2DModel<T>::getAttributes(){
 
 template <class T>
 vector<float>* ArrayAddition2DModel<T>::getAttributesBatch() {
-    return attr;
+    return new vector<float>{ (float)localRow, (float)localCol };
 }
 #endif //ARRAYADD2DMODEL_CPP

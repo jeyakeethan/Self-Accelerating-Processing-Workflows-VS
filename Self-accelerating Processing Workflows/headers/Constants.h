@@ -10,7 +10,7 @@ const bool LOGGER_MODE_ON = false;
 // Test Data Generation
 const int INPUT_NATURE = 1;
 const int N = 10000;
-const int EXPERIMENT_COUNT = 5000;
+const int EXPERIMENT_COUNT = 10000;
 const int MAX_WIDTH_ALIGNED_CPU = 200;
 const int MAX_WIDTH_ALIGNED_GPU = 100;
 const int MAX_WIDTH_ALIGNED = 100;
@@ -55,7 +55,12 @@ struct myDim3 {
 // ML part
 const short NUMBER_OF_PREDICTIONS_TO_BE_CACHED = 5;
 const int MAX_OUTLIERS_LIMIT = 5;
+// Caching
+const short SIZE_OF_CACHE = 9;
 
+
+// Dataset generation
+const float CPU_TIME_MARGIN = 0.75f;
 
 #endif // CONSTANTS_H
 

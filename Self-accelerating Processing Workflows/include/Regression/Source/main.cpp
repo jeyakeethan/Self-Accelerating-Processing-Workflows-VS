@@ -53,7 +53,7 @@ void logistic_regression(char* fileName=NULL, const bool MNIST=false)
     }
     else
     {
-        dataFileName = "F:/Cuda Repos/Self-accelerating Processing Workflows/Self-accelerating Processing Workflows/include/Regression/Data/chip1.dat";
+        dataFileName = "include/Regression/Data/chip1.dat";
     }
 
     DataSet d(dataFileName, DEGREE, TRAIN_PERCENT, TEST_PERCENT, MNIST);

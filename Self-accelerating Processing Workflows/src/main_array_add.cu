@@ -137,7 +137,7 @@ time_log_file << "Two Dimension experiments started" << endl;
 	// load related dimesion spaces
 	const int dim_space_len_2d = 10;
 	
-	int index_g;
+	int index_g, len_dataset;
 
 	myDim2 cpu_dim_space_2d[dim_space_len_2d];
 	myDim2 gpu_dim_space_2d[dim_space_len_2d];
