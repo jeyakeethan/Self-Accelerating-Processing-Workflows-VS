@@ -3,7 +3,11 @@
 
 #include <string>
 #include <config.h>
+#include <xgboost.h>
+#include <logistics.h>
+
 typedef int numericalType1;
+typedef xgboost::XGBoost ML_Algo;
 
 const bool LOGGER_MODE_ON = false;
 

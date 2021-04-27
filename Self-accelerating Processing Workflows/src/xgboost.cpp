@@ -1,5 +1,6 @@
 #include <numeric>
 #include <algorithm>
+#include <vector>
 #include "xgboost.h"
 #include "decision_tree.h"
 #include "tree.h"
@@ -65,14 +66,14 @@ namespace xgboost {
 		return res;
 	}
 
-	float XGBoost::PredictProbability(const vector<float>& features) {
+	bool XGBoost::predict(const vector<float>& features) {
 		float pred = pred_0;
 		float p_0;
 		for (Tree *tree : trees) {
 			pred += config.learning_rate * tree->PredictLeafValue(features);
 		}
 		p_0 = 1.0 / (1 + exp(2 * pred));
-		return p_0;
+		return p_0 <= 0.5;
 	}
 
 	std::string XGBoost::SaveModelToString() {

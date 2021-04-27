@@ -45,7 +45,7 @@ int main()
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
 	cout << "Dim\t" << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header
-	outfile << "x,y,z,prediction" << endl;		// print header
+	// outfile << "x,y,z,prediction" << endl;		// print header
 	for (int m = step; m <= levels * step; m += step) {
 		for (int l = step; l <= levels * step; l += step) {
 			for (int n = step; n <= levels * step; n += step) {
@@ -81,14 +81,15 @@ int main()
 					elapsedTimeGPU += (stop.QuadPart - start.QuadPart);
 				}
 
+				/* print results
 				string status = "Differ";
 				if (compareResults(matOut1, matOut2, lengthZ))
 					status = "Same";
 				cout << l << "," << m << "," << n << "\t" << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;
 
-				//print results
 				// for (int t = 0; t < lengthZ; t++)
 				//	cout << matOut1[t] << ", " << matOut2[t] << endl;
+				*/
 
 				outfile << l << "," << m << "," << n << "," << (elapsedTimeCPU < elapsedTimeGPU ? 0 : 1) << endl;
 

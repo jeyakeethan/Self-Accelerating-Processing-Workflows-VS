@@ -26,3 +26,12 @@ namespace xgboost {
 		int max_bin = 100;
 	};
 }
+
+
+namespace logistics {
+	class Config {
+	public:
+		float alpha = 0.003f;
+		int number_of_epoch = 10;
+	};
+}

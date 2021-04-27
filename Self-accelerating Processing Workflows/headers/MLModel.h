@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <Constants.h>
 #include <Logger.h>
 #include <ML_Configs.h>
 
@@ -16,7 +17,6 @@
 #include <time.h>
 #include "config.h"
 #include "pandas.h"
-#include "xgboost.h"
 #include "tree.h"
 #include "utils.h"
 #include "numpy.h"
@@ -26,7 +26,6 @@
 using namespace std;
 using namespace numpy;
 using namespace rapidjson;
-using namespace xgboost;
 
 class MLModel {
 private:
@@ -34,14 +33,14 @@ private:
 
 public:
 	size_t prediction;
-	XGBoost * xgboost;
+	ML_Algo* model;
 	string model_name, model_path, dataset_path;
 
 	MLModel(string name);
 	~MLModel();
 
 	int predict(vector<float>* params);
-	bool predictGPU(vector<float>* params);
+	bool predict_logic(vector<float>* params);
 	/*inline mat intArrToMat(int* params) {
 		stringstream s;
 		s << "\"";

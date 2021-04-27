@@ -1,3 +1,6 @@
+#include <MLModel.h>
+#include <Constants.h>
+
 #include <Windows.h>
 #include <iostream>
 #include <sstream>
@@ -9,10 +12,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <xgboost/c_api.h>
-#include <MLModel.h>
-#include <ComputationalModel.h>
 
+#include <xgboost/c_api.h>
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -20,10 +21,11 @@
 #include "config.h"
 #include "pandas.h"
 #include "numpy.h"
-#include "xgboost.h"
 #include "tree.h"
 #include "utils.h"
 #include <list>
+#include "xgboost.h"
+#include "logistics.h"
 
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
@@ -60,8 +62,7 @@ MLModel::MLModel(string name) {
 	else*/
 		if(fs::exists(dataset_path)){
 		trainModel();
-		cout << "ML model is being trained! please wait for a moment..." << endl;
-		dumpModel();
+		//dumpModel();
 	}
 	else {
 		cout << "Neither ML model nor training dataset exists!" << endl;
@@ -70,11 +71,16 @@ MLModel::MLModel(string name) {
 }
 
 MLModel::~MLModel() {
-	delete xgboost;
+	delete model;
 }
 
 void MLModel::trainModel() {
-	Config mlConfig;
+	cout << "ML model is being trained! please wait for a moment..." << endl;
+
+	pandas::Dataset dataset = pandas::ReadCSV(dataset_path, ',', -1, 1000);
+
+	// xgboost model
+	xgboost::Config mlConfig;
 	mlConfig.n_estimators = 10;
 	mlConfig.learning_rate = 0.1f;
 	mlConfig.max_depth = 6;
@@ -86,15 +92,20 @@ void MLModel::trainModel() {
 	mlConfig.min_child_weight = 5;
 	mlConfig.max_bin = 100;
 
-	xgboost = new XGBoost(mlConfig);
+	model = new ML_Algo(mlConfig);
 
-	pandas::Dataset dataset = pandas::ReadCSV(dataset_path, ',', -1, 1000);
-	xgboost->fit(dataset.features, dataset.labels);
+	/* // logistics model
+	logistics::Config logistics_config;
+	*/
+
+	model->fit(dataset.features, dataset.labels);
+	cout << "Training successful!" << endl;
+
 }
 
 void MLModel::dumpModel() {
 	ofstream ofs(model_path);
-	ofs << xgboost->SaveModelToString().c_str();
+	ofs << model->SaveModelToString().c_str();
 	ofs.close();
 }
 
@@ -134,32 +145,28 @@ void MLModel::loadModel() {
 		cout << Param["max_bin"].GetInt() << endl;*/
 	}
 
-	xgboost = new XGBoost(mlConfig);
+	model = new XGBoost(mlConfig);
 
 	if (doc.HasMember("Trees")) {
 		const rapidjson::Value& trees = doc["Trees"];
 
 		for (rapidjson::Value::ConstValueIterator itr = trees.Begin(); itr != trees.End(); ++itr)
 		{
-			// const rapidjson::Value& tree = *itr;
-			xgboost->trees.push_back(xgboost->LoadTreeFromJson(*itr));
+			model->trees.push_back(model->LoadTreeFromJson(*itr));
 		}
 	}
 }
 
 int MLModel::predict(vector<float>* params) {
-	//vector<float> temp{ (*params)[1],(*params)[2],(*params)[3] };
-	//float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
-	float prediction = xgboost->PredictProba(*params)[0];
+	float prediction = model->PredictProba(*params)[0];
 	int pre = (int)round(prediction);
-	//cout << pre;
+	// cout << pre;
+
 	return pre;
 }
 
-bool MLModel::predictGPU(vector<float>* params) {
-	//vector<float> temp{ (*params)[1],(*params)[2],(*params)[3] };
-	//float prediction = xgboost->PredictProba({(*params)[1], (*params)[2], (*params)[3]})[0];
-
+bool MLModel::predict_logic(vector<float>* params) {
+	
 	short i = accumulate(params->begin(), params->end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
 	if (!caching[i].empty() && caching[i] == *params)
 		return false;
@@ -168,9 +175,7 @@ bool MLModel::predictGPU(vector<float>* params) {
 	if (!caching[j].empty() && caching[j] == *params)
 		return true;
 
-	float prediction = xgboost->PredictProbability(*params);
-
-	bool decision = prediction <= 0.5;
+	bool decision = model->predict(*params);
 
 	if (decision) {
 		caching[j] = *params;
@@ -178,6 +183,6 @@ bool MLModel::predictGPU(vector<float>* params) {
 	else {
 		caching[i] = *params;
 	}
-
+	
 	return decision;
 }
