@@ -34,6 +34,3 @@ Issues:
 	measuring time whether includes or except data setting time (setData)
 	will there be float type attributes for ML prediction
 
-	Server facility may have gain
-	predictions are correct but no gain high prediction time
-	GPU sleeps when time gaps for Auto mode
