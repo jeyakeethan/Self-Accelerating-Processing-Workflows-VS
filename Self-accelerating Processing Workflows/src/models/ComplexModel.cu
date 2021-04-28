@@ -72,7 +72,7 @@ void ComplexModel<T>::GPUImplementation() {
 	// define grid and thread block sizes
 
 	dim3 dimGrid(32, 1024), dimBlock(32);
-	complex_model << < dimGrid, dimBlock >> > (dev_a, dev_b, dev_x, dev_out, y, z);
+	complex_model_kernel << < dimGrid, dimBlock >> > (dev_a, dev_b, dev_x, dev_out, y, z);
 
 	//Copy back to Host array from Device array
 	cudaMemcpy(localC, dev_out, l3, cudaMemcpyDeviceToHost);

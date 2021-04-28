@@ -9,7 +9,7 @@
 
 #include <device_functions.h>
 
-__global__ void complex_model(numericalType1* A, numericalType1* B,  numericalType1* X, numericalType1* OUT, const int widthA, const int widthB) {
+__global__ void complex_model_kernel(numericalType1* A, numericalType1* B,  numericalType1* X, numericalType1* OUT, const int widthA, const int widthB) {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y;
     if (x < widthB) {
