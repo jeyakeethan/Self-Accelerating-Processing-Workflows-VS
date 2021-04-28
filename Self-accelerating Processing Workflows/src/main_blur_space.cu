@@ -83,7 +83,8 @@ int main()
 			//cout << "CPU Time: " << delayCPU << ", ";
 			//time_log_file << "CPU Time: " << delayCPU << ", ";
 
-
+			blurModel.SetData(arraySet1[0], outputs[0], width, height);
+			blurModel.execute(2);
 			/*-------- GPU Time - ArrayAdditionModel --------*/
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < experiment_count; x++) {
