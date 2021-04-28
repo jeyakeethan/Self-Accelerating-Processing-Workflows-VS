@@ -57,7 +57,7 @@ int main()
 	const int levels = 12;
 	const int number_entries = levels * levels;
 	const int value_range = 256;
-	const int step = 100;
+	const int step = 10;
 	int i_2, i_3;
 	unsigned char* arraySet1[experiment_count];
 	unsigned char* outputs[experiment_count];

@@ -72,6 +72,8 @@ int main()
 				}
 
 
+				matmulmodel.SetData(mat1, mat2, matOut2, new myDim3(l, m, n));
+				matmulmodel.execute(2);
 				elapsedTimeGPU = 0;
 				for (int k = 0; k < experiment_count; k++) {
 					QueryPerformanceCounter(&start);
