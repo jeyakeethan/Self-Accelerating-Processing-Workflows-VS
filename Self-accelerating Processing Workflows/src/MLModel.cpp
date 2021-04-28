@@ -166,20 +166,14 @@ int MLModel::predict(vector<float>* params) {
 }
 
 bool MLModel::predict_logic(vector<float>* params) {
-	float sum = 0;
-	for (int i = 0; i < params->size(); i++) {
-		sum += params->at(i);
-	}
-
-	int i = int(sum) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
-	vector<float>* cache = &caching[i];
-	if (!cache->empty() && *cache == *params)
+	int i = accumulate(params->begin(), params->end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
+	if (caching[i] == *params)
 		return caching_pred[i];
 
 	bool decision = model->predict(*params);
 
 	caching[i] = *params;
 	caching_pred[i] = decision;
-	
+
 	return decision;
 }

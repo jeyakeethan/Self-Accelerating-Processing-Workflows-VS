@@ -106,6 +106,19 @@ time_log_file << "Blur experiments" << endl;
 		input_nature_file << "[" << dimension.x << "," << dimension.y << "]" << ", " << endl;		// log input nature
 	}
 
+	// -------- GPU Time --------
+	delay = 0;
+	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
+		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
+		QueryPerformanceCounter(&start);
+		blurModel.execute(2);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+	}
+	elapsedTime = int(delay * 1000);
+	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
+	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
+
 	// -------- Framework --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
@@ -132,19 +145,7 @@ time_log_file << "Blur experiments" << endl;
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
-	// -------- GPU Time --------
-	delay = 0;
-	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
-		blurModel.SetData(arraySet1[x], outputs[x], dimensions[x].x, dimensions[x].y);
-		QueryPerformanceCounter(&start);
-		blurModel.execute(2);
-		QueryPerformanceCounter(&stop);
-		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	}
-	elapsedTime = int(delay * 1000);
-	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
-	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
-
+	
 	// ************Free Host Memory**************
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		delete[] arraySet1[x];

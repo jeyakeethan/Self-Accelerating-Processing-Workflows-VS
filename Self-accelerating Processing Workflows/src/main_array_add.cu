@@ -59,7 +59,7 @@ time_log_file << "One Dimension experiments started" << endl;
 
 	ArrayAdditionModel<numericalType1> arrayAdditionModel(6);
 
-	const int BOUNDARY_POINT = 100000;
+	const int BOUNDARY_POINT = 200000;
 	numericalType1* arraySet1[EXPERIMENT_COUNT];
 	numericalType1* arraySet2[EXPERIMENT_COUNT];
 	numericalType1* outputs[EXPERIMENT_COUNT];
@@ -77,6 +77,19 @@ time_log_file << "One Dimension experiments started" << endl;
 
 		input_nature_file << length << ",";		// log input nature
 	}
+
+	// -------- GPU Time - ArrayAdditionModel --------
+	delay = 0;
+	for (x = 0; x < EXPERIMENT_COUNT; x++) {
+		arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
+		QueryPerformanceCounter(&start);
+		arrayAdditionModel.execute(2);
+		QueryPerformanceCounter(&stop);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+	}
+	elapsedTime = int(delay * 1000);
+	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
+	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- Framework - ArrayAdditionModel --------
 	delay = 0;
@@ -104,18 +117,7 @@ time_log_file << "One Dimension experiments started" << endl;
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
-	// -------- GPU Time - ArrayAdditionModel --------
-	delay = 0;
-	for (x = 0; x < EXPERIMENT_COUNT; x++) {
-		arrayAdditionModel.SetData(arraySet1[x], arraySet2[x], outputs[x], arrayLength[x]);
-		QueryPerformanceCounter(&start);
-		arrayAdditionModel.execute(2);
-		QueryPerformanceCounter(&stop);
-		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
-	}
-	elapsedTime = int(delay * 1000);
-	cout << "GPU Time: " << elapsedTime << " ms" << endl << endl;
-	time_log_file << "GPU Time: " << elapsedTime << " ms" << endl << endl;
+	
 
 	// *************Free Host Memory**************
 	for (x = 0; x < EXPERIMENT_COUNT; x++) {

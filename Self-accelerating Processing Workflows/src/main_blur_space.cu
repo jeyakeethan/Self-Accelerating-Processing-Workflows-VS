@@ -53,11 +53,11 @@ int main()
 
 	BlurModel <unsigned char> blurModel(6);
 
-	const int experiment_count = 5;
+	const int experiment_count = 10;
 	const int levels = 12;
 	const int number_entries = levels * levels;
 	const int value_range = 256;
-	const int step = 100;
+	const int step = 10;
 	int i_2, i_3;
 	unsigned char* arraySet1[experiment_count];
 	unsigned char* outputs[experiment_count];
@@ -85,6 +85,9 @@ int main()
 
 
 			/*-------- GPU Time - ArrayAdditionModel --------*/
+			blurModel.SetData(arraySet1[0], outputs[0], width, height);
+			blurModel.execute(2);
+
 			QueryPerformanceCounter(&start);
 			for (x = 0; x < experiment_count; x++) {
 				blurModel.SetData(arraySet1[x], outputs[x], width, height);

@@ -35,7 +35,7 @@ int main()
 	double delay;
 	double elapsedTimeCPU, elapsedTimeGPU;
 
-	const int experiment_count = 5;
+	const int experiment_count = 50;
 
 	MatrixMultiplicationModel<numericalType1> matmulmodel(6);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
@@ -81,15 +81,16 @@ int main()
 					elapsedTimeGPU += (stop.QuadPart - start.QuadPart);
 				}
 
-				/* print results
+				/*print results
 				string status = "Differ";
 				if (compareResults(matOut1, matOut2, lengthZ))
 					status = "Same";
-				cout << l << "," << m << "," << n << "\t" << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;
+				cout << l << "," << m << "," << n << "\t" << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;*/
 
-				// for (int t = 0; t < lengthZ; t++)
-				//	cout << matOut1[t] << ", " << matOut2[t] << endl;
-				*/
+				for (int t = 0; t < lengthZ; t++) {
+					cout << matOut1[t] << ", " << matOut2[t] << endl;
+				}
+				
 
 				outfile << l << "," << m << "," << n << "," << (elapsedTimeCPU < elapsedTimeGPU ? 0 : 1) << endl;
 
