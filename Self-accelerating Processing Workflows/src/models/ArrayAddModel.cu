@@ -26,7 +26,6 @@ void ArrayAdditionModel<T>::CPUImplementation(){
     {
 #pragma omp for
     for(int x = 0; x < localL; x++){
-        //cout << localA[x] << "," << localB[x] << ",";
         localC[x] = localA[x] + localB[x];
     }
 #pragma omp barrier
@@ -44,11 +43,12 @@ void ArrayAdditionModel<T>::GPUImplementation(){
     //Copy Host array to Device array
     cudaMemcpy (dev_a , localA , localL *sizeof(int) , cudaMemcpyHostToDevice);
     cudaMemcpy (dev_b , localB , localL *sizeof(int) , cudaMemcpyHostToDevice);
+    
     // Execute the kernel
-
     dim3 blockDims(THREADS_PER_BLOCK, 1, 1);
     dim3 gridDims((unsigned int)ceil((double)(localL / blockDims.x)), 1, 1);
     Vector_Addition << < blockDims, gridDims >> > (dev_a, dev_b, dev_c);
+
     //Copy back to Host array from Device array
     cudaMemcpy(localC , dev_c , localL *sizeof(int) , cudaMemcpyDeviceToHost);
     //Free the Device array memory
