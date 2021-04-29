@@ -11,7 +11,7 @@
 
 #include <Constants.h>
 #include <ComputationalModel.h>
-#include <models/MatrixMulModel.h>
+#include <models/ComplexModel.h>
 #include <random>
 #include <string>
 #include <thread>
@@ -29,22 +29,21 @@ static bool compareResults(numericalType1* arr1, numericalType1* arr2, int len) 
 int main()
 {
 	LARGE_INTEGER start, stop, clockFreq;
-	ofstream outfile("../ml-datasets/matrix-multiplication.csv");
+	ofstream outfile("../ml-datasets/complex-model.csv");
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
 	double elapsedTimeCPU, elapsedTimeGPU;
 
-	const int experiment_count = 50;
+	const int experiment_count = 5;
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(6);
-	matmulmodel.clearLogs();		// empty the performance matrix log file
+	ComplexModel<numericalType1> complexModel(6);
+	complexModel.clearLogs();		// empty the performance matrix log file
 
 	int step = 32;
 	int levels = 8;
 	int lengthX, lengthY, lengthZ;
-	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
+	numericalType1* mat1, * mat2, *matx, * matOut1, * matOut2;
 	cout << "Dim\t" << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header
-	// outfile << "x,y,z,prediction" << endl;		// print header
 	for (int m = step; m <= levels * step; m += step) {
 		for (int l = step; l <= levels * step; l += step) {
 			for (int n = step; n <= levels * step; n += step) {
@@ -53,6 +52,7 @@ int main()
 				lengthZ = l * n;
 				mat1 = new numericalType1[lengthX];
 				mat2 = new numericalType1[lengthY];
+				matx = new numericalType1[lengthZ];
 				matOut1 = new numericalType1[lengthZ];
 				matOut2 = new numericalType1[lengthZ];
 
@@ -60,43 +60,45 @@ int main()
 					mat1[a] = rand() % RANGE_OF_INT_VALUES;
 				for (int b = 0; b < lengthY; b++)
 					mat2[b] = rand() % RANGE_OF_INT_VALUES;
+				for (int c = 0; c < lengthZ; c++)
+					matx[c] = rand() % RANGE_OF_INT_VALUES;
 
 				elapsedTimeCPU = 0;
 				for (int k = 0; k < experiment_count; k++) {
-					matmulmodel.SetData(mat1, mat2, matOut1, new myDim3(l, m, n));
+					complexModel.SetData(mat1, mat2, matx, matOut1, new myDim3(l, m, n));
 					QueryPerformanceCounter(&start);
-					matmulmodel.execute(1);
+					complexModel.execute(1);
 					QueryPerformanceCounter(&stop);
 					elapsedTimeCPU += (stop.QuadPart - start.QuadPart);
 				}
 
 
-				matmulmodel.SetData(mat1, mat2, matOut2, new myDim3(l, m, n));
-				matmulmodel.execute(2);
+				complexModel.SetData(mat1, mat2, matx, matOut2, new myDim3(l, m, n));
+				complexModel.execute(2);
 				elapsedTimeGPU = 0;
 				for (int k = 0; k < experiment_count; k++) {
-					matmulmodel.SetData(mat1, mat2, matOut2, new myDim3(l, m, n));
+					complexModel.SetData(mat1, mat2, matx, matOut2, new myDim3(l, m, n));
 					QueryPerformanceCounter(&start);
-					matmulmodel.execute(2);
+					complexModel.execute(2);
 					QueryPerformanceCounter(&stop);
 					elapsedTimeGPU += (stop.QuadPart - start.QuadPart);
 				}
 
-				/*print results
+				/* print results
 				string status = "Differ";
 				if (compareResults(matOut1, matOut2, lengthZ))
 					status = "Same";
-				cout << l << "," << m << "," << n << "\t" << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;*/
+				cout << l << "," << m << "," << n << "\t" << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;
 
-				for (int t = 0; t < lengthZ; t++) {
-					cout << matOut1[t] << ", " << matOut2[t] << endl;
-				}
-				
+				// for (int t = 0; t < lengthZ; t++)
+				//	cout << matOut1[t] << ", " << matOut2[t] << endl;
+				*/
 
 				outfile << l << "," << m << "," << n << "," << (elapsedTimeCPU < elapsedTimeGPU ? 0 : 1) << endl;
 
 				free(mat1);
 				free(mat2);
+				free(matx);
 				free(matOut1);
 				free(matOut2);
 			}

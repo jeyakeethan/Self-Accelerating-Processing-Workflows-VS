@@ -34,6 +34,7 @@ Issues:
 	measuring time whether includes or except data setting time (setData)
 	GPU sleeps when time gaps for Auto mode
 	will there be float type attributes for ML prediction
+<<<<<<< HEAD
 	Server facility may have gain
 	Correct predictions but no gain
 
@@ -53,4 +54,6 @@ NVida SMI commands
 
 persistent mode 
 
+=======
+>>>>>>> cc346f7ba99f0825cab4fd90668785faf074e568
 
