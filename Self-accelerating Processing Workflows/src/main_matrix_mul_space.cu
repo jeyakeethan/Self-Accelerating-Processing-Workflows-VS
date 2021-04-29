@@ -43,8 +43,6 @@ int main()
 	int levels = 8;
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
-	cout << "Dim\t" << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header
-	// outfile << "x,y,z,prediction" << endl;		// print header
 	for (int m = step; m <= levels * step; m += step) {
 		for (int l = step; l <= levels * step; l += step) {
 			for (int n = step; n <= levels * step; n += step) {

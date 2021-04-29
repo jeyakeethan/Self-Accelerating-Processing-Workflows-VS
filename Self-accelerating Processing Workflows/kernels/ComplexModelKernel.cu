@@ -18,6 +18,6 @@ __global__ void complex_model_kernel(numericalType1* A, numericalType1* B,  nume
     __syncthreads();
 
     // add mat X to the out matrix (matrix addition)
-    OUT += X[y * widthA + x];
+    OUT[y * widthA + x] += X[y * widthA + x];
     return;
 }

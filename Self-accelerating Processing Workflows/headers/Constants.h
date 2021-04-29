@@ -41,7 +41,7 @@ const int CPU_LOAD_REVISE_PERIOD = 3600;		// in seconds
 const int ML_TRAIN_CHECK_PERIOD = DAY;			// in seconds
 const int RESET_COUNT = 19;
 
-const std::string LOG_FILE_NAME = "../logs/statistics.txt";
+// const std::string LOG_FILE_NAME = "../logs/statistics.txt";
 const std::string CONSOLE_LOG_FILE_NAME = "console log.txt";
 
 struct myDim2 {

@@ -23,17 +23,25 @@ __int64 currentTimeMillis();
 ComputationalModel::ComputationalModel(int CPUCores_, string model_name):CPUCores(CPUCores_) {
 	obj_id = obj_id_counter();
 	resetFlow();
+	name = model_name;
+
 	// ml related codes
 	mlModel = new MLModel(model_name);
-	//mlTrainer = thread([this] {checkMLModel();});
-	//mlTrainer.detach();
+
+	/* // Auto train model periodically
+	mlTrainer = thread([this] {checkMLModel();});
+	mlTrainer.detach();
+	*/
 }
 
 ComputationalModel::~ComputationalModel() {
+	// mlTrainer.~thread();
 
-	//mlTrainer.~thread();
+	logExTime(CPUGPULOG.str());
 	Logger::close();
+
 	delete mlModel;
+
 	//TO DO; log present values for using next boot
 }
 
@@ -41,7 +49,6 @@ inline void ComputationalModel::resetFlow() {
 	lastProcessor = processor;
 	prediction_empty_slot = 0;
 	outlier_count = 0;
-	// id_ = int(&*this);
 }
 
 
@@ -143,13 +150,13 @@ void ComputationalModel::trainMLModel() {
 
 void ComputationalModel::logExTime(string str) {
 	if (!Logger::isOpen()) {
-		Logger::open(LOG_FILE_NAME);
+		Logger::open("../logs/framework/" + name + ".txt");
 	}
 	Logger::write(str);
 }
 
 void ComputationalModel::clearLogs() {
-	Logger::clearLogs(LOG_FILE_NAME);
+	Logger::clearLogs("../logs/framework/" + name + ".txt");
 }
 
 string ComputationalModel::attributeToString(vector<float>* attr) {
@@ -158,10 +165,6 @@ string ComputationalModel::attributeToString(vector<float>* attr) {
 		s << (*attr)[i] << ",";
 	}
 	return s.str();
-}
-
-void ComputationalModel::setProcessor(int p) {
-	processor = p;
 }
 
 __int64 currentTimeMillis() {

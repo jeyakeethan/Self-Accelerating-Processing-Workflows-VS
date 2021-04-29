@@ -22,9 +22,10 @@
 
 using namespace std;
 int main()
-{
+{	
+	// write logs into file
 	//string console_log_name = "../logs/Array_addtion_" + CONSOLE_LOG_FILE_NAME;
-	//freopen(console_log_name.c_str(), "w", stdout);	// write logs into file
+	//freopen(console_log_name.c_str(), "w", stdout);
 
 	srand(5);		// Random Seed Value
 
@@ -56,9 +57,9 @@ int main()
 	
 
 	//------------- THree dimension vector addition ------------
-	cout << "Three Dimension experiments started" << endl;
-	input_nature_file << "Three Dimension experiments started" << endl;
-	time_log_file << "Three Dimension experiments started" << endl;
+	cout << "Matrix multiplication experiments started" << endl;
+	input_nature_file << "Matrix multiplication experiments started" << endl;
+	time_log_file << "Matrix multiplication experiments started" << endl;
 
 	MatrixMultiplicationModel<numericalType1> matrixMultiplicationModel(6);
 
@@ -111,7 +112,7 @@ int main()
 		arraySet2[x] = generate_1d_array(length2);
 		outputs[x] = new numericalType1[length3];
 
-		//input_nature_file << "[" << dimension.x << "," << dimension.y << "]" << ", " << endl;		// log input nature
+		input_nature_file << "[" << dimension.x << "," << dimension.y << "," << dimension.z << "]" << ", " << endl;		// log input nature
 	}
 
 	// -------- Framework --------

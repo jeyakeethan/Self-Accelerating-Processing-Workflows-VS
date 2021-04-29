@@ -2,7 +2,7 @@ Matrix Multiplication
 (1)	Generate dataset -> MatrixMulSpace.cu
 		level = 5
 	if separate models required for separate datatypes
-	(3)	Generate dataset for int, float, short, double
+	(3)	Generate dataset for int, float
 	
 Experiments based on occurrences of CPU and GPU fit problems
 (4)	CPU/GPU -> 1/2, 1, 2, 3

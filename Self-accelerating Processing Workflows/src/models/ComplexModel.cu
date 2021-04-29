@@ -77,7 +77,7 @@ void ComplexModel<T>::GPUImplementation() {
 	//Copy Host array to Device array
 	cudaMemcpy(dev_a, localA, l1, cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_b, localB, l2, cudaMemcpyHostToDevice);
-	cudaMemcpy(dev_y, localX, l2, cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_y, localY, l2, cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_x, localX, l3, cudaMemcpyHostToDevice);
 
 	// Execute the kernel

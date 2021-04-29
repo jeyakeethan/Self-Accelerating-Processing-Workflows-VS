@@ -21,7 +21,7 @@ public:
 	static bool operationalMode;
 	stringstream CPUGPULOG;
 	int processor, lastProcessor = -1, revisePeriod;
-	// stringstream s;
+	string name;
 	int CPUCores;
 	int model_id, obj_id, prediction_empty_slot = 0;
 	long long duration;
@@ -42,7 +42,6 @@ public:
 	void execute(int mode);
 	void executeAndLogging();
 	void executeAndLogging(int mode);
-	void setProcessor(int p);
 	void clearLogs();
 	void logExTime(string str);
 	void trainMLModel();

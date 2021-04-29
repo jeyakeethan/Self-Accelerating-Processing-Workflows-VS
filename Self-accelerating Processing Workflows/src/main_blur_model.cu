@@ -21,6 +21,7 @@
 using namespace std;
 int main()
 {
+	// write logs into file
 	//string console_log_name = "../logs/Blur_" + CONSOLE_LOG_FILE_NAME;
 	//freopen(console_log_name.c_str(), "w", stdout);	// write logs into file
 
