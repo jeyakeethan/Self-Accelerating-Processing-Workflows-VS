@@ -1,3 +1,6 @@
+Measure prediction time average
+	tpre-avg
+
 Matrix Multiplication
 (1)	Generate dataset -> MatrixMulSpace.cu
 		level = 5
@@ -6,9 +9,6 @@ Matrix Multiplication
 	
 Experiments based on occurrences of CPU and GPU fit problems
 (4)	CPU/GPU -> 1/2, 1, 2, 3
-
-Measure prediction time average
-	tpre-avg
 
 Measure attainable gain when CPU and GPU fit problems are in fair ratio i.e., 1
 

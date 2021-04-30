@@ -21,11 +21,32 @@
 #include <string>
 
 using namespace std;
+
+void measure_prediction_time() {
+	LARGE_INTEGER start, stop, clockFreq;
+	QueryPerformanceFrequency(&clockFreq);
+	double delay = 0;
+
+	MatrixMultiplicationModel<numericalType1> matrixMultiplicationModel(6);
+	vector<float>* vec;
+	for (int i = 0; i < EXPERIMENT_COUNT; i++) {
+		vec = new vector<float> { float(rand() % 256),float(rand() % 256),float(rand() % 256) };
+		QueryPerformanceCounter(&start);
+		bool pred = matrixMultiplicationModel.mlModel->predict_logic(*vec);
+		QueryPerformanceCounter(&stop);
+		cout << (pred ? 1 : 0);
+		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
+	}
+	cout << endl << "Total time: " << delay << "\tAvg Prediction time : " << delay / EXPERIMENT_COUNT << endl;
+}
+
 int main()
 {	
 	// write logs into file
 	//string console_log_name = "../logs/Array_addtion_" + CONSOLE_LOG_FILE_NAME;
 	//freopen(console_log_name.c_str(), "w", stdout);
+
+	measure_prediction_time();
 
 	srand(5);		// Random Seed Value
 
@@ -85,7 +106,7 @@ int main()
 			cpu_dim_space_3d[x].y = dataset.features.at(x).at(1);
 			cpu_dim_space_3d[x].z = dataset.features.at(x).at(2);
 			vector<float> cpu{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
-			bool pre_cpu = matrixMultiplicationModel.mlModel->predict_logic(&cpu);
+			bool pre_cpu = matrixMultiplicationModel.mlModel->predict_logic(cpu);
 			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
 			
 			index_g = len_dataset - dim_space_len_3d + x;
@@ -93,7 +114,7 @@ int main()
 			gpu_dim_space_3d[x].y = dataset.features.at(index_g).at(1);
 			gpu_dim_space_3d[x].z = dataset.features.at(index_g).at(2);
 			vector<float> gpu{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z };
-			bool pre_gpu = matrixMultiplicationModel.mlModel->predict_logic(&gpu);
+			bool pre_gpu = matrixMultiplicationModel.mlModel->predict_logic(gpu);
 			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << gpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
 		}
 
@@ -120,7 +141,6 @@ int main()
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
-		
 		matrixMultiplicationModel.execute();
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -134,7 +154,6 @@ int main()
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		QueryPerformanceCounter(&start);
 		matrixMultiplicationModel.SetData(arraySet1[x], arraySet2[x], outputs[x], &dimensions[x]);
-		
 		matrixMultiplicationModel.execute(1);
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;

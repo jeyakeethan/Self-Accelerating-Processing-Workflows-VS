@@ -159,10 +159,10 @@ void ComputationalModel::clearLogs() {
 	Logger::clearLogs("../logs/framework/" + name + ".txt");
 }
 
-string ComputationalModel::attributeToString(vector<float>* attr) {
+string ComputationalModel::attributeToString(vector<float> attr) {
 	stringstream s;
-	for (int i = 1; i <= (*attr)[0]; i++) {
-		s << (*attr)[i] << ",";
+	for (int i = 1; i <= attr[0]; i++) {
+		s << attr[i] << ",";
 	}
 	return s.str();
 }

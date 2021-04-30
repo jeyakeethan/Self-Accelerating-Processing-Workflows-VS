@@ -14,8 +14,7 @@
 using namespace std;
 
 template <class T>
-ArrayAddition2DModel<T>::ArrayAddition2DModel(int CPUCores): ComputationalModel(CPUCores, "Array-Addition2D") {
-}
+ArrayAddition2DModel<T>::ArrayAddition2DModel(int CPUCores): ComputationalModel(CPUCores, "Array-Addition2D") {}
 
 template <class T>
 ArrayAddition2DModel<T>::~ArrayAddition2DModel() {}
@@ -63,12 +62,12 @@ void ArrayAddition2DModel<T>::GPUImplementation(){
 }
 
 template <class T>
-vector<float>* ArrayAddition2DModel<T>::getAttributes(){
-    return new vector<float>{ (float)localRow, (float)localCol};
+vector<float> ArrayAddition2DModel<T>::getAttributes(){
+    return *attr;
 }
 
 template <class T>
-vector<float>* ArrayAddition2DModel<T>::getAttributesBatch() {
-    return new vector<float>{ (float)localRow, (float)localCol };
+vector<float> ArrayAddition2DModel<T>::getAttributesBatch() {
+    return *attr;
 }
 #endif //ARRAYADD2DMODEL_CPP

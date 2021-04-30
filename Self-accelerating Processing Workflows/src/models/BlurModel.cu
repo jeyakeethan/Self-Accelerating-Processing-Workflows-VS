@@ -14,9 +14,7 @@
 using namespace std;
 
 template <class T>
-BlurModel<T>::BlurModel(int CPUCores):ComputationalModel(CPUCores, "blur") {
-	//super(CPUCores);
-}
+BlurModel<T>::BlurModel(int CPUCores):ComputationalModel(CPUCores, "blur") { }
 
 template <class T>
 BlurModel<T>::~BlurModel() {}
@@ -98,12 +96,12 @@ void BlurModel<T>::getError(cudaError_t err) {
 
 // retrive influenced attributes
 template <class T>
-vector<float>* BlurModel<T>::getAttributes() {
-    return attr;
+vector<float> BlurModel<T>::getAttributes() {
+    return *attr;
 }
 
 template <class T>
-vector<float>* BlurModel<T>::getAttributesBatch() {
-    return attr;
+vector<float> BlurModel<T>::getAttributesBatch() {
+    return *attr;
 }
 #endif // _BLURMODEL_CPP_

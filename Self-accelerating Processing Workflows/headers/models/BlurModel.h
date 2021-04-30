@@ -13,24 +13,27 @@ class BlurModel: public ComputationalModel
     public:
         unsigned char *input_image, *output_image;
         int width, height;
-        vector<float> * attr;
+        vector<float> *attr;
+
         BlurModel(int CPUCores);
         ~BlurModel();
-        inline void SetData(unsigned char *input, unsigned char *output, int widthT, int heightT){
+
+        inline void SetData(unsigned char* input, unsigned char* output, int widthT, int heightT) {
             input_image = input;
             output_image = output;
             width = widthT;
             height = heightT;
-            attr = new vector<float>{(float)widthT, (float)heightT};
+            attr = new vector<float>{ (float)widthT, (float)heightT };
             return;
         }
+
     protected:
 
     private:
         virtual void CPUImplementation();
         virtual void GPUImplementation();
-        virtual vector<float>* getAttributes();
-        virtual vector<float>* getAttributesBatch();
+        virtual vector<float> getAttributes();
+        virtual vector<float> getAttributesBatch();
         void getError(cudaError_t err);
 };
 

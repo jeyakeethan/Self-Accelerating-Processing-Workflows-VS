@@ -113,11 +113,12 @@ void MLModel::trainModel() {
 
 bool MLModel::predict_logic(vector<float>& params) {
 	int f_index;
-	// center bound check
+	// upper bound check
 	for (f_index = 0; f_index < m_no_features; f_index++) {
 		if (params[f_index] > m_upper_bound[f_index])
 			return true;
 	}
+
 	// lower bounds check
 	for (f_index = 0; f_index < m_no_features; f_index++) {
 		if (params[f_index] > m_lower_bound[f_index])
@@ -191,8 +192,6 @@ void MLModel::fit_data_local(const std::vector<std::vector<float>>& features, co
 
 	// find bounds
 	m_center_bound = m_leasts;
-	m_lower_bound = m_leasts;
-	m_upper_bound = m_highests;
 	vector<float> vec = m_leasts;
 	vector<float> m_ranges_ = m_ranges;
 	const int CENTRAL_BOUND_PRECISION = 256;
@@ -224,7 +223,6 @@ void MLModel::print_center_bound() {
 	for (size_t f = 0; f < m_no_features; f++) {
 		cout << m_center_bound[f] << ", ";
 	}
-	cout << endl;
 }
 
 void MLModel::print_turning_points() {

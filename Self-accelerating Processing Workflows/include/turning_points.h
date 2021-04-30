@@ -6,25 +6,25 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
+using namespace rapidjson;
 using namespace std;
 
-
-namespace logistics {
-	class Logistics {
+namespace turning_points {
+	class TurningPoints {
 	public:
-		Logistics(Config conf);
-		~Logistics();
+		TurningPoints();
+		~TurningPoints();
 		void fit_data(const std::vector<std::vector<float>>& features, const std::vector<int>& labels);
-		int predict(const std::vector<double>& features);
 		bool predict(const std::vector<float>& features);
 		void print_weights();
 
-		const Config config;
-
-
 	private:
-		short no_features;
-		vector<double> weights;
+		int m_no_features = 0;
+		int m_no_tps = 0;
+		int m_tp_last_i = 0;
+		vector<float> m_upper_bound;
+		vector<float> m_lower_bound;
+		vector<vector<float>> m_turning_points;
 		vector<double> error;
 	};
 }

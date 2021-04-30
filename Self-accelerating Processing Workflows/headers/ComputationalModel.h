@@ -34,7 +34,7 @@ public:
 	virtual ~ComputationalModel();
 	static int m_id_counter() { static int m_id = 0; return m_id++; }
 	static int obj_id_counter() { static int obj_id = 0; return obj_id++; }
-	string static attributeToString(vector<float>* attr);
+	string static attributeToString(vector<float> attr);
 	void checkMLModel();
 	void resetFlow();
 	void execute();
@@ -56,8 +56,8 @@ private:
 	* the first value of the pointer would be the length of the array and the attributes are followed
 	* every subclass implementing this class must have to implement this virtual method
 	**/
-	virtual vector<float>* getAttributes() = 0;
-	virtual vector<float>* getAttributesBatch() = 0;
+	virtual vector<float> getAttributes() = 0;
+	virtual vector<float> getAttributesBatch() = 0;
 
 };
 

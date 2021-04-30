@@ -61,7 +61,12 @@ const short NUMBER_OF_PREDICTIONS_TO_BE_CACHED = 5;
 const int MAX_OUTLIERS_LIMIT = 5;
 // Caching
 const short SIZE_OF_CACHE = 19;
+// local data fit
+const float CENTRAL_BOUND_PRECISION = 256;
 
+// constants
+const float VERY_LARGE_FLOAT_NEG = -21474836;
+const float VERY_LARGE_FLOAT = 2147483648;
 
 // Dataset generation
 const float CPU_TIME_MARGIN = 0.75f;
