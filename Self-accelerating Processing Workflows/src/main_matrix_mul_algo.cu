@@ -78,7 +78,7 @@ int main()
 	
 
 	//------------- THree dimension vector addition ------------
-	cout << "Matrix multiplication experiments started" << endl;
+	cout << endl << "Matrix multiplication experiments started" << endl;
 	input_nature_file << "Matrix multiplication experiments started" << endl;
 	time_log_file << "Matrix multiplication experiments started" << endl;
 

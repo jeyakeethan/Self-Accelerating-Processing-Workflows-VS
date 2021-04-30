@@ -112,19 +112,13 @@ void MLModel::trainModel() {
 }
 
 bool MLModel::predict_logic(vector<float>& params) {
-	int f_index;
 	// center bound check
-	for (f_index = 0; f_index < m_no_features; f_index++) {
-		if (params[f_index] > m_upper_bound[f_index])
-			return true;
+	int pred = 0;
+	for (int f_index = 0; f_index < m_no_features; f_index++) {
+		if (params[f_index] < m_center_bound[f_index]) pred++;
 	}
-	// lower bounds check
-	for (f_index = 0; f_index < m_no_features; f_index++) {
-		if (params[f_index] > m_lower_bound[f_index])
-			break;
-	}
-	if (++f_index == m_no_features)
-		return false;
+	if (pred == m_no_features)return false;
+	if (pred == 0)return true;
 
 	int i = accumulate(params.begin(), params.end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
 	if (caching[i] == params)
@@ -170,12 +164,11 @@ void MLModel::fit_data_local(const std::vector<std::vector<float>>& features, co
 	int pre = 0;
 	int curr_label;
 
-	for (size_t idx = 0; idx < training_data_size; idx++) {
-		vector<float> features_x = features[idx];
+	for (size_t idx = 1; idx < training_data_size; idx++) {
 
 		curr_label = labels[idx];
 		if (pre == 0 && curr_label == 1) {
-			m_turning_points.push_back(features_x);
+			m_turning_points.push_back(features[idx-1]);
 		}
 
 		pre = curr_label;
@@ -224,7 +217,7 @@ void MLModel::print_center_bound() {
 	for (size_t f = 0; f < m_no_features; f++) {
 		cout << m_center_bound[f] << ", ";
 	}
-	cout << endl;
+	cout << endl << endl;
 }
 
 void MLModel::print_turning_points() {
