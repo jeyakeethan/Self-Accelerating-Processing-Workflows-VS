@@ -12,21 +12,24 @@ class MatrixMultiplicationModel: public ComputationalModel
     public:
         T *localA, *localB, *localC;
         myDim3 *localMD;
-        vector<float> * attr;
+        vector<float> *attr;
+
         MatrixMultiplicationModel(int CPUCores);
         ~MatrixMultiplicationModel();
-        inline void SetData(T *mat1, T *mat2, T *out, myDim3 *matricesDim){
+
+        inline void SetData(T* mat1, T* mat2, T* out, myDim3* matricesDim) {
             localA = mat1; localB = mat2; localC = out; localMD = matricesDim;
-            attr = new vector<float>{(float)matricesDim->x, (float)matricesDim->y, (float)matricesDim->z};
+            attr = new vector<float>{ (float)matricesDim->x, (float)matricesDim->y, (float)matricesDim->z };
             return;
         }
+
     protected:
 
     private:
         virtual void CPUImplementation();
         virtual void GPUImplementation();
-        virtual vector<float>* getAttributes();
-        virtual vector<float>* getAttributesBatch();
+        virtual vector<float> getAttributes();
+        virtual vector<float> getAttributesBatch();
 };
 
 #include "../src/models/MatrixMulModel.cu"

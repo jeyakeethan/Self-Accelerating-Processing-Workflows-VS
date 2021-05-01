@@ -14,9 +14,7 @@
 using namespace std;
 
 template <class T>
-ComplexModel<T>::ComplexModel(int CPUCores) :ComputationalModel(CPUCores, "complex-model") {
-	//super(CPUCores);
-}
+ComplexModel<T>::ComplexModel(int CPUCores) :ComputationalModel(CPUCores, "complex-model") { }
 
 template <class T>
 ComplexModel<T>::~ComplexModel() {}
@@ -109,12 +107,12 @@ void ComplexModel<T>::GPUImplementation() {
 
 // retrive attributes
 template <class T>
-vector<float>* ComplexModel<T>::getAttributes() {
-	return attr;
+vector<float> ComplexModel<T>::getAttributes() {
+	return *attr;
 }
 
 template <class T>
-vector<float>* ComplexModel<T>::getAttributesBatch() {
-	return attr;
+vector<float> ComplexModel<T>::getAttributesBatch() {
+	return *attr;
 }
 #endif // _COMPLEX_MODEL_CPP_

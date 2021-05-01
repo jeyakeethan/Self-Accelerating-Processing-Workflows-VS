@@ -14,9 +14,7 @@
 using namespace std;
 
 template <class T>
-MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores):ComputationalModel(CPUCores, "matrix-multiplication") {
-	//super(CPUCores);
-}
+MatrixMultiplicationModel<T>::MatrixMultiplicationModel(int CPUCores):ComputationalModel(CPUCores, "matrix-multiplication") { }
 
 template <class T>
 MatrixMultiplicationModel<T>::~MatrixMultiplicationModel() {}
@@ -87,12 +85,12 @@ void MatrixMultiplicationModel<T>::GPUImplementation() {
 
 // retrive attributes
 template <class T>
-vector<float>* MatrixMultiplicationModel<T>::getAttributes() {
-	return attr;
+vector<float> MatrixMultiplicationModel<T>::getAttributes() {
+	return *attr;
 }
 
 template <class T>
-vector<float>* MatrixMultiplicationModel<T>::getAttributesBatch() {
-	return attr;
+vector<float> MatrixMultiplicationModel<T>::getAttributesBatch() {
+	return *attr;
 }
 #endif // _MATRIXMULTIPLICATIONMODEL_CPP_

@@ -21,6 +21,7 @@
 using namespace std;
 int main()
 {
+	// write logs into file
 	//string console_log_name = "../logs/Blur_" + CONSOLE_LOG_FILE_NAME;
 	//freopen(console_log_name.c_str(), "w", stdout);	// write logs into file
 
@@ -78,7 +79,7 @@ time_log_file << "Blur experiments" << endl;
 			cpu_dim_space_2d[x].x = dataset.features.at(x).at(0);
 			cpu_dim_space_2d[x].y = dataset.features.at(x).at(1);
 			vector<float> cpu{ (float)cpu_dim_space_2d[x].x, (float)cpu_dim_space_2d[x].y };
-			bool pre_cpu = blurModel.mlModel->predict_logic(&cpu);
+			bool pre_cpu = blurModel.mlModel->predict_logic(cpu);
 			cout << "[" << cpu_dim_space_2d[x].x << "," << cpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
 			if (dataset.labels.at(x) == (pre_cpu ? 1 : 0)) {
 				cout << "same" << endl;
@@ -89,7 +90,7 @@ time_log_file << "Blur experiments" << endl;
 			gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_2d[x].y = dataset.features.at(index_g).at(1);
 			vector<float> gpu{ (float)gpu_dim_space_2d[x].x, (float)gpu_dim_space_2d[x].y };
-			bool pre_gpu = blurModel.mlModel->predict_logic(&gpu);
+			bool pre_gpu = blurModel.mlModel->predict_logic(gpu);
 			cout << "[" << gpu_dim_space_2d[x].x << "," << gpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
 			if (dataset.labels.at(index_g) == (pre_gpu ? 1 : 0)) {
 				cout << "same" << endl;

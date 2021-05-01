@@ -14,8 +14,7 @@
 using namespace std;
 
 template <class T>
-ArrayAdditionModel<T>::ArrayAdditionModel(int CPUCores): ComputationalModel(CPUCores, "Array-Addition") {
-}
+ArrayAdditionModel<T>::ArrayAdditionModel(int CPUCores): ComputationalModel(CPUCores, "Array-Addition") { }
 
 template <class T>
 ArrayAdditionModel<T>::~ArrayAdditionModel() {}
@@ -58,12 +57,12 @@ void ArrayAdditionModel<T>::GPUImplementation(){
 }
 
 template <class T>
-vector<float>* ArrayAdditionModel<T>::getAttributes(){
-    return new vector<float>{ float(localL) };
+vector<float> ArrayAdditionModel<T>::getAttributes(){
+    return *attr;
 }
 
 template <class T>
-vector<float>* ArrayAdditionModel<T>::getAttributesBatch() {
-    return new vector<float>{ float(localL) };
+vector<float> ArrayAdditionModel<T>::getAttributesBatch() {
+    return *attr;
 }
 #endif //ARRAYADDMODEL_CPP

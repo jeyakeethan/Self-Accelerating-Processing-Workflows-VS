@@ -20,15 +20,14 @@
 
 using namespace std;
 int main()
-{
+{	// write logs into file
 	//string console_log_name = "../logs/array_addtion_" + CONSOLE_LOG_FILE_NAME;
-	//freopen(console_log_name.c_str(), "w", stdout);	// write logs into file
+	//freopen(console_log_name.c_str(), "w", stdout);
 
 	srand(5);		// Random Seed Value
 
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream dataset_file;
-	ofstream time_log_file;
 	QueryPerformanceFrequency(&clockFreq);
 	double delayCPU, delayGPU;
 	int elapsedTime;
@@ -41,16 +40,8 @@ int main()
 	string inputNatureFile = "../ml-datasets/Array-Addition.csv";
 	dataset_file.open(inputNatureFile, ios_base::out);
 
-	string timeLogFile = "../logs/Array_addition_dataset_Time.txt"; fileNum = 0;
-	while (FILE* file = fopen(timeLogFile.c_str(), "r")) {
-		fclose(file);
-		timeLogFile = "../logs/Array_addition_dataset_Time" + to_string(++fileNum) + ".txt";
-	}
-	time_log_file.open(timeLogFile);
-
 	/*------------- Single dimension vector addition ------------*/
 	cout << "One Dimension experiments started" << endl;
-	time_log_file << "One Dimension experiments started" << endl;
 
 	ArrayAdditionModel<numericalType1> arrayAdditionModel(6);
 
@@ -79,7 +70,6 @@ int main()
 		QueryPerformanceCounter(&stop);
 		delayCPU = (double)(stop.QuadPart - start.QuadPart);
 		cout << "CPU Time: " << delayCPU << ", ";
-		//time_log_file << "CPU Time: " << delayCPU << ", ";
 
 		/*-------- GPU Time - ArrayAdditionModel --------*/
 		QueryPerformanceCounter(&start);
@@ -90,7 +80,6 @@ int main()
 		QueryPerformanceCounter(&stop);
 		delayGPU = (double)(stop.QuadPart - start.QuadPart);
 		cout << "GPU Time: " << delayGPU << ", " << endl;
-		//time_log_file << "GPU Time: " << delayGPU << ", " << endl;
 
 		dataset_file << length << "," << (delayGPU > delayCPU ? 0 : 1) << endl;
 
@@ -102,6 +91,5 @@ int main()
 		}
 	}
 	dataset_file.close();
-	time_log_file.close();
 	return 0;
 }

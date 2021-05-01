@@ -20,7 +20,8 @@
 
 using namespace std;
 int main()
-{
+{	
+	// write logs into file
 	//string console_log_name = "../logs/Array_addtion_" + CONSOLE_LOG_FILE_NAME;
 	//freopen(console_log_name.c_str(), "w", stdout);	// write logs into file
 
@@ -28,7 +29,6 @@ int main()
 
 	LARGE_INTEGER start, stop, clockFreq;
 	ofstream input_nature_file;
-	ofstream time_log_file;
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
 	int elapsedTime;
@@ -44,19 +44,9 @@ int main()
 	}
 	input_nature_file.open(inputNatureFile, ios_base::out);
 
-	string timeLogFile = "../logs/Complex_Model_Time.txt"; fileNum = 0;
-	while (FILE* file = fopen(timeLogFile.c_str(), "r")) {
-		fclose(file);
-		timeLogFile = "../logs/Complex_Model_Time_" + to_string(++fileNum) + ".txt";
-	}
-	time_log_file.open(timeLogFile);
-
-
 
 	//------------- THree dimension vector addition ------------
-	cout << "Three Dimension experiments started" << endl;
-	input_nature_file << "Three Dimension experiments started" << endl;
-	time_log_file << "Three Dimension experiments started" << endl;
+	cout << "Complex model experiments started" << endl;
 
 	ComplexModel<numericalType1> complexModel(6);
 
@@ -118,7 +108,7 @@ int main()
 		outputs1[x] = new numericalType1[length3];
 		outputs2[x] = new numericalType1[length3];
 		outputs3[x] = new numericalType1[length3];
-		//input_nature_file << "[" << dimension.x << "," << dimension.y << "]" << ", " << endl;		// log input nature
+		input_nature_file << "[" << dimension.x << "," << dimension.y << "," << dimension.z << "]" << ", " << endl;		// log input nature
 	}
 
 	// -------- GPU Time --------
@@ -132,7 +122,6 @@ int main()
 	}
 	elapsedTime = int(delay * 1000);
 	cout << endl << "GPU Time: " << elapsedTime << " ms" << endl << endl;
-	time_log_file <<  endl <<"GPU Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- Framework --------
 	delay = 0;
@@ -145,7 +134,6 @@ int main()
 	}
 	elapsedTime = int(delay * 1000);
 	cout << "Auto Time: " << elapsedTime << " ms" << endl << endl;
-	time_log_file << "Auto Time: " << elapsedTime << " ms" << endl << endl;
 
 	// -------- CPU Time --------
 	delay = 0;
@@ -158,7 +146,6 @@ int main()
 	}
 	elapsedTime = int(delay * 1000);
 	cout << "CPU Time: " << elapsedTime << " ms" << endl << endl;
-	time_log_file << "CPU Time: " << elapsedTime << " ms" << endl << endl;
 
 	// ************Free Host Memory**************
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
@@ -172,7 +159,6 @@ int main()
 	}
 
 	input_nature_file.close();
-	time_log_file.close();
 
 	return 0;
 }

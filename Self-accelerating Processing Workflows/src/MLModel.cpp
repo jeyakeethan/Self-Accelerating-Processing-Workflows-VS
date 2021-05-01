@@ -49,6 +49,13 @@ int err = (call);                                                       \
     }                                                                       \
 }
 
+bool a_greater_b(vector<float>& a, vector<float>& b, int size) {
+	for (int i = 0; i < size; i++)
+		if (a[i] < b[i])
+			return false;
+	return true;
+}
+
 MLModel::MLModel(string name) {
 	model_name = name;
 	model_path = "../ml-models/" + name + ".json";
@@ -97,10 +104,144 @@ void MLModel::trainModel() {
 	/* // logistics model
 	logistics::Config logistics_config;
 	*/
-
+	fit_data_local(dataset.features, dataset.labels);
+	print_center_bound();
 	model->fit(dataset.features, dataset.labels);
 	cout << "Training successful!" << endl;
 
+}
+
+bool MLModel::predict_logic(vector<float>& params) {
+	// center bound check
+	int pred = 0;
+	for (int f_index = 0; f_index < m_no_features; f_index++) {
+		if (params[f_index] < m_center_bound[f_index]) pred++;
+	}
+	if (pred == m_no_features)return false;
+	if (pred == 0)return true;
+
+	int i = accumulate(params.begin(), params.end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
+	if (caching[i] == params)
+		return caching_pred[i];
+
+	bool decision = model->predict(params);
+
+	caching[i] = params;
+	caching_pred[i] = decision;
+	
+	return decision;
+}
+
+void MLModel::fit_data_local(const std::vector<std::vector<float>>& features, const std::vector<int>& labels) {
+	int training_data_size = labels.size();
+
+	if (training_data_size == 0) {
+		cout << "Training data insufficient!" << endl;
+		return;
+	}
+	
+	m_no_features = features.at(0).size();
+	m_turning_points.clear();
+
+	// initialize low high
+	vector<float> x(m_no_features, VERY_LARGE_FLOAT_NEG);
+	m_highests = x;
+	vector<float> y(m_no_features, VERY_LARGE_FLOAT);
+	m_leasts = y;
+
+	for (size_t idx = 0; idx < training_data_size; idx++) {
+		vector<float> features_x = features[idx];
+		// update low high
+		for (int f_index = 0; f_index < m_no_features; f_index++) {
+			if (m_highests[f_index] < features_x[f_index])
+				m_highests[f_index] = features_x[f_index];
+
+			if (m_leasts[f_index] > features_x[f_index])
+				m_leasts[f_index] = features_x[f_index];
+		}
+	}
+
+	int pre = 0;
+	int curr_label;
+
+	for (size_t idx = 1; idx < training_data_size; idx++) {
+
+		curr_label = labels[idx];
+		if (pre == 0 && curr_label == 1) {
+			m_turning_points.push_back(features[idx-1]);
+		}
+
+		pre = curr_label;
+	}
+
+	// calculate ranges
+	for (int f_index = 0; f_index < m_no_features; f_index++) {
+		m_ranges.push_back(m_highests[f_index] - m_leasts[f_index]);
+	}
+
+	m_no_tps = m_turning_points.size();
+	m_tp_last_i = m_no_tps - 1;
+
+	// find bounds
+	m_center_bound = m_leasts;
+	m_lower_bound = m_leasts;
+	m_upper_bound = m_highests;
+	vector<float> vec = m_leasts;
+	vector<float> m_ranges_ = m_ranges;
+	const int CENTRAL_BOUND_PRECISION = 256;
+	for (int f_index = 0; f_index < m_no_features; f_index++)
+		m_ranges_[f_index] /= CENTRAL_BOUND_PRECISION;
+
+	for (int step = 0; step < CENTRAL_BOUND_PRECISION; step++) {
+		for (auto t_p = m_turning_points.begin(); t_p != m_turning_points.end(); ++t_p){
+			if (a_greater_b(*t_p, vec, m_no_features)) {
+				m_center_bound = *t_p;
+			}
+		}
+		for (int f_index = 0; f_index < m_no_features; f_index++) {
+			vec[f_index] += step * m_ranges_[f_index];
+		}
+	}
+
+}
+
+float MLModel::calculate_distance(vector<float>& a, vector<float>& b) {
+	float sum = 0;
+	for (int f_index = 0; f_index < m_no_features; f_index++)
+		sum += (a[f_index] - b[f_index]) / m_ranges[f_index];
+	return sum;
+}
+
+void MLModel::print_center_bound() {
+	cout << "center bound: ";
+	for (size_t f = 0; f < m_no_features; f++) {
+		cout << m_center_bound[f] << ", ";
+	}
+	cout << endl << endl;
+}
+
+void MLModel::print_turning_points() {
+	// PRINT BOUNDS
+	cout << "lower bound: ";
+	for (size_t f = 0; f < m_no_features; f++) {
+		cout << m_lower_bound[f] << ", ";
+	}
+	cout << endl;
+	cout << "upper bound: ";
+	for (size_t f = 0; f < m_no_features; f++) {
+		cout << m_upper_bound[f] << ", ";
+	}
+	cout << endl;
+
+	// PRINT TURNING POINTS
+	for (size_t tp_i = 0; tp_i < m_no_tps; tp_i++) {
+		vector<float> turning_point = m_turning_points[tp_i];
+		for (size_t f = 0; f < m_no_features; f++) {
+			cout << turning_point[f] << ", ";
+		}
+		cout << endl;
+	}
+	cout << endl;
 }
 
 void MLModel::dumpModel() {
@@ -132,7 +273,7 @@ void MLModel::loadModel() {
 		mlConfig.reg_lambda = Param["reg_lambda"].GetFloat();
 		mlConfig.colsample_bytree = Param["colsample_bytree"].GetFloat();
 		mlConfig.max_bin = Param["max_bin"].GetInt();
-		
+
 		/*cout << Param["n_estimators"].GetInt() << endl;
 		cout << Param["learning_rate"].GetFloat() << endl;
 		cout << Param["max_depth"].GetInt() << endl;
@@ -163,17 +304,4 @@ int MLModel::predict(vector<float>* params) {
 	// cout << pre;
 
 	return pre;
-}
-
-bool MLModel::predict_logic(vector<float>* params) {
-	int i = accumulate(params->begin(), params->end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
-	if (caching[i] == *params)
-		return caching_pred[i];
-
-	bool decision = model->predict(*params);
-
-	caching[i] = *params;
-	caching_pred[i] = decision;
-
-	return decision;
 }

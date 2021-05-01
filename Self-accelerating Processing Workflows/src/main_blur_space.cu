@@ -21,15 +21,15 @@
 using namespace std;
 int main()
 {
+	// write logs into file
 	//string console_log_name = "../logs/blur_" + CONSOLE_LOG_FILE_NAME;
-	//freopen(console_log_name.c_str(), "w", stdout);	// write logs into file
+	//freopen(console_log_name.c_str(), "w", stdout);
 
 	srand(5);		// Random Seed Value
 
 	LARGE_INTEGER start, stop, clockFreq;
 	QueryPerformanceFrequency(&clockFreq);
 	ofstream dataset_file;
-	ofstream time_log_file;
 	double delayCPU, delayGPU;
 	int elapsedTime;
 	int fileNum;
@@ -40,16 +40,8 @@ int main()
 	string inputNatureFile = "../ml-datasets/blur.csv";
 	dataset_file.open(inputNatureFile, ios_base::out);
 
-	string timeLogFile = "../logs/Blur_dataset_Time.txt"; fileNum = 0;
-	while (FILE* file = fopen(timeLogFile.c_str(), "r")) {
-		fclose(file);
-		timeLogFile = "../logs/Blur_dataset_Time" + to_string(++fileNum) + ".txt";
-	}
-	time_log_file.open(timeLogFile);
-
 	/*------------- Single dimension vector addition ------------*/
 	cout << "BlurModel experiments started" << endl;
-	time_log_file << "BlurModel experiments started" << endl;
 
 	BlurModel <unsigned char> blurModel(6);
 
@@ -81,7 +73,6 @@ int main()
 			QueryPerformanceCounter(&stop);
 			delayCPU = (double)(stop.QuadPart - start.QuadPart);
 			//cout << "CPU Time: " << delayCPU << ", ";
-			//time_log_file << "CPU Time: " << delayCPU << ", ";
 
 			blurModel.SetData(arraySet1[0], outputs[0], width, height);
 			blurModel.execute(2);
@@ -97,7 +88,6 @@ int main()
 			QueryPerformanceCounter(&stop);
 			delayGPU = (double)(stop.QuadPart - start.QuadPart);
 			//cout << "GPU Time: " << delayGPU << ", " << endl;
-			//time_log_file << "GPU Time: " << delayGPU << ", " << endl;
 
 			dataset_file << width << "," << height << "," << (delayGPU > delayCPU ? 0 : 1) << endl;
 
@@ -130,7 +120,6 @@ int main()
 		}
 	}
 	dataset_file.close();
-	time_log_file.close();
 	return 0;
 }
 

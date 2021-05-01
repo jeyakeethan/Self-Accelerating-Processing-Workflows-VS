@@ -1,14 +1,14 @@
+Measure prediction time average
+	tpre-avg
+
 Matrix Multiplication
 (1)	Generate dataset -> MatrixMulSpace.cu
 		level = 5
 	if separate models required for separate datatypes
-	(3)	Generate dataset for int, float, short, double
+	(3)	Generate dataset for int, float
 	
 Experiments based on occurrences of CPU and GPU fit problems
 (4)	CPU/GPU -> 1/2, 1, 2, 3
-
-Measure prediction time average
-	tpre-avg
 
 Measure attainable gain when CPU and GPU fit problems are in fair ratio i.e., 1
 
