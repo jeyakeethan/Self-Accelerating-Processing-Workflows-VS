@@ -26,6 +26,7 @@ void ComplexModel<T>::CPUImplementation() {
 	CPUGPULOG << 0;
 	int x = localMD->x, y = localMD->y, z = localMD->z;
 	int length_b = y * z;
+	int length_c = x * z;
 // ADD Y to the B first
 #pragma omp parallel num_threads(CPUCores)
 	{
@@ -34,11 +35,8 @@ void ComplexModel<T>::CPUImplementation() {
 			localB[x] = localB[x] + localY[x];
 		}
 #pragma omp barrier
-	}
 
 // Multiply B and A then add X
-#pragma omp parallel num_threads(CPUCores)
-	{
 #pragma omp for
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < z; j++) {
@@ -47,9 +45,17 @@ void ComplexModel<T>::CPUImplementation() {
 					sum += localA[y * i + k] * localB[j + z * k];
 				}
 				int index = z * i + j;
-				localC[index] = sum + localX[index];
+				localC[index] = sum;
 			}
 		}
+#pragma omp barrier
+
+// ADD X to the OUT first
+#pragma omp for
+		for (int x = 0; x < length_c; x++) {
+			localC[x] += localX[x];
+		}
+#pragma omp barrier
 	}
 }
 
@@ -78,17 +84,23 @@ void ComplexModel<T>::GPUImplementation() {
 	cudaMemcpy(dev_y, localY, l2, cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_x, localX, l3, cudaMemcpyHostToDevice);
 
-	// Execute the kernel
-	// Array addition kernel
+	// EXECUTE THE KERNEL
+	// Call vector addition kernel		 Add B = B + Y
 	dim3 blockDims(THREADS_PER_BLOCK, 1, 1);
 	dim3 gridDims((unsigned int)ceil((double)(l2 / blockDims.x)), 1, 1);
 	Vector_Addition << < blockDims, gridDims >> > (dev_y, dev_b, dev_b);
-
 	cudaDeviceSynchronize();		//sychronize
 
 	// Complex Kernel
 	dim3 dimGrid(32, 1024), dimBlock(32);
 	complex_model_kernel << < dimGrid, dimBlock >> > (dev_a, dev_b, dev_x, dev_out, y, z);
+	cudaDeviceSynchronize();		//sychronize
+
+	// Call vector addition kernel		 Add OUT = OUT + X
+	dim3 blockDims(THREADS_PER_BLOCK, 1, 1);
+	dim3 gridDims((unsigned int)ceil((double)(l3 / blockDims.x)), 1, 1);
+	Vector_Addition << < blockDims, gridDims >> > (dev_x, dev_out, dev_out);
+	cudaDeviceSynchronize();		//sychronize
 
 	//Copy back to Host array from Device array
 	cudaMemcpy(localC, dev_out, l3, cudaMemcpyDeviceToHost);
