@@ -183,6 +183,7 @@ int main()
 	// ************Free Host Memory**************
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		delete[] arraySet1[x];
+		delete[] arraySet2[x];
 		delete[] outputs1[x];
 		delete[] outputs2[x];
 		delete[] outputs3[x];
