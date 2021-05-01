@@ -65,6 +65,7 @@ const short SIZE_OF_CACHE = 19;
 
 // Dataset generation
 const float CPU_TIME_MARGIN = 0.75f;
+const float SPACE_TIME_MARGIN = 1000; // clock cycles
 
 #endif // CONSTANTS_H
 

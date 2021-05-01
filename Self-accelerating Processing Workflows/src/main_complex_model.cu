@@ -37,17 +37,17 @@ int main()
 
 
 	/*------- Write Input Nature into File -------*/
-	string inputNatureFile = "../logs/Array_addition_Input Nature.csv"; fileNum = 0;
+	string inputNatureFile = "../logs/Complex_Model_Input Nature.csv"; fileNum = 0;
 	while (FILE* file = fopen(inputNatureFile.c_str(), "r")) {
 		fclose(file);
-		inputNatureFile = "../logs/Array_addition_Input Nature_" + to_string(++fileNum) + ".csv";
+		inputNatureFile = "../logs/Complex_Model_Input Nature_" + to_string(++fileNum) + ".csv";
 	}
 	input_nature_file.open(inputNatureFile, ios_base::out);
 
-	string timeLogFile = "../logs/Array_addition_Time.txt"; fileNum = 0;
+	string timeLogFile = "../logs/Complex_Model_Time.txt"; fileNum = 0;
 	while (FILE* file = fopen(timeLogFile.c_str(), "r")) {
 		fclose(file);
-		timeLogFile = "../logs/Array_addition_Time_" + to_string(++fileNum) + ".txt";
+		timeLogFile = "../logs/Complex_Model_Time_" + to_string(++fileNum) + ".txt";
 	}
 	time_log_file.open(timeLogFile);
 
@@ -63,6 +63,7 @@ int main()
 	numericalType1* arraySet1[EXPERIMENT_COUNT];
 	numericalType1* arraySet2[EXPERIMENT_COUNT];
 	numericalType1* arraySetx[EXPERIMENT_COUNT];
+	numericalType1* arraySety[EXPERIMENT_COUNT];
 	numericalType1* outputs1[EXPERIMENT_COUNT];
 	numericalType1* outputs2[EXPERIMENT_COUNT];
 	numericalType1* outputs3[EXPERIMENT_COUNT];
@@ -109,8 +110,11 @@ int main()
 		length2 = dimension.y * dimension.z;
 		length3 = dimension.x * dimension.z;
 		arraySet1[x] = generate_1d_array(length1);
+
 		arraySet2[x] = generate_1d_array(length2);
+		arraySety[x] = generate_1d_array(length2);
 		arraySetx[x] = generate_1d_array(length3);
+
 		outputs1[x] = new numericalType1[length3];
 		outputs2[x] = new numericalType1[length3];
 		outputs3[x] = new numericalType1[length3];
@@ -121,7 +125,7 @@ int main()
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		QueryPerformanceCounter(&start);
-		complexModel.SetData(arraySet1[x], arraySet2[x], arraySetx[x], outputs3[x], &dimensions[x]);
+		complexModel.SetData(arraySet1[x], arraySet2[x], arraySetx[x], arraySety[x], outputs1[x], &dimensions[x]);
 		complexModel.execute(2);
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -134,7 +138,7 @@ int main()
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		QueryPerformanceCounter(&start);
-		complexModel.SetData(arraySet1[x], arraySet2[x], arraySetx[x], outputs1[x], &dimensions[x]);
+		complexModel.SetData(arraySet1[x], arraySet2[x], arraySetx[x], arraySety[x], outputs2[x], &dimensions[x]);
 		complexModel.execute();
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -147,7 +151,7 @@ int main()
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		QueryPerformanceCounter(&start);
-		complexModel.SetData(arraySet1[x], arraySet2[x], arraySetx[x], outputs2[x], &dimensions[x]);
+		complexModel.SetData(arraySet1[x], arraySet2[x], arraySetx[x], arraySety[x], outputs3[x], &dimensions[x]);
 		complexModel.execute(1);
 		QueryPerformanceCounter(&stop);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
@@ -161,6 +165,7 @@ int main()
 		delete[] arraySet1[x];
 		delete[] arraySet2[x];
 		delete[] arraySetx[x];
+		delete[] arraySety[x];
 		delete[] outputs1[x];
 		delete[] outputs2[x];
 		delete[] outputs3[x];

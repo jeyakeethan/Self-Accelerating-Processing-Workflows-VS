@@ -34,13 +34,13 @@ int main()
 	double delay;
 	double elapsedTimeCPU, elapsedTimeGPU;
 
-	const int experiment_count = 50;
+	const int experiment_count = 5;
 
 	MatrixMultiplicationModel<numericalType1> matmulmodel(6);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
-	int step = 32;
-	int levels = 8;
+	int step = 8;
+	int levels = 25;
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
 	cout << "Dim\t" << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header

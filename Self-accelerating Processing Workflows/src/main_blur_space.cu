@@ -54,10 +54,10 @@ int main()
 	BlurModel <unsigned char> blurModel(6);
 
 	const int experiment_count = 10;
-	const int levels = 12;
+	const int levels = 20;
 	const int number_entries = levels * levels;
 	const int value_range = 256;
-	const int step = 10;
+	const int step = 12;
 	int i_2, i_3;
 	unsigned char* arraySet1[experiment_count];
 	unsigned char* outputs[experiment_count];

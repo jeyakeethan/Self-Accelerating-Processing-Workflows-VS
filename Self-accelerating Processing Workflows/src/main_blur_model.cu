@@ -63,10 +63,10 @@ time_log_file << "Blur experiments" << endl;
 	myDim2 dimensions[EXPERIMENT_COUNT];
 	myDim2 dimension;
 
-	int length, index_g, dim_index, len_dataset;
+	int length, index_g, dim_index, len_dataset, accuracyCount = 0;
 
 	// load related dimesion spaces
-	const int dim_space_len_2d = 10;
+	const int dim_space_len_2d = 100;
 	const int value_range = 256;
 
 	myDim2 cpu_dim_space_2d[dim_space_len_2d];
@@ -80,6 +80,10 @@ time_log_file << "Blur experiments" << endl;
 			vector<float> cpu{ (float)cpu_dim_space_2d[x].x, (float)cpu_dim_space_2d[x].y };
 			bool pre_cpu = blurModel.mlModel->predict_logic(&cpu);
 			cout << "[" << cpu_dim_space_2d[x].x << "," << cpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
+			if (dataset.labels.at(x) == (pre_cpu ? 1 : 0)) {
+				cout << "same" << endl;
+				accuracyCount += 1;
+			}
 
 			index_g = len_dataset - dim_space_len_2d + x;
 			gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
@@ -87,10 +91,13 @@ time_log_file << "Blur experiments" << endl;
 			vector<float> gpu{ (float)gpu_dim_space_2d[x].x, (float)gpu_dim_space_2d[x].y };
 			bool pre_gpu = blurModel.mlModel->predict_logic(&gpu);
 			cout << "[" << gpu_dim_space_2d[x].x << "," << gpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
-
+			if (dataset.labels.at(index_g) == (pre_gpu ? 1 : 0)) {
+				cout << "same" << endl;
+				accuracyCount += 1;
+			}
 		}
 	}
-
+	cout << "Accuracy" << accuracyCount << endl;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;
 		dim_index = rand() % dim_space_len_2d;
