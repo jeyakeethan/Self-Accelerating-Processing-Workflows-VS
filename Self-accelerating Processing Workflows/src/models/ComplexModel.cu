@@ -23,7 +23,7 @@ ComplexModel<T>::~ComplexModel() {}
 template <class T>
 void ComplexModel<T>::CPUImplementation() {
 	// log mode to see the flow of execution
-	CPUGPULOG << 0;
+	// CPUGPULOG << 0;
 	int x = localMD->x, y = localMD->y, z = localMD->z;
 	int length_b = y * z;
 	int length_c = x * z;
@@ -62,7 +62,7 @@ void ComplexModel<T>::CPUImplementation() {
 template <class T>
 void ComplexModel<T>::GPUImplementation() {
 	// log mode to see the flow of execution
-	CPUGPULOG << 1;
+	// CPUGPULOG << 1;
 
 	//Device array
 	numericalType1* dev_a, * dev_b, * dev_y, * dev_out, * dev_x;
