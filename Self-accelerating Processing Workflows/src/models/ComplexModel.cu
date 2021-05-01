@@ -97,9 +97,8 @@ void ComplexModel<T>::GPUImplementation() {
 	cudaDeviceSynchronize();		//sychronize
 
 	// Call vector addition kernel		 Add OUT = OUT + X
-	dim3 blockDims(THREADS_PER_BLOCK, 1, 1);
-	dim3 gridDims((unsigned int)ceil((double)(l3 / blockDims.x)), 1, 1);
-	Vector_Addition << < blockDims, gridDims >> > (dev_x, dev_out, dev_out);
+	dim3 gridDims2((unsigned int)ceil((double)(l3 / blockDims.x)), 1, 1);
+	Vector_Addition << < blockDims, gridDims2 >> > (dev_x, dev_out, dev_out);
 	cudaDeviceSynchronize();		//sychronize
 
 	//Copy back to Host array from Device array
