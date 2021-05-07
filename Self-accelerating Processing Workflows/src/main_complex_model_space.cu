@@ -39,11 +39,10 @@ int main()
 	ComplexModel<numericalType1> complexModel(6);
 	complexModel.clearLogs();		// empty the performance matrix log file
 
-	int step = 32;
-	int levels = 8;
+	int step = 16;
+	int levels = 12;
 	int lengthA, lengthB, lengthC;
 	numericalType1* mat1, * mat2, *maty, *matx, * matOut1, * matOut2;
-	cout << "Dim\t" << "Status\t" << "CPU\t" << "GPU (ms)" << endl << endl;		// print header
 	for (int m = step; m <= levels * step; m += step) {
 		for (int l = step; l <= levels * step; l += step) {
 			for (int n = step; n <= levels * step; n += step) {

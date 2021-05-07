@@ -123,7 +123,7 @@ bool MLModel::predict_logic(vector<float>& params) {
 	int i = accumulate(params.begin(), params.end(), 0) % SIZE_OF_CACHE;	// detemine the hash value for cache replacement of CPU
 	if (caching[i] == params)
 		return caching_pred[i];
-		*/
+	*/
 	bool decision = model->predict(params);
 	/*
 	caching[i] = params;
