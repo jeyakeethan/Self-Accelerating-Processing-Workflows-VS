@@ -34,7 +34,7 @@ void measure_prediction_time() {
 		QueryPerformanceCounter(&start);
 		bool pred = matrixMultiplicationModel.mlModel->predict_logic(*vec);
 		QueryPerformanceCounter(&stop);
-		cout << (pred ? 1 : 0);
+		// cout << (pred ? 1 : 0);
 		delay += (double)(stop.QuadPart - start.QuadPart) / (double)clockFreq.QuadPart;
 	}
 	cout << endl << "Total time: " << delay << "\tAvg Prediction time : " << delay / EXPERIMENT_COUNT << endl;
