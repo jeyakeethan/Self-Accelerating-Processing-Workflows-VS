@@ -37,7 +37,7 @@ int main()
 	unsigned error;
 
 	/*------- Write Input Nature into File -------*/
-	string inputNatureFile = "../ml-datasets/blur.csv";
+	string inputNatureFile = "../ml-datasets/experiment-blur-sorted.csv";
 	dataset_file.open(inputNatureFile, ios_base::out);
 
 	/*------------- Single dimension vector addition ------------*/
@@ -45,11 +45,11 @@ int main()
 
 	BlurModel <unsigned char> blurModel(6);
 
-	const int experiment_count = 10;
-	const int levels = 20;
+	const int experiment_count = 5;
+	const int levels = 30;
 	const int number_entries = levels * levels;
 	const int value_range = 256;
-	const int step = 12;
+	const int step = 8;
 	int i_2, i_3;
 	unsigned char* arraySet1[experiment_count];
 	unsigned char* outputs[experiment_count];

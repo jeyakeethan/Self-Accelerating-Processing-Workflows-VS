@@ -23,7 +23,7 @@ MatrixMultiplicationModel<T>::~MatrixMultiplicationModel() {}
 template <class T>
 void MatrixMultiplicationModel<T>::CPUImplementation() {
 	// log mode to see the flow of execution
-	CPUGPULOG << 0;
+	// CPUGPULOG << 0;
 
 	int x = localMD->x, y = localMD->y, z = localMD->z;
 	
@@ -47,7 +47,7 @@ void MatrixMultiplicationModel<T>::CPUImplementation() {
 template <class T>
 void MatrixMultiplicationModel<T>::GPUImplementation() {
 	// log mode to see the flow of execution
-	CPUGPULOG << 1;
+	// CPUGPULOG << 1;
 
 	//Device array
 	numericalType1 *dev_a, *dev_b, *dev_c;

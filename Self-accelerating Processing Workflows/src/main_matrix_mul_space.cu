@@ -36,11 +36,11 @@ int main()
 
 	const int experiment_count = 5;
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(6);
+	MatrixMultiplicationModel<numericalType1> matmulmodel(12);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
-	int step = 8;
-	int levels = 25;
+	int step = 20;
+	int levels = 12;
 	int lengthX, lengthY, lengthZ;
 	numericalType1 *mat1, *mat2, *matOut1, *matOut2;
 	for (int m = step; m <= levels * step; m += step) {
@@ -85,11 +85,11 @@ int main()
 				if (compareResults(matOut1, matOut2, lengthZ))
 					status = "Same";
 				cout << l << "," << m << "," << n << "\t" << status << "\t" << elapsedTimeCPU << "\t" << elapsedTimeGPU << endl;*/
-
+				/*
 				for (int t = 0; t < lengthZ; t++) {
 					cout << matOut1[t] << ", " << matOut2[t] << endl;
 				}
-				
+				*/
 
 				outfile << l << "," << m << "," << n << "," << (elapsedTimeCPU < elapsedTimeGPU ? 0 : 1) << endl;
 

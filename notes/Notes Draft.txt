@@ -14,6 +14,7 @@ ML model accuracy
 Generalize ML model
     1. Number of Attributes
     2. Range of values of the attributes
+		True false attributes
     # auto config meta params based on above
 Reduce prediction time
     Caching √
@@ -22,6 +23,8 @@ Reduce prediction time
            #hashing
            i = sum(*attr)% CACHE_SIZE ;
            j = i + CACHE_SIZE
+    Center boundary
+
 Include additional features
     like sys load etc.
 	

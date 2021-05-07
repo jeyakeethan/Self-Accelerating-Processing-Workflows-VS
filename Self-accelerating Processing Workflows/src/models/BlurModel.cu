@@ -22,7 +22,7 @@ BlurModel<T>::~BlurModel() {}
 template <class T>
 void BlurModel<T>::CPUImplementation() {
 	// log mode to see the flow of execution
-	CPUGPULOG << 0;
+	// CPUGPULOG << 0;
 
     int fsize = 5; // Filter size
 
@@ -64,7 +64,7 @@ void BlurModel<T>::CPUImplementation() {
 template <class T>
 void BlurModel<T>::GPUImplementation() {
 	// log mode to see the flow of execution
-	CPUGPULOG << 1;
+	// CPUGPULOG << 1;
 
 	unsigned char* dev_input;
 	unsigned char* dev_output;

@@ -60,15 +60,15 @@ int main()
 	myDim3 dimensions[EXPERIMENT_COUNT];
 	myDim3 dimension;
 
-	int length1, length2, length3, index_g, dim_index, len_dataset;
+	int length1, length2, length3, index_g, dim_index, len_dataset, accuracyCount = 0;
 
 	// load related dimesion spaces
-	const int dim_space_len_3d = 10;
+	const int dim_space_len_3d = 100;
 	const int value_range = 32;
 
 	myDim3 cpu_dim_space_3d[dim_space_len_3d];
 	myDim3 gpu_dim_space_3d[dim_space_len_3d];
-	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/complex-model.csv", ',', -1, 1000);
+	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/experiment-complex-model-sorted.csv", ',', -1, 1000);
 	len_dataset = dataset.labels.size();
 	if (len_dataset > 20)
 		for (int x = 0; x < dim_space_len_3d; x++) {
@@ -76,17 +76,27 @@ int main()
 			cpu_dim_space_3d[x].y = dataset.features.at(x).at(1);
 			cpu_dim_space_3d[x].z = dataset.features.at(x).at(2);
 			vector<float> cpu{ (float)cpu_dim_space_3d[x].x, (float)cpu_dim_space_3d[x].y, (float)cpu_dim_space_3d[x].z };
-			bool pre_cpu = complexModel.mlModel->predict_logic(&cpu);
+			bool pre_cpu = complexModel.mlModel->predict_logic(cpu);
 			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
+			if (dataset.labels.at(x) == (pre_cpu ? 1 : 0)) {
+				// cout << "same" << endl;
+				accuracyCount += 1;
+			}
 
 			index_g = len_dataset - dim_space_len_3d + x;
 			gpu_dim_space_3d[x].x = dataset.features.at(index_g).at(0);
 			gpu_dim_space_3d[x].y = dataset.features.at(index_g).at(1);
 			gpu_dim_space_3d[x].z = dataset.features.at(index_g).at(2);
 			vector<float> gpu{ (float)gpu_dim_space_3d[x].x, (float)gpu_dim_space_3d[x].y, (float)gpu_dim_space_3d[x].z };
-			bool pre_gpu = complexModel.mlModel->predict_logic(&gpu);
+			bool pre_gpu = complexModel.mlModel->predict_logic(gpu);
 			cout << "[" << gpu_dim_space_3d[x].x << "," << gpu_dim_space_3d[x].y << "," << gpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
+			cout << "[" << cpu_dim_space_3d[x].x << "," << cpu_dim_space_3d[x].y << "," << cpu_dim_space_3d[x].z << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
+			if (dataset.labels.at(x) == (pre_cpu ? 1 : 0)) {
+				// cout << "same" << endl;
+				accuracyCount += 1;
+			}
 		}
+		cout << "Accuracy: " << accuracyCount << endl;
 
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;
@@ -122,7 +132,7 @@ int main()
 	}
 	elapsedTime = int(delay * 1000);
 	cout << endl << "GPU Time: " << elapsedTime << " ms" << endl << endl;
-
+	
 	// -------- Framework --------
 	delay = 0;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {

@@ -72,7 +72,7 @@ time_log_file << "Blur experiments" << endl;
 
 	myDim2 cpu_dim_space_2d[dim_space_len_2d];
 	myDim2 gpu_dim_space_2d[dim_space_len_2d];
-	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/blur.csv", ',', -1, 1000);
+	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/experiment-blur-sorted.csv", ',', -1, 1000);
 	len_dataset = dataset.labels.size();
 	if (len_dataset > 20) {
 		for (int x = 0; x < dim_space_len_2d; x++) {
@@ -82,7 +82,7 @@ time_log_file << "Blur experiments" << endl;
 			bool pre_cpu = blurModel.mlModel->predict_logic(cpu);
 			cout << "[" << cpu_dim_space_2d[x].x << "," << cpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(x) << ",\t" << (pre_cpu ? 1 : 0) << endl;
 			if (dataset.labels.at(x) == (pre_cpu ? 1 : 0)) {
-				cout << "same" << endl;
+				// cout << "same" << endl;
 				accuracyCount += 1;
 			}
 
@@ -93,12 +93,12 @@ time_log_file << "Blur experiments" << endl;
 			bool pre_gpu = blurModel.mlModel->predict_logic(gpu);
 			cout << "[" << gpu_dim_space_2d[x].x << "," << gpu_dim_space_2d[x].y << "]" << " =\t" << dataset.labels.at(index_g) << ",\t" << (pre_gpu ? 1 : 0) << endl;
 			if (dataset.labels.at(index_g) == (pre_gpu ? 1 : 0)) {
-				cout << "same" << endl;
+				// cout << "same" << endl;
 				accuracyCount += 1;
 			}
 		}
 	}
-	cout << "Accuracy" << accuracyCount << endl;
+	cout << "Accuracy: " << accuracyCount << endl;
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;
 		dim_index = rand() % dim_space_len_2d;
