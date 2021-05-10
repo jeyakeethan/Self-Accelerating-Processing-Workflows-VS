@@ -85,7 +85,7 @@ MLModel::~MLModel() {
 void MLModel::trainModel() {
 	cout << "ML model is being trained! please wait for a moment..." << endl;
 
-	pandas::Dataset dataset = pandas::ReadCSV(dataset_path, ',', -1, 1000);
+	pandas::Dataset dataset = pandas::ReadCSV(dataset_path, ',', -1, 100000);
 
 	xgboost::Config mlConfig;
 	mlConfig.n_estimators = 10;

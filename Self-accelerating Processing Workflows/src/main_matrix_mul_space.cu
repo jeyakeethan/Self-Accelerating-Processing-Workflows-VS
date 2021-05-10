@@ -29,14 +29,14 @@ static bool compareResults(numericalType1* arr1, numericalType1* arr2, int len) 
 int main()
 {
 	LARGE_INTEGER start, stop, clockFreq;
-	ofstream outfile("../ml-datasets/matrix-multiplication.csv");
+	ofstream outfile("../ml-datasets/experiment-matrix-multiplication-sorted.csv");
 	QueryPerformanceFrequency(&clockFreq);
 	double delay;
 	double elapsedTimeCPU, elapsedTimeGPU;
 
 	const int experiment_count = 5;
 
-	MatrixMultiplicationModel<numericalType1> matmulmodel(12);
+	MatrixMultiplicationModel<numericalType1> matmulmodel(4);
 	matmulmodel.clearLogs();		// empty the performance matrix log file
 
 	int step = 20;

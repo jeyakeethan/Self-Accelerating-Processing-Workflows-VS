@@ -43,13 +43,14 @@ int main()
 	/*------------- Single dimension vector addition ------------*/
 	cout << "BlurModel experiments started" << endl;
 
-	BlurModel <unsigned char> blurModel(6);
+	BlurModel <unsigned char> blurModel(4);
 
 	const int experiment_count = 5;
-	const int levels = 30;
+
+	const int step = 12;
+	const int levels = 20;
 	const int number_entries = levels * levels;
 	const int value_range = 256;
-	const int step = 8;
 	int i_2, i_3;
 	unsigned char* arraySet1[experiment_count];
 	unsigned char* outputs[experiment_count];

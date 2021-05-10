@@ -54,7 +54,7 @@ public:
     /*!
         \param stream stream opened for read.
     */
-    BasicIStreamWrapper(StreamType &stream) : stream_(stream), buffer_(peekBuffer_), bufferSize_(4), bufferLast_(0), current_(buffer_), readCount_(0), count_(0), eof_(false) { 
+    BasicIStreamWrapper(StreamType &stream) : stream_(stream), buffer_(peekBuffer_), bufferSize_(6), bufferLast_(0), current_(buffer_), readCount_(0), count_(0), eof_(false) { 
         Read();
     }
 

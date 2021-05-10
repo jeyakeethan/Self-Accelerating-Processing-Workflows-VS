@@ -57,22 +57,22 @@ cout << "Blur experiments" << endl;
 input_nature_file << "Blur experiments" << endl;
 time_log_file << "Blur experiments" << endl;
 
-	BlurModel<numericalType1> blurModel(6);
+	BlurModel<numericalType1> blurModel(4);
 	
 	unsigned char* arraySet1[EXPERIMENT_COUNT];
 	unsigned char* outputs[EXPERIMENT_COUNT];
 	myDim2 dimensions[EXPERIMENT_COUNT];
 	myDim2 dimension;
 
-	int length, index_g, dim_index, len_dataset, accuracyCount = 0;
+	int length, index_g, dim_index, len_dataset, accuracyCount = 0, falseNegative = 0;
 
 	// load related dimesion spaces
-	const int dim_space_len_2d = 100;
+	const int dim_space_len_2d = 10;
 	const int value_range = 256;
 
 	myDim2 cpu_dim_space_2d[dim_space_len_2d];
 	myDim2 gpu_dim_space_2d[dim_space_len_2d];
-	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/experiment-blur-sorted.csv", ',', -1, 1000);
+	pandas::Dataset dataset = pandas::ReadCSV("../ml-datasets/experiment-blur-sorted.csv", ',', -1, 100000);
 	len_dataset = dataset.labels.size();
 	if (len_dataset > 20) {
 		for (int x = 0; x < dim_space_len_2d; x++) {
@@ -85,6 +85,9 @@ time_log_file << "Blur experiments" << endl;
 				// cout << "same" << endl;
 				accuracyCount += 1;
 			}
+			if (dataset.labels.at(x) == 1 && !pre_cpu) {
+				falseNegative++;
+			}
 
 			index_g = len_dataset - dim_space_len_2d + x;
 			gpu_dim_space_2d[x].x = dataset.features.at(index_g).at(0);
@@ -96,9 +99,15 @@ time_log_file << "Blur experiments" << endl;
 				// cout << "same" << endl;
 				accuracyCount += 1;
 			}
+			if (dataset.labels.at(index_g) == 1 && !pre_gpu) {
+				falseNegative++;
+			}
 		}
 	}
 	cout << "Accuracy: " << accuracyCount << endl;
+	cout << "FalseNegative: " << falseNegative << "/" << dim_space_len_2d * 2 << endl;
+
+
 	for (int x = 0; x < EXPERIMENT_COUNT; x++) {
 		favor = rand() % 2;
 		dim_index = rand() % dim_space_len_2d;

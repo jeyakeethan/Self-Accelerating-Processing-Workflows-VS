@@ -36,11 +36,11 @@ int main()
 
 	const int experiment_count = 5;
 
-	ComplexModel<numericalType1> complexModel(6);
+	ComplexModel<numericalType1> complexModel(4);
 	complexModel.clearLogs();		// empty the performance matrix log file
 
 	int step = 16;
-	int levels = 12;
+	int levels = 16;
 	int lengthA, lengthB, lengthC;
 	numericalType1* mat1, * mat2, *maty, *matx, * matOut1, * matOut2;
 	for (int m = step; m <= levels * step; m += step) {
