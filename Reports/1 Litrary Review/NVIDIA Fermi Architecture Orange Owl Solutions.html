@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html style="transform: none;" lang="en-US"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="http://www.orangeowlsolutions.com/xmlrpc.php">
+
+<title>NVIDIA Fermi Architecture | Orange Owl Solutions</title>
+
+<!-- All in One SEO Pack 2.7.2 by Michael Torbert of Semper Fi Web Design[280,341] -->
+<meta name="description" content="Overview and characteristics The Fermi architecture is the penultimate NVIDIA architecture, the very last being the Kepler one. Fermi Graphic Processing Units (GPUs) feature 3.0 billion transistors and a schematic is sketched in Fig. 1. Streaming Multiprocessor (SM): composed by 32 CUDA cores (see Streaming Multiprocessor and CUDA core sections). GigaThread globlal scheduler: distributes thread blocks to SM thread schedulers and manages the context switches between threads during execution (see Warp Scheduling section). Host interface: connects the GPU to the CPU via a PCI-Express v2 bus (peak transfer rate of 8GB/s). DRAM: supported up to 6GB of GDDR5 DRAM memory thanks to the 64-bit addressing capability (see Memory Architecture section). Clock frequency: 1.5GHz (not released by NVIDIA, but estimated by Insight 64). Peak performance: 1.5 TFlops. Global memory clock: 2GHz. DRAM bandwidth: 192GB/s. Convention in figures: orange - scheduling and dispatch; green - execution; light blue -registers and caches. Fig. 01 - NVIDIA Fermi Architecture Streaming Multiprocessor (SM) Each SM (see Fig. 2) features 32 single-precision CUDA cores, 16 load/store units, four Special Function Units (SFUs), a 64KB block of high speed on-chip memory (see L1+Shared Memory subsection) and an interface to the L2 cache (see L2 Cache subsection). Fig. 2. The Fermi SM. Load/Store Units Allow source and destination addresses to be calculated for 16 threads per clock. Load and store the data from/to cache or DRAM. Data can be converted from one format to another (for example, from integer to floating point or vice-versa) as it passes between DRAM and the core registers at the full rate. These formatting and converting features are examples of optimizations unique to GPUs. They are not worthwhile to be implemented in general-purpose CPUs, but for GPUs they will be used sufficiently often to justify their inclusion. Special Functions Units (SFUs) Execute transcendental instructions such as sin, cosine, reciprocal, and square root. The device intrinsics (e.g., __log2f(), __sinf(), __cosf()) expose in hardware the instructions implemented by the SFU. The hardware implementation is based on quadratic interpolation in ROM tables using fixed-point arithmetic, as described in . If -ffast-math is passed to nvcc, it will automatically use the intrinsic versions of the transcendentals, they have to be called explicitly. Four of these operations can be issued per cycle in each SM. The SFU pipeline is decoupled from the dispatch unit, allowing the dispatch unit to issue to other execution units while the SFU is occupied. It should be noticed that CUDA intrinsics rarely map to a single SFU instruction, but usually map to sequences of multiple SFU and non-SFU instructions. Different GPU have different throughputs for the various operations involved, so if one needs to know the throughput of a particular intrinsic on a particular GPU it would be best to simply measure it. The performance of single-precision intrinsics can also vary with compilation mode, in particular -ftz={true|false}. CUDA core Fig. 3. The Fermi core. A CUDA core handles integer and floating point operations (see Fig. 3). Integer Arithmetic Logic Unit (ALU) Supports full 32-bit precision for all usual mathematical and logical instructions, including multiplication, consistent with standard programming language requirements. It is also optimized to efficiently support 64-bit and extended precision operations. Floating Point Unit (FPU) Implements the new IEEE 754-2008 floating-point standard, providing the fused multiply-add (FMA) instruction (see Fused Multiply-Add subsection) for both single and double precision arithmetics. Up to 16 double precision fused multiply-add operations can be performed per SM, per clock. Fused Multiply-Add Fig. 4. Multiply-Add (MAD) instruction. Fused Multiply-Add (FMA) perform Multiply-Add (MAD) operations (i.e., A*B+C) with a single final rounding step, with no loss of precision in the addition, for both 32-bit single-precision and 64-bit double-precision floating point numbers. FMA improves the accuracy upon MAD (see Fig. 4) by retaining full precision in the intermediate stage (see Fig. 5). In Fermi, this intermediate result carries a full 106-bit mantissa; in fact, 161 bits of precision are maintained during the add operation to handle worst-case denormalized numbers before the final double-precision result is computed. Fig. 5. Fused Multiply-Add (FMA) instruction. Prior GPUs accelerated these calculations with the MAD instruction (multiplication with truncation, followed by an addition with round-to-nearest even) that allowed both operations to be performed in a single clock. A FMA counts as two operations when estimating performance, resulting in a peak performance rate of 1024 operations per clock (32 cores x 16 SM x 2 operations). Rounding and subnormal numbers Subnormal numbers are small numbers that lie between zero and the smallest normalized number of a given floating point number system. In the Fermi architecture, single precision floating point instructions support subnormal numbers by default in hardware, allowing values to gradually underflow to zero with no performance penalty, as well as all four IEEE 754-2008 rounding modes (nearest, zero, positive infinity, and negative infinity). This is a relevant point since prior generation GPUs flushed subnormal operands and results to zero, incurring in losses of accuracy and CPUs typically perform subnormal calculations in exception-handling software, taking thousands of cycles. Warp scheduling The Fermi architecture uses a two-level, distributed thread scheduler. The GigaThread engine schedules thread blocks to various SMs, while at the SM level, each warp scheduler distributes warps of 32 threads to its execution units. Each SM can issue instructions consuming any two of the four green execution columns shown in the schematic Fig. 6. For example, the SM can mix 16 operations from the 16 first column cores with 16 operations from the 16 second column cores, or 16 operations from the load/store units with four from SFUs, or any other combinations the program specifies. Fig. 6. Relevant to warp scheduling. Note that 64-bit floating point operations consume both the first two execution columns. This implies that an SM can issue up to 32 single-precision (32-bit) floating point operations or 16 double-precision (64-bit) floating point operations at a time. Dual Warp Scheduler Threads are scheduled in groups of 32 threads called warps. Each SM features two warp schedulers (Fig. 7) and two instruction dispatch units, allowing two warps to be issued and executed concurrently. The dual warp scheduler selects two warps, and issues one instruction from each warp to a group of 16 cores, 16 load/store units, or 4 SFUs. Most instructions can be dual issued; two integer instructions, two floating instructions, or a mix of integer, floating point, load, store, and SFU instructions can be issued concurrently. Double precision instructions do not support dual dispatch with any other operation. In each cycle, a total of 32 instructions can be dispatched from one or two warps to these blocks. It takes two cycles for the 32 instructions in each warp to execute on the cores or load/store units. A warp of 32 special-function instructions is issued in a single cycle but takes eight cycles to complete on the four SFUs (see Fig. 8). Context Switching Fermi supports concurrent kernel execution, where different kernels of the same application context can execute on the GPU at the same time. Concurrent kernel execution allows programs that execute a number of small kernels to utilize the whole GPU. For example, a program may invoke a fluids solver and a rigid body solver which, if executed sequentially, would use only half of the available thread processors. On the Fermi architecture, different kernels of the same CUDA context can execute concurrently, allowing maximum utilization of GPU resources. Fig. 7. Illustrating the dual warp scheduler. Kernels from different application contexts can still run sequentially with great efficiency thanks to the improved context switching performance. Switching from one application to another takes just 25 microseconds. This time is short enough that a Fermi GPU can still maintain high utilization even when running multiple applications, like a mix of compute code and graphics code. Fig. 8. Issuing of the instructions to the execution blocks. Efficient multitasking is important for consumers (e.g., for video games using physics-based effects) and professional users (who often need to run computationally intensive simulations and simultaneously visualize the results). As mentioned, this switching is managed by the GigaThread hardware thread scheduler. Memory L1 cache per SM and unified L2 cache that services all operations (load, store and texture). Register files, shared memories, L1 caches, L2 cache, and DRAM memory are Error Correcting Code (see subsection on the Error Correcting Code) protected. Registers Each SM has 32KB of registers. Each thread has access to its own registers and not those of other threads. The maximum number of registers that can be used by a CUDA kernel is 63. The number of available registers degrades gracefully from 63 to 21 as the workload (and hence resource requirements) increases by number of threads. Registers have a very high bandwidth: about 8,000 GB/s. Fig. 9. The Fermi memory hierarchy. L1+Shared Memory On-chip memory that can be used either to cache data for individual threads (register spilling/L1 cache) and/or to share data among several threads (shared memory). This 64 KB memory can be configured as either 48 KB of shared memory with 16 KB of L1 cache, or 16 KB of shared memory with 48 KB of L1 cache. Prior generation GPUs spilled registers directly to DRAM, increasing access latency. Also, shared memory enables threads within the same thread block to cooperate, facilitates extensive reuse of on-chip data, and greatly reduces off-chip traffic. Shared memory is accessible by the threads in the same thread block. It provides low-latency access (10-20 cycles) and very high bandwidth (1,600 GB/s) to moderate amounts of data (such as intermediate results in a series of calculations, one row or column of data for matrix operations, a line of video, etc.). Because the access latency to this memory is also completely predictable, algorithms can be written to interleave loads, calculations, and stores with maximum efficiency. Local memory Local memory is meant as a memory location used to hold &quot;spilled&quot; registers. Register spilling occurs when a thread block requires more register storage than is available on an SM. Pre-Fermi GPUs spilled registers to global memory, causing a dramatic drop in performance. Compute ≥ 2.0 devices spill registers to the L1 cache, which minimizes the performance impact of register spills. Register spilling increases the importance of the L1 cache. Pressure from register spilling and the stack (which consume L1 storage) can increase the cache miss rate by data eviction. Local memory is used only for some automatic variables (which are declared in the device code without any of the __device__, __shared__, or __constant__ qualifiers). Generally, an automatic variable resides in a register except for the following: Arrays that the compiler cannot determine are indexed with constant quantities; Large structures or arrays that would consume too much register space; Any variable the compiler decides to spill to local memory when a kernel uses more registers than are available on the SM. The nvcc compiler reports total local memory usage per kernel (lmem) when compiling with the –ptxas-options=-v option. L2 Cache 768 KB unified L2 cache, shared among the 16 SMs, that services all load and store from/to global memory, including copies to/from CPU host, and also texture requests. As an example, if one copies 512KB from CPU to GPU, those data will reside both in the global memory and in L2; a kernel needing those data immediately after the CPU-&gt;GPU copy will find them in L2. The L2 cache subsystem also implements atomic operations, used for managing access to data that must be shared across thread blocks or even kernels. Global memory Accessible by all threads as well as host (CPU). High latency (400-800 cycles). Error Correcting Code The Fermi architecture supports the Error Correcting Code (ECC) based protection of data in memory. ECC was requested by GPU computing users to enhance data integrity in high performance computing environments (as medical imaging and large-scale cluster computing). Naturally occurring radiation can cause a bit stored in memory to be altered, resulting in a soft error. ECC technology detects and corrects single-bit soft errors before they affect the system. Because the probability of such radiation induced errors increase linearly with the number of installed systems, ECC is an essential requirement in large cluster installations. Fermi supports Single-Error Correct Double-Error Detect (SECDED) ECC codes that correct any single bit error in hardware as the data is accessed. In addition, SECDED ECC ensures that all double bit errors and many multi-bit errors are also be detected and reported so that the program can be re-run rather than being allowed to continue executing with bad data. ECC is enabled by default.If ECC is not needed, it can be disabled for improved performance using the nvidia-smi utility (or via Control Panel on Microsoft Windows systems) . Note that toggling ECC on or off requires a reboot to take effect. References NVIDIA's Next Generation CUDA Compute Architecture: Fermi. N. Brookwood, NVIDIA Solves the GPU Computing Puzzle. P.N. Glaskowsky, NVIDIA's Fermi: The First Complete GPU Computing Architecture. N. Whitehead, A. Fit-Florea, Precision &amp; Performance: Floating Point and IEEE 754 Compliance for NVIDIA GPUs, 2011. S.F. Oberman, M. Siu, &quot;A high-performance area-efficient multifunction interpolator,&quot; Proc. of the 17th IEEE Symposium on Computer Arithmetic, Cap Cod, MA, USA, Jul. 27-29, 2005, pp. 272–279. R. Farber, &quot;CUDA Application Design and Development,&quot; Morgan Kaufmann, 2011. NVIDIA Application Note &quot;Tuning CUDA applica Note: All the images are owned by NVIDIA Corporation and distributed under Creative Commons Attribution Share Alike 3.0 License">
+
+<link rel="canonical" href="http://www.orangeowlsolutions.com/archives/388">
+<!-- /all in one seo pack -->
+<link rel="dns-prefetch" href="http://fonts.googleapis.com/">
+<link rel="dns-prefetch" href="http://s.w.org/">
+<link rel="alternate" type="application/rss+xml" title="Orange Owl Solutions » Feed" href="http://www.orangeowlsolutions.com/feed">
+<link rel="alternate" type="application/rss+xml" title="Orange Owl Solutions » Comments Feed" href="http://www.orangeowlsolutions.com/comments/feed">
+<link rel="alternate" type="application/rss+xml" title="Orange Owl Solutions » NVIDIA Fermi Architecture Comments Feed" href="http://www.orangeowlsolutions.com/archives/388/feed">
+		<script async="" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/analytics.js"></script><script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/www.orangeowlsolutions.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.15"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/wp-emoji-release.js" type="text/javascript" defer="defer"></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="ufbl-custom-select-css-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/jquery_002.css" type="text/css" media="all">
+<link rel="stylesheet" id="ufbl-front-css-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/frontend.css" type="text/css" media="all">
+<link rel="stylesheet" id="dlm-frontend-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/frontend_002.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-google-fonts-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/css.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-font-awesome-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/font-awesome.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-fancybox-css-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/nivo-lightbox.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-bx-slider-style-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/jquery.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-woo-commerce-style-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/woocommerce.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-font-style-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/fonts.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-style-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/style.css" type="text/css" media="all">
+<link rel="stylesheet" id="accesspresslite-responsive-css" href="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/responsive.css" type="text/css" media="all">
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/jquery_004.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/jquery-migrate.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/jquery_002.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var frontend_js_obj = {"default_error_message":"This field is required","ajax_url":"http:\/\/www.orangeowlsolutions.com\/wp-admin\/admin-ajax.php","ajax_nonce":"70ebe2bcab"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/frontend.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/theia-sticky-sidebar.js"></script>
+<link rel="https://api.w.org/" href="http://www.orangeowlsolutions.com/wp-json/">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.orangeowlsolutions.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.orangeowlsolutions.com/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="Tricks and Tips:  The const keyword in C++ classes" href="http://www.orangeowlsolutions.com/archives/369">
+<link rel="next" title="Tricks and Tips: Generating CUDA ptx files from Visual Studio" href="http://www.orangeowlsolutions.com/archives/430">
+<meta name="generator" content="WordPress 4.9.15">
+<link rel="shortlink" href="http://www.orangeowlsolutions.com/?p=388">
+<link rel="alternate" type="application/json+oembed" href="http://www.orangeowlsolutions.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.orangeowlsolutions.com%2Farchives%2F388">
+<link rel="alternate" type="text/xml+oembed" href="http://www.orangeowlsolutions.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.orangeowlsolutions.com%2Farchives%2F388&amp;format=xml">
+<link rel="shortcut icon" type="image/png" href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2015/10/favicon.ico"><style type="text/css">@media screen and (max-width: 480px){
+.slider-caption{
+display: block !important;
+}
+}</style>		<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+		<style>.theiaStickySidebar:after {content: ""; display: table; clear: both;}</style><style>.theiaStickySidebar:after {content: ""; display: table; clear: both;}</style></head>
+
+<body class="post-template-default single single-post postid-388 single-format-standard body_template_one " style="transform: none;" data-gr-c-s-loaded="true">
+<div id="page" class="site" style="transform: none;">
+
+	<header id="masthead" class="site-header">
+    <div id="top-header">
+		<div class="ak-container">
+			<div class="site-branding">
+				<a href="http://www.orangeowlsolutions.com/">				
+									<img src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/cropped-Logo-def.png" alt="Orange Owl Solutions">
+						
+				</a>
+				
+			</div><!-- .site-branding -->
+        
+
+			<div class="right-header clearfix">
+				<div class="header-text"><p>Get in touch with us!</p>
+</div>                <div class="clearfix"></div>
+                	<div class="socials">
+	
+		<a href="https://twitter.com/OOwlSolutions" class="twitter" title="Twitter" target="_blank"><span class="font-icon-social-twitter"></span></a>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		<a href="http://feeds.feedburner.com/OrangeOwlSolutions" class="rss" title="RSS" target="_blank"><span class="font-icon-rss"></span></a>
+		</div>
+				<div class="ak-search">
+						<form method="get" class="searchform" action="http://www.orangeowlsolutions.com/" role="search">
+		<input type="text" name="s" class="s" placeholder="Search...">
+		<button type="submit" name="submit" class="searchsubmit"><i class="fa fa-search"></i></button>
+	</form>
+				</div>
+							</div><!-- .right-header -->
+		</div><!-- .ak-container -->
+  </div><!-- #top-header -->
+
+		
+		<nav id="site-navigation" class="main-navigation menu-left">
+			<div class="ak-container">
+				<h1 class="menu-toggle">Menu</h1>
+
+				<div class="menu-menu-container"><ul id="menu-menu" class="menu"><li id="menu-item-1484" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1484"><a href="http://www.orangeowlsolutions.com/">Home</a></li>
+<li id="menu-item-1497" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1497"><a href="http://www.orangeowlsolutions.com/consulting">Consulting</a></li>
+<li id="menu-item-1496" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1496"><a href="http://www.orangeowlsolutions.com/contacts">Contacts</a></li>
+<li id="menu-item-1494" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-1494"><a href="http://www.orangeowlsolutions.com/archives/category/blog">Blog</a></li>
+</ul></div>			</div>
+		</nav><!-- #site-navigation -->    
+    
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-35218778-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+    
+    
+            
+	</header><!-- #masthead -->
+
+	<section id="slider-banner">
+			</section><!-- #slider-banner -->
+		<div id="content" class="site-content" style="transform: none;">
+
+<div class="ak-container" style="transform: none;">
+		<div id="primary" class="content-area" style="position: relative; overflow: visible; box-sizing: border-box; min-height: 1px;">
+		<!-- #main -->
+	<div class="theiaStickySidebar" style="padding-top: 0px; padding-bottom: 1px; position: static;"><main id="main" class="site-main" role="main">
+
+		
+			<article id="post-388" class="post-388 post type-post status-publish format-standard hentry category-blog category-cuda">
+	<header class="entry-header">
+		<h1 class="entry-title">NVIDIA Fermi Architecture</h1>
+            
+		<div class="entry-meta">
+			<span class="posted-on">Posted on <a href="http://www.orangeowlsolutions.com/archives/388" rel="bookmark"><time class="entry-date published" datetime="2013-03-31T16:28:54+00:00">March 31, 2013</time><time class="updated" datetime="2016-10-19T08:17:51+00:00">October 19, 2016</time></a></span><span class="byline"> by <span class="author vcard"><a class="url fn n" href="http://www.orangeowlsolutions.com/archives/author/orangeowl">OrangeOwl</a></span></span>		</div><!-- .entry-meta -->
+	</header><!-- .entry-header -->
+
+
+	<div class="entry-content">
+		<p><strong><em>Overview and characteristics</em></strong></p>
+<p>The Fermi architecture is the penultimate NVIDIA architecture, the very last being the Kepler one.<br>
+Fermi Graphic Processing Units (GPUs) feature 3.0 billion transistors and a schematic is sketched in Fig. 1.</p>
+<p style="padding-left: 30px;"><em>Streaming Multiprocessor (SM)</em>: composed by 32 CUDA cores (see Streaming Multiprocessor and CUDA core sections).<br>
+<em>GigaThread globlal scheduler</em>: distributes thread blocks to SM 
+thread schedulers and manages the context switches between threads 
+during execution (see Warp Scheduling section).<br>
+<em>Host interface</em>: connects the GPU to the CPU via a PCI-Express v2 bus (peak transfer rate of 8GB/s).<br>
+<em>DRAM</em>: supported up to 6GB of GDDR5 DRAM memory thanks to the 64-bit addressing capability (see Memory Architecture section).<br>
+<em>Clock frequency</em>: 1.5GHz (not released by NVIDIA, but estimated by Insight 64).<br>
+<em>Peak performance</em>: 1.5 TFlops.<em></em><br>
+<em>Global memory clock</em>: 2GHz.<br>
+<em>DRAM bandwidth</em>: 192GB/s.</p>
+<p><em>Convention in figures</em>:<br>
+orange – scheduling and dispatch;<br>
+green – execution;<br>
+light blue -registers and caches.</p>
+<div id="attachment_390" style="width: 604px" class="wp-caption aligncenter"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig1.png"><img class=" wp-image-390 " title="Fig. 01 - NVIDIA Fermi Architecture" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig1.png" alt="Fig. 01 - NVIDIA Fermi Architecture" srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig1.png 849w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig1-300x237.png 300w" sizes="(max-width: 594px) 100vw, 594px" width="594" height="469"></a><p class="wp-caption-text">Fig. 01 – NVIDIA Fermi Architecture</p></div>
+<p align="center"><em><br clear="all"> </em><em></em></p>
+<p><strong><em>&nbsp;</em></strong></p>
+<p><strong><em>Streaming Multiprocessor (SM)</em></strong></p>
+<p>Each SM (see Fig. 2) features 32 single-precision CUDA cores, 16 
+load/store units, four Special Function Units (SFUs), a 64KB block of 
+high speed on-chip memory (see L1+Shared Memory subsection) and an 
+interface to the L2 cache (see L2 Cache subsection).</p>
+<div id="attachment_394" style="width: 363px" class="wp-caption alignleft"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig2.png"><img class="size-full wp-image-394" title="Fig. 2. The Fermi SM." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig2.png" alt="Fig. 2. The Fermi SM." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig2.png 353w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig2-117x300.png 117w" sizes="(max-width: 353px) 100vw, 353px" width="353" height="906"></a><p class="wp-caption-text">Fig. 2. The Fermi SM.</p></div>
+<p><em>Load/Store Units</em></p>
+<p>Allow source and destination addresses to be calculated for 16 threads per clock. Load and store the data from/to cache or DRAM.<br>
+Data can be converted from one format to another (for example, from 
+integer to floating point or vice-versa) as it passes between DRAM and 
+the core registers at the full rate.<br>
+These formatting and converting features are examples of optimizations unique to GPUs.<br>
+They are not worthwhile to be implemented in general-purpose CPUs, but 
+for GPUs they will be used sufficiently often to justify their 
+inclusion.</p>
+<p><em>Special Functions Units (SFUs)</em></p>
+<p>Execute transcendental instructions such as sin, cosine, reciprocal, 
+and square root. The device intrinsics (e.g., __log2f(), __sinf(), 
+__cosf()) expose in hardware the instructions implemented by the SFU.<br>
+The hardware implementation is based on quadratic interpolation in ROM tables using fixed-point arithmetic, as described in [5].</p>
+<p>If -ffast-math is passed to nvcc, it will automatically use the 
+intrinsic versions of the transcendentals, they have to be called 
+explicitly.</p>
+<p>Four of these operations can be issued per cycle in each SM. The SFU 
+pipeline is decoupled from the dispatch unit, allowing the dispatch unit
+ to issue to other execution units while the SFU is occupied.<br>
+It should be noticed that CUDA intrinsics rarely map to a single SFU 
+instruction, but usually map to sequences of multiple SFU and non-SFU 
+instructions.<br>
+Different GPU have different throughputs for the various operations 
+involved, so if one needs to know the throughput of a particular 
+intrinsic on a particular GPU it would be best to simply measure it.<br>
+The performance of single-precision intrinsics can also vary with compilation mode, in particular -ftz={true|false}.</p>
+<p><strong><em>CUDA core</em></strong></p>
+<div id="attachment_398" style="width: 216px" class="wp-caption alignleft"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig3.png"><img class="size-full wp-image-398" title="Fig. 3. The Fermi core." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig3.png" alt="Fig. 3. The Fermi core." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig3.png 206w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig3-150x150.png 150w" sizes="(max-width: 206px) 100vw, 206px" width="206" height="207"></a><p class="wp-caption-text">Fig. 3. The Fermi core.</p></div>
+<p>A CUDA core handles integer and floating point operations (see Fig. 3).</p>
+<p><em>Integer Arithmetic Logic Unit (ALU)</em></p>
+<p>Supports full 32-bit precision for all usual mathematical and logical
+ instructions, including multiplication, consistent with standard 
+programming language requirements. It is also optimized to efficiently 
+support 64-bit and extended precision operations.</p>
+<p><em>Floating Point Unit (FPU)</em></p>
+<p>Implements the new IEEE 754-2008 floating-point standard, providing 
+the fused multiply-add (FMA) instruction (see Fused Multiply-Add 
+subsection) for both single and double precision arithmetics. Up to 16 
+double precision fused multiply-add operations can be performed per SM, 
+per clock.</p>
+<p><strong><em>Fused Multiply-Add</em></strong><strong></strong></p>
+<div id="attachment_405" style="width: 510px" class="wp-caption aligncenter"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig4.png"><img class=" wp-image-405 " title="Fig. 4. Multiply-Add (MAD) instruction." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig4.png" alt="Fig. 4. Multiply-Add (MAD) instruction." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig4.png 715w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig4-300x88.png 300w" sizes="(max-width: 500px) 100vw, 500px" width="500" height="146"></a><p class="wp-caption-text">Fig. 4. Multiply-Add (MAD) instruction.</p></div>
+<p>Fused Multiply-Add (FMA) perform Multiply-Add (MAD) operations (i.e.,
+ A*B+C) with a single final rounding step, with no loss of precision in 
+the addition, for both 32-bit single-precision and 64-bit 
+double-precision floating point numbers.<br>
+FMA improves the accuracy upon MAD (see Fig. 4) by retaining full precision in the intermediate stage (see Fig. 5).<br>
+In Fermi, this intermediate result carries a full 106-bit mantissa; in 
+fact, 161 bits of precision are maintained during the add operation to 
+handle worst-case denormalized numbers before the final double-precision
+ result is computed.</p>
+<div id="attachment_407" style="width: 499px" class="wp-caption aligncenter"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig5.png"><img class=" wp-image-407 " title="Fig. 5. Fused Multiply-Add (FMA) instruction." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig5.png" alt="Fig. 5. Fused Multiply-Add (FMA) instruction." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig5.png 698w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig5-300x86.png 300w" sizes="(max-width: 489px) 100vw, 489px" width="489" height="141"></a><p class="wp-caption-text">Fig. 5. Fused Multiply-Add (FMA) instruction.</p></div>
+<p>Prior GPUs accelerated these calculations with the MAD instruction 
+(multiplication with truncation, followed by an addition with 
+round-to-nearest even) that allowed both operations to be performed in a
+ single clock.<br>
+A FMA counts as two operations when estimating performance, resulting in
+ a peak performance rate of 1024 operations per clock (32 cores x 16 SM x
+ 2 operations).</p>
+<p><strong><em>Rounding and subnormal numbers</em></strong></p>
+<p>Subnormal numbers are small numbers that lie between zero and the 
+smallest normalized number of a given floating point number system.<br>
+In the Fermi architecture, single precision floating point instructions 
+support subnormal numbers by default in hardware, allowing values to 
+gradually underflow to zero with no performance penalty, as well as all 
+four IEEE 754-2008 rounding modes (nearest, zero, positive infinity, and
+ negative infinity).<br>
+This is a relevant point since prior generation GPUs flushed subnormal 
+operands and results to zero, incurring in losses of accuracy and CPUs 
+typically perform subnormal calculations in exception-handling software,
+ taking thousands of cycles.</p>
+<p><strong><em>Warp scheduling</em></strong></p>
+<p>The Fermi architecture uses a two-level, distributed thread scheduler.<br>
+The GigaThread engine schedules thread blocks to various SMs, while at 
+the SM level, each warp scheduler distributes warps of 32 threads to its
+ execution units.<br>
+Each SM can issue instructions consuming any two of the four green 
+execution columns shown in the schematic Fig. 6. For example, the SM can
+ mix 16 operations from the 16 first column cores with 16 operations 
+from the 16 second column cores, or 16 operations from the load/store 
+units with four from SFUs, or any other combinations the program 
+specifies.</p>
+<div id="attachment_410" style="width: 327px" class="wp-caption alignleft"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig6.png"><img class=" wp-image-410    " title="Fig. 6. Relevant to warp scheduling." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig6.png" alt="Fig. 6. Relevant to warp scheduling." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig6.png 825w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig6-178x300.png 178w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig6-606x1024.png 606w" sizes="(max-width: 317px) 100vw, 317px" width="317" height="535"></a><p class="wp-caption-text">Fig. 6. Relevant to warp scheduling.</p></div>
+<p>Note that 64-bit floating point operations consume both the first two
+ execution columns. This implies that an SM can issue up to 32 
+single-precision (32-bit) floating point operations or 16 
+double-precision (64-bit) floating point operations at a time.</p>
+<p><em>Dual Warp Scheduler</em></p>
+<p>Threads are scheduled in groups of 32 threads called warps. Each SM 
+features two warp schedulers (Fig. 7) and two instruction dispatch 
+units, allowing two warps to be issued and executed concurrently.<br>
+The dual warp scheduler selects two warps, and issues one instruction 
+from each warp to a group of 16 cores, 16 load/store units, or 4 SFUs.<br>
+Most instructions can be dual issued; two integer instructions, two 
+floating instructions, or a mix of integer, floating point, load, store,
+ and SFU instructions can be issued concurrently.<br>
+Double precision instructions do not support dual dispatch with any other operation.<br>
+In each cycle, a total of 32 instructions can be dispatched from one or two warps to these blocks.<br>
+It takes two cycles for the 32 instructions in each warp to execute on the cores or load/store units.<br>
+A warp of 32 special-function instructions is issued in a single cycle 
+but takes eight cycles to complete on the four SFUs (see Fig. 8).</p>
+<p><strong><em>Context Switching</em></strong></p>
+<p>Fermi supports concurrent kernel execution, where different kernels 
+of the same application context can execute on the GPU at the same time.<br>
+Concurrent kernel execution allows programs that execute a number of small kernels to utilize the whole GPU.<br>
+For example, a program may invoke a fluids solver and a rigid body 
+solver which, if executed sequentially, would use only half of the 
+available thread processors.<br>
+On the Fermi architecture, different kernels of the same CUDA context 
+can execute concurrently, allowing maximum utilization of GPU resources.</p>
+<div id="attachment_411" style="width: 558px" class="wp-caption aligncenter"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig7.png"><img class="wp-image-411 " title="Fig. 7. Illustrating the dual warp scheduler." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig7.png" alt="Fig. 7. Illustrating the dual warp scheduler." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig7.png 783w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig7-300x200.png 300w" sizes="(max-width: 548px) 100vw, 548px" width="548" height="365"></a><p class="wp-caption-text">Fig. 7. Illustrating the dual warp scheduler.</p></div>
+<p>Kernels from different application contexts can still run 
+sequentially with great efficiency thanks to the improved context 
+switching performance.<br>
+Switching from one application to another takes just 25 microseconds.<br>
+This time is short enough that a Fermi GPU can still maintain high 
+utilization even when running multiple applications, like a mix of 
+compute code and graphics code.</p>
+<div id="attachment_412" style="width: 544px" class="wp-caption aligncenter"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig8.png"><img class="wp-image-412  " title="Fig. 8. Issuing of the instructions to the execution blocks." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig8.png" alt="Fig. 8. Issuing of the instructions to the execution blocks." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig8.png 1247w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig8-300x171.png 300w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig8-1024x584.png 1024w" sizes="(max-width: 534px) 100vw, 534px" width="534" height="304"></a><p class="wp-caption-text">Fig. 8. Issuing of the instructions to the execution blocks.</p></div>
+<p>Efficient multitasking is important for consumers (e.g., for video 
+games using physics-based effects) and professional users (who often 
+need to run computationally intensive simulations and simultaneously 
+visualize the results). As mentioned, this switching is managed by the 
+GigaThread hardware thread scheduler.</p>
+<p><strong><em>Memory</em></strong></p>
+<p>L1 cache per SM and unified L2 cache that services all operations (load, store and texture).<br>
+Register files, shared memories, L1 caches, L2 cache, and DRAM memory 
+are Error Correcting Code (see subsection on the Error Correcting Code) 
+protected.</p>
+<p><em>Registers</em></p>
+<p>Each SM has 32KB of registers. Each thread has access to its own 
+registers and not those of other threads. The maximum number of 
+registers that can be used by a CUDA kernel is 63. The number of 
+available registers degrades gracefully from 63 to 21 as the workload 
+(and hence resource requirements) increases by number of threads. 
+Registers have a very high bandwidth: about 8,000 GB/s.</p>
+<p><strong><em>&nbsp;</em></strong></p>
+<div id="attachment_413" style="width: 576px" class="wp-caption aligncenter"><a href="http://www.orangeowlsolutions.com/5d45f44/oos/wp-content/uploads/2013/03/Fig9.png"><img class=" wp-image-413 " title="Fig. 9. The Fermi memory hierarchy." src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/Fig9.png" alt="Fig. 9. The Fermi memory hierarchy." srcset="http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig9.png 707w, http://www.orangeowlsolutions.com/wp-content/uploads/2013/03/Fig9-300x157.png 300w" sizes="(max-width: 566px) 100vw, 566px" width="566" height="296"></a><p class="wp-caption-text">Fig. 9. The Fermi memory hierarchy.</p></div>
+<p><em>L1+Shared Memory</em></p>
+<p>On-chip memory that can be used either to cache data for individual 
+threads (register spilling/L1 cache) and/or to share data among several 
+threads (shared memory).<br>
+This 64 KB memory can be configured as either 48 KB of shared memory 
+with 16 KB of L1 cache, or 16 KB of shared memory with 48 KB of L1 
+cache.<br>
+Prior generation GPUs spilled registers directly to DRAM, increasing 
+access latency. Also, shared memory enables threads within the same 
+thread block to cooperate, facilitates extensive reuse of on-chip data, 
+and greatly reduces off-chip traffic.<br>
+Shared memory is accessible by the threads in the same thread block. It 
+provides low-latency access (10-20 cycles) and very high bandwidth 
+(1,600 GB/s) to moderate amounts of data (such as intermediate results 
+in a series of calculations, one row or column of data for matrix 
+operations, a line of video, etc.).<br>
+Because the access latency to this memory is also completely 
+predictable, algorithms can be written to interleave loads, 
+calculations, and stores with maximum efficiency.</p>
+<p><em>Local memory</em></p>
+<p>Local memory is meant as a memory location used to hold “spilled” registers.<br>
+Register spilling occurs when a thread block requires more register storage than is available on an SM.<br>
+Pre-Fermi GPUs spilled registers to global memory, causing a dramatic drop in performance.<br>
+Compute ≥ 2.0 devices spill registers to the L1 cache, which minimizes the performance impact of register spills.<br>
+Register spilling increases the importance of the L1 cache. Pressure 
+from register spilling and the stack (which consume L1 storage) can 
+increase the cache miss rate by data eviction.<br>
+Local memory is used only for some automatic variables (which are 
+declared in the device code without any of the __device__, __shared__, 
+or __constant__ qualifiers).<br>
+Generally, an automatic variable resides in a register except for the following:</p>
+<ul>
+<li>Arrays that the compiler cannot determine are indexed with constant quantities;</li>
+<li>Large structures or arrays that would consume too much register space;</li>
+</ul>
+<p>Any variable the compiler decides to spill to local memory when a kernel uses more registers than are available on the SM.<br>
+The nvcc compiler reports total local memory usage per kernel (lmem) when compiling with the –ptxas-options=-v option.</p>
+<p><em>L2 Cache</em></p>
+<p>768 KB unified L2 cache, shared among the 16 SMs, that services all 
+load and store from/to global memory, including copies to/from CPU host,
+ and also texture requests.<br>
+As an example, if one copies 512KB from CPU to GPU, those data will 
+reside both in the global memory and in L2; a kernel needing those data 
+immediately after the CPU-&gt;GPU copy will find them in L2.<br>
+The L2 cache subsystem also implements atomic operations, used for 
+managing access to data that must be shared across thread blocks or even
+ kernels.</p>
+<p><em>Global memory</em></p>
+<p>Accessible by all threads as well as host (CPU). High latency (400-800 cycles).</p>
+<p><em>Error Correcting Code</em></p>
+<p>The Fermi architecture supports the Error Correcting Code (ECC) based protection of data in memory.<br>
+ECC was requested by GPU computing users to enhance data integrity in 
+high performance computing environments (as medical imaging and 
+large-scale cluster computing).<br>
+Naturally occurring radiation can cause a bit stored in memory to be altered, resulting in a soft error.<br>
+ECC technology detects and corrects single-bit soft errors before they 
+affect the system. Because the probability of such radiation induced 
+errors increase linearly with the number of installed systems, ECC is an
+ essential requirement in large cluster installations.<br>
+Fermi supports Single-Error Correct Double-Error Detect (SECDED) ECC 
+codes that correct any single bit error in hardware as the data is 
+accessed.<br>
+In addition, SECDED ECC ensures that all double bit errors and many 
+multi-bit errors are also be detected and reported so that the program 
+can be re-run rather than being allowed to continue executing with bad 
+data.<br>
+ECC is enabled by default.If ECC is not needed, it can be disabled for 
+improved performance using the nvidia-smi utility (or via Control Panel 
+on Microsoft Windows systems) [7].<br>
+Note that toggling ECC on or off requires a reboot to take effect.</p>
+<p>&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+<em><strong>References</strong></em><br>
+[1] <a href="http://www.nvidia.com/content/PDF/fermi_white_papers/NVIDIA_Fermi_Compute_Architecture_Whitepaper.pdf" target="_blank">NVIDIA’s Next Generation CUDA Compute Architecture: Fermi.</a></p>
+<p>[2] <a href="http://www.nvidia.com/content/PDF/fermi_white_papers/N.Brookwood_NVIDIA_Solves_the_GPU_Computing_Puzzle1.pdf" target="_blank">N. Brookwood, NVIDIA Solves the GPU Computing Puzzle</a>.</p>
+<p>[3] <a href="http://www.nvidia.com/content/PDF/fermi_white_papers/P.Glaskowsky_NVIDIA's_Fermi-The_First_Complete_GPU_Architecture.pdf" target="_blank">P.N. Glaskowsky, NVIDIA’s Fermi: The First Complete GPU Computing Architecture.</a></p>
+<p>[4] <a href="http://www.orangeowlsolutions.com/archives/%20//developer.download.nvidia.com/assets/cuda/files/NVIDIA-CUDA-Floating-Point.pdf" target="_blank">N. Whitehead, A. Fit-Florea, Precision &amp; Performance: Floating Point and IEEE 754 Compliance for NVIDIA GPUs, 2011.</a></p>
+<p>[5] S.F. Oberman, M. Siu, “A high-performance area-efficient 
+multifunction interpolator,” Proc. of the 17th IEEE Symposium on 
+Computer Arithmetic, Cap Cod, MA, USA, Jul. 27-29, 2005, pp. 272–279.</p>
+<p>[6] R. Farber, “CUDA Application Design and Development,” Morgan Kaufmann, 2011.</p>
+<p>[7] NVIDIA Application Note “Tuning CUDA applica</p>
+<p><em>Note: </em>All the images are owned by NVIDIA Corporation and distributed under <a title=" Creative Commons Attribution ShareAlike 3.0 License" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike 3.0 License</a></p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+			</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+
+			
+            
+<div id="comments" class="comments-area">
+
+	
+	
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://www.orangeowlsolutions.com/archives/388#respond" style="display:none;">Cancel reply</a></small></h3>			<form action="http://www.orangeowlsolutions.com/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p><p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" size="30" maxlength="245" required="required"></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" size="30" maxlength="100" aria-describedby="email-notes" required="required"></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" size="30" maxlength="200"></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment"> <input type="hidden" name="comment_post_ID" value="388" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p>			</form>
+			</div><!-- #respond -->
+	
+</div><!-- #comments -->
+
+		
+		</main></div></div><!-- #primary -->
+	
+	
+
+	<div id="secondary-right" class="widget-area right-sidebar sidebar" style="position: relative; overflow: visible; box-sizing: border-box; min-height: 5402px;">
+		
+        
+	    		
+
+								<div class="theiaStickySidebar" style="padding-top: 0px; padding-bottom: 1px; position: fixed; top: 35px; left: 1037.2px; width: 339px;"><aside id="categories-9" class="widget widget_categories"><h3 class="widget-title">Categories</h3><form action="http://www.orangeowlsolutions.com" method="get"><label class="screen-reader-text" for="cat">Categories</label><select name="cat" id="cat" class="postform">
+	<option value="-1" selected="selected">Select Category</option>
+	<option class="level-0" value="98">Blog&nbsp;&nbsp;(174)</option>
+	<option class="level-0" value="4">Bluebird Library&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="5">C++&nbsp;&nbsp;(19)</option>
+	<option class="level-0" value="100">Consulting&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="127">Course&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="9">Cuda&nbsp;&nbsp;(133)</option>
+	<option class="level-0" value="110">Cuda Libraries&nbsp;&nbsp;(12)</option>
+	<option class="level-0" value="111">GitHub&nbsp;&nbsp;(20)</option>
+	<option class="level-0" value="14">Heuristic Algorithms&nbsp;&nbsp;(3)</option>
+	<option class="level-0" value="19">Mathematics&nbsp;&nbsp;(6)</option>
+	<option class="level-0" value="20">Matlab&nbsp;&nbsp;(18)</option>
+	<option class="level-0" value="112">Slider&nbsp;&nbsp;(3)</option>
+	<option class="level-0" value="25">Software &amp; Download&nbsp;&nbsp;(17)</option>
+	<option class="level-0" value="122">Tricks and Tips&nbsp;&nbsp;(7)</option>
+	<option class="level-0" value="28">VB.NET&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="29">Visual Studio&nbsp;&nbsp;(20)</option>
+</select>
+</form>
+
+
+</aside><aside id="tag_cloud-2" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><a href="http://www.orangeowlsolutions.com/archives/tag/ant-colony" class="tag-cloud-link tag-link-31 tag-link-position-1" style="font-size: 8pt;" aria-label="Ant Colony (1 item)">Ant Colony</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/arduino" class="tag-cloud-link tag-link-32 tag-link-position-2" style="font-size: 8pt;" aria-label="Arduino (1 item)">Arduino</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/arrays" class="tag-cloud-link tag-link-119 tag-link-position-3" style="font-size: 13.620437956204pt;" aria-label="Arrays (6 items)">Arrays</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/barnes-hut" class="tag-cloud-link tag-link-34 tag-link-position-4" style="font-size: 8pt;" aria-label="Barnes-Hut (1 item)">Barnes-Hut</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/basis-expansion" class="tag-cloud-link tag-link-35 tag-link-position-5" style="font-size: 8pt;" aria-label="Basis Expansion (1 item)">Basis Expansion</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/blender" class="tag-cloud-link tag-link-123 tag-link-position-6" style="font-size: 12.087591240876pt;" aria-label="Blender (4 items)">Blender</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/block-reduction" class="tag-cloud-link tag-link-37 tag-link-position-7" style="font-size: 8pt;" aria-label="Block Reduction (1 item)">Block Reduction</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/bonduary-conditions" class="tag-cloud-link tag-link-38 tag-link-position-8" style="font-size: 8pt;" aria-label="Bonduary Conditions (1 item)">Bonduary Conditions</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/cub" class="tag-cloud-link tag-link-42 tag-link-position-9" style="font-size: 15.153284671533pt;" aria-label="Cub (9 items)">Cub</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/cublas" class="tag-cloud-link tag-link-43 tag-link-position-10" style="font-size: 12.087591240876pt;" aria-label="cuBlas (4 items)">cuBlas</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/cufft" class="tag-cloud-link tag-link-48 tag-link-position-11" style="font-size: 12.087591240876pt;" aria-label="cuFFT (4 items)">cuFFT</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/curand" class="tag-cloud-link tag-link-49 tag-link-position-12" style="font-size: 8pt;" aria-label="cuRand (1 item)">cuRand</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/cusolver" class="tag-cloud-link tag-link-113 tag-link-position-13" style="font-size: 9.8394160583942pt;" aria-label="cuSolver (2 items)">cuSolver</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/data-mining" class="tag-cloud-link tag-link-50 tag-link-position-14" style="font-size: 8pt;" aria-label="Data mining (1 item)">Data mining</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/differential-evolutionary-algorithm" class="tag-cloud-link tag-link-51 tag-link-position-15" style="font-size: 8pt;" aria-label="Differential Evolutionary Algorithm (1 item)">Differential Evolutionary Algorithm</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/dynamic-parallelism" class="tag-cloud-link tag-link-52 tag-link-position-16" style="font-size: 9.8394160583942pt;" aria-label="Dynamic Parallelism (2 items)">Dynamic Parallelism</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/expression-templates-2" class="tag-cloud-link tag-link-54 tag-link-position-17" style="font-size: 9.8394160583942pt;" aria-label="Expression Templates (2 items)">Expression Templates</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/fdtd" class="tag-cloud-link tag-link-55 tag-link-position-18" style="font-size: 9.8394160583942pt;" aria-label="Fdtd (2 items)">Fdtd</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/fft" class="tag-cloud-link tag-link-56 tag-link-position-19" style="font-size: 16.992700729927pt;" aria-label="FFT (14 items)">FFT</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/fir" class="tag-cloud-link tag-link-57 tag-link-position-20" style="font-size: 9.8394160583942pt;" aria-label="FIR (2 items)">FIR</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/interpolation" class="tag-cloud-link tag-link-62 tag-link-position-21" style="font-size: 12.087591240876pt;" aria-label="Interpolation (4 items)">Interpolation</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/linear-systems" class="tag-cloud-link tag-link-66 tag-link-position-22" style="font-size: 12.087591240876pt;" aria-label="Linear Systems (4 items)">Linear Systems</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/matrix" class="tag-cloud-link tag-link-68 tag-link-position-23" style="font-size: 18.014598540146pt;" aria-label="Matrix (18 items)">Matrix</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/memory-access" class="tag-cloud-link tag-link-69 tag-link-position-24" style="font-size: 16.686131386861pt;" aria-label="Memory access (13 items)">Memory access</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/mesh" class="tag-cloud-link tag-link-70 tag-link-position-25" style="font-size: 12.087591240876pt;" aria-label="Mesh (4 items)">Mesh</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/mex" class="tag-cloud-link tag-link-125 tag-link-position-26" style="font-size: 11.065693430657pt;" aria-label="Mex (3 items)">Mex</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/moving-average" class="tag-cloud-link tag-link-71 tag-link-position-27" style="font-size: 11.065693430657pt;" aria-label="Moving Average (3 items)">Moving Average</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/multi-gpu" class="tag-cloud-link tag-link-106 tag-link-position-28" style="font-size: 9.8394160583942pt;" aria-label="Multi-gpu (2 items)">Multi-gpu</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/n-body" class="tag-cloud-link tag-link-72 tag-link-position-29" style="font-size: 8pt;" aria-label="N-body (1 item)">N-body</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/numerical-integration" class="tag-cloud-link tag-link-74 tag-link-position-30" style="font-size: 9.8394160583942pt;" aria-label="Numerical integration (2 items)">Numerical integration</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/numerical-methods" class="tag-cloud-link tag-link-75 tag-link-position-31" style="font-size: 14.131386861314pt;" aria-label="Numerical methods (7 items)">Numerical methods</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/nvidia-visual-profiler" class="tag-cloud-link tag-link-77 tag-link-position-32" style="font-size: 11.065693430657pt;" aria-label="NVIDIA Visual Profiler (3 items)">NVIDIA Visual Profiler</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/openmp" class="tag-cloud-link tag-link-78 tag-link-position-33" style="font-size: 9.8394160583942pt;" aria-label="OpenMP (2 items)">OpenMP</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/particle-swarm" class="tag-cloud-link tag-link-80 tag-link-position-34" style="font-size: 8pt;" aria-label="Particle Swarm (1 item)">Particle Swarm</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/ptx" class="tag-cloud-link tag-link-81 tag-link-position-35" style="font-size: 9.8394160583942pt;" aria-label="PTX (2 items)">PTX</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/reduction" class="tag-cloud-link tag-link-83 tag-link-position-36" style="font-size: 9.8394160583942pt;" aria-label="Reduction (2 items)">Reduction</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/sorting" class="tag-cloud-link tag-link-105 tag-link-position-37" style="font-size: 13.620437956204pt;" aria-label="Sorting (6 items)">Sorting</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/streams" class="tag-cloud-link tag-link-86 tag-link-position-38" style="font-size: 9.8394160583942pt;" aria-label="Streams (2 items)">Streams</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/svd" class="tag-cloud-link tag-link-121 tag-link-position-39" style="font-size: 9.8394160583942pt;" aria-label="SVD (2 items)">SVD</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/tegra" class="tag-cloud-link tag-link-88 tag-link-position-40" style="font-size: 9.8394160583942pt;" aria-label="Tegra (2 items)">Tegra</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/thrust" class="tag-cloud-link tag-link-90 tag-link-position-41" style="font-size: 22pt;" aria-label="Thrust (46 items)">Thrust</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/timing" class="tag-cloud-link tag-link-91 tag-link-position-42" style="font-size: 9.8394160583942pt;" aria-label="Timing (2 items)">Timing</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/twitter" class="tag-cloud-link tag-link-93 tag-link-position-43" style="font-size: 9.8394160583942pt;" aria-label="Twitter (2 items)">Twitter</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/ubuntu" class="tag-cloud-link tag-link-94 tag-link-position-44" style="font-size: 9.8394160583942pt;" aria-label="Ubuntu (2 items)">Ubuntu</a>
+<a href="http://www.orangeowlsolutions.com/archives/tag/vector" class="tag-cloud-link tag-link-95 tag-link-position-45" style="font-size: 9.8394160583942pt;" aria-label="Vector (2 items)">Vector</a></div>
+</aside></div></div><!-- #secondary -->
+</div>
+
+	</div><!-- #content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+	
+		
+		<div id="bottom-footer">
+		<div class="ak-container">
+			<h1 class="site-info">
+				<a href="http://wordpress.org/">Free WordPress Theme</a>
+				<span class="sep"> | </span>
+				<a href="https://accesspressthemes.com/" title="AccessPress Themes" target="_blank">AccessPress Lite</a>
+			</h1><!-- .site-info -->
+
+			<div class="copyright">
+				Copyright © 2020 
+				<a target="_blank" href="http://demo.accesspressthemes.com/accesspresslite/">
+				Orange Owl Solutions				</a>
+			</div>
+		</div>
+		</div>
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/jquery_003.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/nivo-lightbox.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/jquery.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/skip-link-focus-fix.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/custom.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/comment-reply.js"></script>
+<script type="text/javascript" src="NVIDIA%20Fermi%20Architecture%20Orange%20Owl%20Solutions_files/wp-embed.js"></script>
+
+
+
+</body></html>
+<!--
+Performance optimized by W3 Total Cache. Learn more: https://www.w3-edge.com/products/
+
+Page Caching using disk: enhanced 
+
+Served from: www.orangeowlsolutions.com @ 2020-06-30 11:00:39 by W3 Total Cache
+-->

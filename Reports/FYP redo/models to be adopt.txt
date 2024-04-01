@@ -1,0 +1,3 @@
+https://madsravn.dk/posts/simple-image-processing-with-cuda
+
+https://github.com/rpgolshan/CUDA-image-processing

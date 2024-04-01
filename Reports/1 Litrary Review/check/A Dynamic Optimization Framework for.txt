@@ -1,0 +1,30 @@
+At least three independent studies have shown that the most efficient processor for a given application is dependent both on application characteristics and input-data [9- 11].
+
+binary translation is done using hardware decoders as in modern Intel and AMD x86 processors or in software as in NVIDIA and AMD GPUs or Transmeta CPUs [12],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

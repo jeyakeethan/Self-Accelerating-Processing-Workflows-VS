@@ -1,0 +1,15 @@
+#However, increased parallelism will only increase the performance of parallel code sections, meaning that the serial part of the code soon becomes the bottleneck.
+
+#However, the DMA engine can only access CPU memory that has been pinned so that it will not be paged out by the OS. The DMA engines also provide GPU cores direct (but slow) access to CPU memory.
+
+#The term kernel is used to denote the function that executes on the GPU by a collection of threads in parallel. The programmer configures the kernel to be executed by a given number of GPU threads. These threads are grouped into thread blocks as configured by the programmer. Each thread block is assigned to a SM by a hardware scheduler.
+
+#Thread divergence will occur if, on a conditional branch, threads of the same warp take different paths, which can lead to serious performance degradations. Inter-warp divergence does not negatively impact performance.
+
+#Any given application can either use all cores on the multicore CPU or can primarily use the GPU. It should be noted that GPU intensive applications still require one CPU thread. Typically, such thread is used to issue GPU calls and does not consume many computing cycles.
+
+#In practice, it is possible that some applications can be executed only on the multi-core CPU or primarily on the GPU, but for simplicity, we assume that each application can be executed on either platform.
+
+#Because application runtimes are averaged into the previous runtime for a device, outlying points that could be caused by factors unknown to the scheduler (e.g., GPU contention due to video processing associated with the display) are smoothed out over time.
+
+

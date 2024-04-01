@@ -1,0 +1,27 @@
+Dive into the Research Domain	Dec10-May5	
+	Read and understand the context of the Problem
+	Go through previous arts and create Bibliography
+	Go deep and Analyze selected previous arts
+Proposal submission	Feb24-Mar29
+	Narrow down and define the Problem and Motivation
+	Define and narrow the scope and the contribution
+	Choose a methodology for the experiment
+	Define appropriate measurements for experiment
+	Proposal and Proposal Presentation Preparation
+Research and Experiments	Mar29-Oct10
+	Extracting features
+	Evaluating impact of the features
+	Prioritizing features
+	Set the features into classes
+	Group the features for functions
+Library design and implementation May5-Oct10
+	Design the Library of functions
+	Implement and code the Library
+		for mid evalution
+		for final evalution
+Library Evaluation	Oct10-Nov10
+	Experiment the functions
+	Reimplementation of the Library
+Completion and Final Report Oct10-Dec10
+	Final Report
+	Final Presentation

@@ -1,0 +1,148 @@
+Good morning everyone
+Thanks nirojan
+Upto this point we have talked about execution time based analysis.
+Now, we will look at  input weight based analysis and a hybrid model which has both execution time based algorithm and input weight based ml setup.
+1 - Machine Learning Approach
+As nirojan said above,
+Executing larger problems in CPU may freeze the server since CPU has less number of cores. servers may have hundreds of cores. but yet limited.
+Therefore, we must pull them out before fall into the CPU.
+how to do that?
+For that, we need to consider weights of the inputs to estimates the problem sizes.
+We were having  two approaches,
+one is statistical estimation approach
+And the second one is ml based approach.
+We have selected the ML one for the following reasons.
+We dont know the nature and the number of attributes for new problems.
+Also, All the problems are not the same. it means, there is no general solution.
+for example, for a matrix multiplication it has 3 weights and complexity increases cubically.
+And We need less human intervention in the maintenance phase of the system.
+To do it for new models appropriately, we have gone for the ML.
+
+After this point in reseach we have started using matrix multiplication model for experiments.
+Also, the CPU implementation modified to utilize multiple cores of CPU using OpenMB threads API.
+
+2 - Dataset generation
+We need dataset that contains labels for some normally distributed weights to train an ml model.
+It can only be obtained by executing problems in both processors and comparing corresponding execution times.
+For that, we have generated an input stream containing all possible combinations of the weights, within a range.
+We used a step value of 32 and generated from 32x32x32 to 160x160x160. All values in the range are covered in the input set.
+And create the dataset by executing the input on both processors.
+
+3 - Technical Details
+When it comes to machine learning, there are lots of pre-existing algorithms.
+From them, we have selected the XGboost for our system.
+Because it has less prediction time.
+Also, we are caching predictions of inputs that bound CPU above, that means the largest problems that were  run on CPU last are cached.
+Input parameters for ml are gathered using an abstract method called getattributes().
+if a programmer wants to create a new model for his own needs, he must implement the getattributes method. 
+Every model must be trained once at the beginning, when it is deployed.
+which might be the negative part of the system.
+
+4 - Caching mechanism
+Some papers have suggested using ML for this purpose having overhead and such solutions is often limited in production systems.
+To overcome the delay due to prediction, we used caching stategy.
+The following diagram shows how the caching mechanism works.
+If the cache array is empty or input comes for prediction not in cache, it will go for prediction.
+if the decision is CPU, we need to cache or replace with existing small 
+
+5 - How we have used the Machine learning to solve the outlier issue?
+ML based solution does not consider the present loads in the processors. Contention in  Therefore, we have come up with a hybrid model combining both the ML and self flow algorithms.
+if it is the CPU turn, Every problem is evaluated using ml approximately.
+It avoids the outliers causing the system to an inactive state.
+Just to prevent hikes in the input stream hit the CPU.
+We train the ml model from the data, Assumed to be collected, when CPU is on its peak performance and The GPU is busy or under contention.
+The reason is,  in the above state, some more problems become possible to be executed on a CPU. But, they may never get the chance otherwise.
+Because, The ML would divert them all beforehand.
+Also,The hybrid model has a mechanism,
+that is, if outliers are caughts consequently, the next batch will be sent to the GPU automatically.
+It is useful if upcoming inputs are GPU oriented.
+
+
+We have experimented the hybrid model using the same 5 input streams this time .
+6 - CPU input stream
+On the graph, 
+x axis shows input stream flow
+y axis number of operations in the inputs
+thin line shows hybrid model decisions, low and high.
+The surge peaks along the thin line mean to the sampling phase, the 5 samples executed on the GPU.
+The thick line indicates the flow of the input stream.
+
+other than the sampling peaks, the algorithm perfectly predict the optimal processor.
+also, as you can see on the graph, it incrementally increases the revise count value. which reduces sampling overhead.
+
+In this case the gain was noticeable.
+and very high if we consider it in percentage.
+The performance has been increased by 314.81%.
+
+
+7 - GPU input stream
+Since this stream entirely having larger inputs, it is obvious we cannot achieve a gain in this case.
+Nevertheless we execute in both processors parallely.
+No peaks in this graph and No sampling taken place. Why?
+Because the outliers are caught and sent to GPU and hence no sampling phase and CPU executions at all.
+But, if continuously large problems were coming, it would have switched to GPU for next batch.
+There was a little overhead due to the algorithm and it was -0.15%.
+
+8 - Binary input stream
+In the thick line, values taking low are best suits for CPU and 
+Values taking high are good for GPU.
+
+The low values cannot be noticed in this graph
+Because of the performance difference between the CPU and GPU of the system on which we have experimented.
+we did all experiments in our personal laptops. therefore CPU is less powerful compared to GPU. but on servers CPU has hundreds of cores.
+
+900ms 
+but percentage wise the performance was improved by around 13.20%.
+Which is in an acceptable range.
+
+9 - Square wave input stream
+In this case inputs comes in clusters of random width and height.
+Clusters lying very below are only suits for a CPU and all others are good for a GPU.
+As you can see, when the cluster values are very low in y axis,
+the decision by thin line is also down. and otherwise, high.
+It shows that algorithm worked as we expect.
+Also, the sudden peaks corresponds to the sampling phase of GPU.
+In this case, the gain is very negligible.
+because it has very less likelihood of CPU favor problems coming in the stream.
+The gain was 0.17% for above stream.
+
+
+10 - random input stream
+This stream has no cluster. 
+Input sizes are all random and alternating zig zag.
+Here also, we cannot look for a gain. Because, The stream has less likely hood to have small problems comes in cluster that fits CPU.
+The REVISE COUNT value has increased incrementally in this case often. Not always but whenever sampling never allowed.
+The drain due to algorithm processing was -1.03% and it can be ignored.
+and gain from other streams would compensate this loss.
+
+
+11 - Elapsed Time Averages
+Here, we have summarised the elapsed times of CPU, GPU, Self-flow, ML and Hybrid respectively. (5000 inputs)
+for some cases, ML perform well. But ML will not hope with different loads in processors at different instances.
+The gains achieved by the hybrid model are shown on the right side. It will be even more in production systems. because production systems would have powerful CPUs with 10s of, 100s of cores.
+
+12 - conclusion
+During the research, primarily we had three algorithms.
+Time based sampling model which has the outlier issues.
+Input weights based ML model which is time consuming and not considering the present loads.
+A hybrid model combining both above, which has solved the two issues.
+We are caching few predictions in the hybrid model to reduce latency.
+Also, consequent caught of outliers would set GPU for the next batch.
+That's how we have conducted our research.
+
+13 - future task
+In our scope, we have missed something to add, but can be accomplised by fellow reseaches.
+An addtional thread can be used to scan and mark optimal processors for inputs previously. it would remove the prediction time from algorithm overhead.
+Estimating inputs as batches in the ML model may reduce the overall prediction time.
+OS suppress CPU clock to save power. turn off it may improve prediction time.
+We are not reusing an ml model but tain new ml model everytime program runs. Dump and reuse the ML model can be implemented rather training a new model every time.
+
+
+
+
+
+
+
+
+
+Also, we are caching predictions where CPU performs well and all inputs in this stream are above the cached values. 

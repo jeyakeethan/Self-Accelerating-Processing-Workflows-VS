@@ -1,0 +1,72 @@
+Our final year project was about the selection of optimal processor from the tradeoff between CPU and GPU.
+We utilize gpu for parallel execution to reduce exectution time.
+However, CPU perform well up to some limits.
+Because of the CPU has less context switching time
+and the data trasfer time to the GPU is an overhead.
+We dont know whether a computation is appropriate for CPU or GPU, it depends on the problem instances.
+
+Our ultimate goal is to determine or predict the optimal processor before execution.
+Actually we need to reduce the overall execution time.
+It is benefitial for time critical applications.
+For example, receive rocket in correct angle, estimate stock value, bitcoin ledgering etc.
+
+We were motivated with the cost we can save and prevent bad things hapenning with the above applications.
+Also, the branch predictor which predict the right branch before execution was a successful implementation and be a motivation for us.
+
+We have gone through several strategies
+and found a solution which is an ML based solution.
+
+We need to have a model first for a computation type, like a blueprint
+means that we need CPU GPU implementations in a class that inherits an abstract class provided by our library.
+After we had a model,
+We set data and execute on the object, it evaluates internally
+and execute the problem instance on the appropriate processor.
+
+First, we had gone for time based approaces where we had gone through several versions of algorithms.
+I will not go through them deeply because of the time constraint.
+Time based means, we take prediction for new instances based on the previous execution time.
+since it is tim based, It is An abstract method since it accounts everything on the machine itself.
+
+
+
+but we cant ascertain a new task based on previous one. because, An unexpectedly large computation comes for execution to CPU caused delays.
+We used ML to prevent huge computations get into CPU.
+
+We had used stream based evalution where we generate stream of task
+and execute them one after another.
+It also does not work well for some random streams.
+
+
+As you can see in this graph there are falls in the time based models and
+We found that ML performs better than time based for all kinds of streams.
+So, we moved to an completely Ml based solution.
+We estimate task based on some estimators given by the programmer.
+For example, dimension, array size, number of elements etc.
+We need to train the system once for each computational model for the first time.
+Then it would predict the optimal prcessor with the estimators, by predicting with the trained ML model.
+
+We have tried caching to reduce the prediction. We find slot of the cache with haching and check and return the prediction if exists.
+It is failed, it had yielded worse performance and added overhead.
+We drop it and go for another strategy called center boundary.
+We estimate a line that bisect the features or the estimators that influences the optimal processor.
+We could reduce prediction time with it. We have not added the results here.
+
+So, ML is the final solution.
+Now experiments and evaluation part.
+We have to test efficiency, effectiveness and generality of our solution.
+Generality means, it would work for all kind of problems and all system.
+So, we formed 3 test cases covering all criteria.
+
+For software agnostics,
+1, with different computational problems having deifferent dimension.
+As you can see here, for all three computaitonal models, it has achieved gain and the accuracy also significant.
+
+2, data type based experiments.
+To prove its data type generality, we changed the data type in the computaitons with int, float, double and experimented
+its behaviours was similar. no issues with that too.
+
+to check whether our system would work on a harware agnostics environment,
+3, we experimented on 3 different hardware, two laptops and a machine on cloud
+For all three models, on all three machines,
+it achieved gain no any loss there.
+

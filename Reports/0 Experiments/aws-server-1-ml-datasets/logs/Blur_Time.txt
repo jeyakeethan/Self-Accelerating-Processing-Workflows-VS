@@ -1,0 +1,7 @@
+Blur experiments
+GPU Time: 6007 ms
+
+Auto Time: 5679 ms
+
+CPU Time: 76376 ms
+

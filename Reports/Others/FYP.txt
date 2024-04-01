@@ -1,0 +1,98 @@
+Initially, on the first run of the application, sample data set to be executed on the particular machine on which the application has been installed to evaluate and update relative performance in the machine.
+
+A configuration file is maintained by the framework class/library to determine whether execute a problem on the CPU or GPU. The file is loaded when the application is initiated, and to be updated based on success and falls of the predictions.
+
+The scheduling algorithm described above continues to improve as more data is entered into the historical database, and each application is penalized at most once when it is assigned to a slower device in order to build the database.
+
+If it is assumed that the host has many devices (GPU), the application would be more extensible. An computation can be scheduled to any of the devices not neccessarily on the device that would give the best performance but the time taken for computation should be minimal to ensure no starvation occur.
+
+since CPU cores support fewer threads and do not require additional data communication, while GPUs expect large number of concurrent threads, require explicit communication between the standard machine memory and the GPU, and are better suited for SIMD computations.
+https://ieeexplore.ieee.org/abstract/document/5289193
+
+Latency is important => CPU Latency is important and Latency is not important but for Throughput => GPU
+
+Some application can only be run in the CPU but not in the GPU
+
+GPGPU is only possible if it has a map from input array to output array.
+
+Basic operations
+•Map
+	number of operations in each mapping
+		//we will calculate computational intensity internally.
+•Reduce
+•Scan
+•Gather/Scatter
+page 20
+
+Applications of Scan
+•Radix sort
+•Quicksort
+•String comparison
+•Lexical analysis
+•Stream compaction
+•Polynomial evaluation
+•Solving recurrences
+•Tree operations
+•Histograms
+page 24
+
+#Features
+(1) Dimension
+	single and multi-dimensional arrays
+	sizeOfDimension=100×80×10 - if fits a Block Size
+(2) Data Type
+	primitive or reference type
+	precision
+	strings
+(3) Class Type
+	inner classes
+	composite objects
+(4) Operation
+	MajorTypeOfOperation
+	synchronized methods or monitors (asynchronous)
+(5) instance and static fields
+(6) memory allocation and transfer
+	dynamic
+	size
+	once or multiple times
+	one side or both side
+	sqlLite query used in GPU code : binary
+(7) exceptions that are thrown or caught on the GPU.
+(8) Number of Threads - 32 threads max per warp
+(9) CPU or GPU : boolean (just for implementation comfort, not to consider in statistical  analysis)
+
+Data Parallelism (Optimum for GPU) VS Task Parallelism (Optimum for CPU)
+
+Code structure
+	Loop/ Sequential
+
+operations possible GPU
+
+The right resources should be utilized properly to improve the efficiency and performance of a computer system. The GPU was originally invented for graphical processing in which a huge number of parallel and correlated computations are very common. Later, computer scientists recognized that the GPU can be utilized in some other parallel computation problems and use it for general-purpose programming, the GPGPU evolved. Not all problems are good to be scheduled on a GPU all the time. Because the GPU may be busy in graphical processing, still some problems are limited to the CPU and some problems are less efficient to be executed in a GPU compared to the CPU. The GPU is good at processing problems that have common instructions with input data parallelism. Though it has a bottleneck on its bandwidth to transfer data between a host and a device. This research proposes a solution, a library that determines on which (CPU or GPU) a specified problem is efficient to execute. This is similar and motivated with the branch prediction concept. So, programmers can characterise problems and leave the job to select the optimal platform dynamically to the system. Though there are researches to optimize the performance by scheduling properly, it does not have more related previous works.
+
+
+a class or package
+	load samples on first load and execute them to calculate delay
+	the method consider hardware factors such as number of threads running, waiting, sleep
+
+A thread to be executed by an executor
+	would help to calculate actual execution time => more accurate prediction next time.
+	
+Main goals of the research
+	Qualification: Find out the attributes that affect the performance
+	Quantification: Measure impacts and ascertain the level of impact of the attributes
+	Cases: Find out the cases (combinations of the attributes) to be logged to take upcoming decisions
+	
+	
+	
+Search terms
+	selection gpu cpu
+
+Basic operations
+•Map - there are one to one correspondence from input to output. Each mapping is assigned to a thread.
+•Reduce
+•Scan - work well as parallelism but seems like it can only be executed serially.
+•Scatter - scatter the input elements into output. Threads are assigned to input elements. Histogram
+•Gather - Gather outputs from input elements. Threads are assigned to output elements.
+
+

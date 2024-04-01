@@ -1,0 +1,7 @@
+Matrix multiplication experiments started
+GPU Time: 8502 ms
+
+Auto Time: 7811 ms
+
+CPU Time: 51297 ms
+

@@ -1,0 +1,21 @@
+We moved from the dot multiplication model to matrix multiplication model for further experiments. The experiments conducted with the dot multiplication model showed the good performance for most of the input stream types. But the presupposition was that it would not be the same for complex models. If a very large computation comes in the middle when the processor set to CPU, it cannot bear processing load of the computation. It will cause severe latency in the execution flow and the process may become not responding, busy in processing the large problem sequencially. Therefore such outliers need to be caught ealier in case to avoid such undesired events happening. Machine learning approach was tried next to handle outliers and overcome the trap.
+
+A logger module was intergrated to log the performance matrix to analyse performance of the system. The data would also be useful to fine tune the configurations of the system and to tune the machine learning hyper parameters more appropriate. It is logged in the CSV format. The performance data for each model is logged massively at beginning including the time for execution. But limited to some required data after sometime to avoid overhead of logging. The log files generated for the machine learning contain the attributes estimate a computation followed by the decision offered by the algorithm in each line.  
+
+After a machine learning model was set to be trained periodically using an additional thread. An XGBoost pre-existed library has been used for the purpose and the data are loaded from csv files created by the logger. A small problem arrival when the GPU in operation would not affect the flow but a large problem comes in the middle when the CPU in operation would be the issue. Therefore, computations were evaluated using the trained ML model before executed in the CPU. If it detects a computation as an outlier, better to be executed in a GPU, it would switched from CPU and utilize the GPU only for the computation. Therefore it prevented the algorithm from the outlier trap.
+
+Every computation to be executed in the CPU were evaluated using the ML model to avoid outliers execution in the CPU. However, each computation that arrive during the CPU session should be sent through the ML model to predict the optimum processor for the computation. It recouped the gain that earned from the sampling allgorithm since the prediction time close to the computation time of the matrix multiplication experimental model. We used a caching technique to mitigate the problem. It would store last few predictions of the high valued weights that chosen the CPU into an array. The number of prediction needs to save can be configured in a constants file.
+
+First, weight of every computation is compared with the predictions stored in the array iteratively. If all the attribute values in the weight is less than any of the weight in the cached array, it means the the problem is bounded by the exceeding weight and the computation better takes the CPU execution, that is no need to switch. If none of the prediction weight stored in the cached array bound the weight of the new problem, it is sent for the prediction to the ML model and the action upon the output. It would take little more time compared to the cache comparision. The computation will be executed in the GPU if it is predicted as an outlier but the platform that has been set by the sampling algorithm for the execution will not be changed. The cache will only be updated if new prediction is CPU. The new cache will be added into the cache array, or compared and replaced with an existing one if it is full.
+
+In the self-flow mode, where execution flow is based on the sampling algorithm, there are two places where a computation is assigned to the CPU. One is on sampling mode of the processor and execution mode of the processor. Therefore to handle outliers in both places, the caching and outlier prediction mechanism are extracted into a separate method and a boolean returned to execute in the corresponding processors.
+
+
+
+
+
+
+
+
+
+எதை நீ மனபூர்வமாக ஏற்றுக் கொள்கிறாயோ அது உன் வாழ்வின் அங்கமாக மாறிவிடுகிறது.

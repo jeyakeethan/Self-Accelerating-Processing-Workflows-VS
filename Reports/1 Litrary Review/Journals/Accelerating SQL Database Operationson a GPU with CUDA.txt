@@ -1,0 +1,34 @@
+#The two most relevant technical limitations are the GPU memory size and the host to GPU device memory transfer time.
+
+A full database cannot be loaded into a GPU and Transferring memory blocks between the CPU and the GPU remains costly.
+
+There are a number of applications that ﬁt into the do-main of this project, despite the limitations described above.Many databases, such as those used for research, modify data infrequently and experience their heaviest loads during read queries.
+
+Though the ﬁnite memory size of the GPU is a signiﬁcant limitation, allocating just half of the 4 gigabytes of a Tesla C1060 to store a data set gives the user room for over 134 million rows of 4 integers.
+
+This interface enables a subset of SQL SELECT queries on datathat has been explicitly transferred in row-column form to GPU memory.
+
+The project is built upon an existing open-source database, SQLite, enabling switching between CPU and GPU query execution and providing a direct comparison of serial and parallel execution.
+
+Of the thirteen SQL queries tested in this paper, the smallest GPU speedup was 20X, with a mean of35X.
+
+Other primitives in-clude binary searches, p-ary searches [14], tree operations,relational join operations [6], etc. An area where GPUs haveproven particularly useful is with sort operations. GPUTera-Sort, for example, is an algorithm developed to sort databaserows based on keys.
+
+GPUMiner, a program which implements several algo-rithms, including k-means, and provides tools to visualize the results [7]. Much of this research was performed on previous generations of GPU hardware, and recent advances can only improve the already impressive results.
+
+A limitation of SQLite is that its serverless design means it is not implemented to take advantage of multiple cores. Because it exists solely as a part of another program’s process,threading is controlled entirely outside SQLite, though it has been written to be thread-safe. This limitation means that there is no simple way to compare SQLite queries executed on a single core to SQLite queries optimized for multicore machines. This is an area for future work.
+
+We explicitly target applications that run SELECT queries multiple times on the same mid-size data set. The SELECT query qualiﬁcation means that the GPU is used for read-only data. This enables the GPU to maximize its bandwidth for this case and predicates storing database rows in row-column form.
+
+the data set loaded on the GPU. there must be another memory block allocated to store the result set. Also, meta data such as the size of the block, the number of rows in the block, the stride of the block, and the size of each column must be explicitly managed.
+
+Constant memory is also used to store data set meta information,including column types and widths. Since this data set information is accessed very frequently across all threads, constant memory signiﬁcantly reduces the overhead that would be incurred if this information was stored in global memory.
+
+Local memory is an abstraction in the CUDA programming model that means memory within the scope of a single thread that is stored in the global memory space. #Each CUDA thread block is limited to 16 kilobytes of register memory: when this limit broken the compiler automatically places variables in local memory.
+
+Local memory is also used for arrays that are accessed by variables not known at compile time. This is a signiﬁcant limitation since the SQLite virtual machine registers are stored in an array. This limitation is discussed in further detail below
+
+
+
+
+

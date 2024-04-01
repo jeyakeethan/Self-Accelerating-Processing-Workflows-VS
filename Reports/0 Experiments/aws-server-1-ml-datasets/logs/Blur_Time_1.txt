@@ -1,0 +1,5 @@
+Blur experiments
+GPU Time: 5953 ms
+
+Auto Time: 5795 ms
+

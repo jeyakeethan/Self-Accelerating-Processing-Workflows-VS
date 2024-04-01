@@ -1,0 +1,27 @@
+CUDA’s hierarchy of threads maps to a hierarchy of processors on the GPU.
+
+#The programmer or compiler organizes these threads in thread blocks and grids of thread blocks.
+
+A kernel executes in parallel across a set of parallel threads.
+
+A grid is an array of thread blocks that execute the same kernel, read inputs from global memory, write results to global memory, and synchronize between dependent kernel calls.
+
+A GPU //concurrently(can handle)// executes one or more kernel grids.
+#A streaming multiprocessor (SM) //concurrently(can handle)// executes one or more thread blocks.
+A CUDA cores and other execution units in the SM execute threads in the blocks. //32threats at once as a warp.//
+#The SM //parallelly(at once)// executes threads in groups of 32 threads called a warp.
+
+#The first Fermi based GPU, implemented with 3.0 billion transistors, features up to 512 CUDA cores. A CUDA core executes a floating point or integer instruction per clock for a thread. The 512 CUDA cores are organized in 16 SMs of 32 cores each.
+
+#A host interface connects the GPU to the CPU via PCI-Express. //limited bandwidth
+
+//scheduling
+#The GigaThread global scheduler distributes thread blocks to SM thread schedulers.
+
+Various instructions are supported, including Boolean, shift, move, compare, convert, bit-field extract, bit-reverse insert, and population count.
+
+#Each SM has 16 load/store units, allowing source and destination addresses to be calculated for sixteen threads per clock. Supporting units load and store the data at each address to cache or DRAM.
+
+#//Four SFU(Special Function Units) per SM. if computation needs SFU needs more clocks// Each SFU executes one instruction per thread, per clock; a warp executes over eight clocks.
+
+

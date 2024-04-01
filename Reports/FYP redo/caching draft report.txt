@@ -1,0 +1,31 @@
+Effort to reduce overall prediction time
+	Caching often predicted entries
+    Center boundary
+
+Why caching is useful?
+practical problems are associated with some conventions and standards. for examples, 1280x720, 1024x768. Same attributes sets may be frequently coming prediction. Therefore, caching would reduce the  overall prediction time.
+
+Caching Mechanisms
+	Two equal sized arrays are used for caching predictions. One is to store the attribute sets and the other one is to store corresponding predictions of the attribute sets.
+    Cache replacement policy
+        Hash table is used to store the cache entries. Therefore, cache replacement policy would be a hashing. The hashing algorithm used to find the cache location is as follows,
+		cache location of an attribute set of a computation (if exists) i, 
+			i = sum(*attr)% CACHE_SIZE;
+			
+		if we consider
+			a 3 dimension model,
+			an attribute set of <16, 32, 32>,
+			CACHE_SIZE of 50
+		the cache location will be,
+		i = 30 and the cache will be looked at 30.
+		
+		if "i" th location of the attribute set is equal to the set came for the prediction, it means prediction exists, retrived and returned from "i" th location of the second array, the prediction array.
+		If the corresponding caching slot is empty or does not equal to the predicting attribute set, caching does not exist for the attribute set. decision for the attribute set is predicted, stored in the slot and returned. Hence, the previous values might be lost due to this replacement. It would cause cache miss. The CACHE_SIZE determines the often replacement of the same location which cauases cache misses.
+	
+	The above caching mechanisms was desinged and implemented with the intention of imroving the prediction time. However, during the experiments, it was found that direct prediction time is already very low and not a reason for the latency. Additionally, the overall prediction time is increased when using the caching mechanisms.
+	
+	Prediction time for 10k of three dimensional problems (x,y,z)
+		without caching = 20 ms
+		with caching 	= 32 ms
+	
+	Due to this delay, the caching mechanisms has not been used with our framework although it is effective.

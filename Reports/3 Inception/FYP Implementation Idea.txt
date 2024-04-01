@@ -1,0 +1,42 @@
+
+abstract class ComputationalModel {
+	public void execute(){
+		// Our algorithm placed here
+		if(bounded)
+			CPUImplementation(int* input, int* output);
+		else
+			GPUImplementation(int* input, int* output);
+	}
+	public void CPUImplementation(int* input, int* output);
+	public void GPUImplementation(int* input, int* output);
+}
+
+ComputationalModel arrayAdditionModel = new ComputationalModel(){
+											public void CPUImplementation(int* input, int* output){
+												// CPU code here
+											}
+											public void GPUImplementation(int* input, int* output){
+												// GPU code here
+											}
+										}
+arrayAdditionModel.execute(int* input, int* output);
+
+or
+
+/* Boundary points are updated daily or monthlt basis, random samples; our old plan.*/
+framework.addCModel("ModelName", new ComputationalModel(){
+											public void CPUImplementation(int* input, int* output){
+												// CPU code here
+											}
+											public void GPUImplementation(int* input, int* output){
+												// GPU code here
+											}
+										});
+
+
+if (framework.evaluate(ModelName, int *attributes))
+	// CPU real implementation here. customizable for different instances
+else
+	// GPU real implementation here. customizable for different instances
+	
+											

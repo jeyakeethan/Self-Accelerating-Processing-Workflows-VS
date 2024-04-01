@@ -1,0 +1,94 @@
+Solitary programming models need to be used for different types of processing units with their accompanying libraries supplied by hardware vendors. Often they support particular problem structure. Eg. SIMD problems will be easily and efficiently handled by GPUs.
+
+There are many versions of implementation for a particular task such as GPU, CPU versions. 
+[Seaming]
+Thus, a so-called fat binary approach that includes all accelerator implementations suffers from numerous dependencies due to individual toolchains and software stacks with runtime libraries. 
+
+ If these are absent on an end-user system, e.g. because the respective hardware is not present, an application linked against these will break. one has to install the CUDA software stack solely to execute this application, although it will only use the CPU.
+// These are out of our scope and we assume that the hardware requested by the programmar exists on each end-user system regardless of the availability of an accelerator and the related libraries installed []. because the application can not be executed without having all the corresponding libraries available[].
+The benefit of implementations compared to others can vastly differ for varying problem sizes. This is especially true in heterogeneous systems. In many cases, accelerators require explicit data transfers because they come with their own dedicated memory. So, their usual performance benefit for kernel calculations has to compensate the overhead created by memory transfer. Other factors are, for example, initialization costs, like kernel compilation and transfer in case of GPUs. Hence, in most cases, using an accelerator is only beneficial if the problem size, e.g., the size of two matrices, exceeds a certain level.
+For example, the time required for kernel initialization and memory transfer in a GPU case can easily take more than several milliseconds. In such a case, the probability that the GPU is faster than the CPU for small problem sizes is rather low.
+
+"We show that our approach chooses the fastest usable implementation dynamically on several systems while introducing only a negligible overhead itself."
+
+
+#####Solution
+A function is provided for the programmers to specify their requirements. During runtime, requirements are checked with current hardware availability and suitable implementation is chosen. Only functionality and implementation available in the library can be chosen. We should manually add implementation to the library if we need to use it.
+
+If more than one implementation is possible,finding a suitable unit based on an analytical method is a very complex problem, as this requires to not only consider the properties of the accelerators but also the system’s current state that influences their benefit significantly, e.g., contention. Therefore, we propose an online-learning empirical method that measures and afterwards predicts the runtime on the different processing units and thus enables to predict the fastest unit for further executions. Through periodic checks, this method is also able to help the application adapt to changing system states.
+
+The remaining task is to find the most suitable implementation in this set.The history-based selector determines the fastest choice by evaluating data from the performance database.
+
+In order to determine which implementation for a given problem size should be chosen, the selector queries the performance database where the execution times of the implementations from previous runs are stored for the respective problem size. If there are values for all implementations available, the history-based selector compares the runtimes and chooses the implementation with the shortest runtime for execution. In case not all implementations are evaluated, the selector tries to interpolate the values [Kicherer et al. 2011] using the runtimes from other problem sizes. If that is not possible, it chooses the unevaluated implementation and measures its runtime to update the database afterwards. In that way, the history-based selector predicts the fastest implementation for given problem size to be executed. Of course, this has some impact on the execution time, but as has been shown [Kicherer et al. 2011], benefit can be obtained when more accurate decisions can be made for further runs. Additionally, in certain intervals, measuring is activated nonetheless to verify the values. In case of a resource conflict, the selector can thereby adapt to new system states.
+
+
+
+
+
+// This paper considering attributes to select the best implementation of hardwares library. concerning about auto detection of the implementation based on the attributes.
+
+#######Problem Statement
+
+
+
+#######Literature Review
+As there are usually multiple hardware-specific implementations for a certain task, e.g., a CPU and a GPU version, a method is required to determine which are usable at all and which one is most suitable for execution on the current system.
+
+programmers can express the requirements and the abilities of the application and the hardware-specific implementations in a simplified manner. During runtime, the requirements and abilities are compared with regard to the present hardware in order to determine the usable implementations of a task. If multiple implementations are usable, an online-learning history-based selector is employed to determine the most efficient one.		// but our work is independent of hardware specific implementations
+
+Typically, each vendor supplies an own, proprietary programming model and toolchain for their respective hardware.		// but our work is independent....
+
+Every hardware-specific implementation usually entails additional dependencies to the application, which endanger its wide-spread employment. If, for example, an application contains code for CUDA-enabled GPUs from NVIDIA, this application will most likely not start on a system with an AMD GPU because AMD has another software stack for GPU computing and thus, the required libraries for CUDA are not available.
+
+[MARIO KICHERER, FABIAN NOWAK, RAINER BUCHTY, and WOLFGANG KARL] proposes a solution considering which selecting one among implementations that will deliver the best performance. They expect the hardware vendors to bundle their hardware device (e.g., FPGA, GPU, dedicated accelerator) with a tuned library that might not even exist at the application’s compile time. Hence a mechanism is required to determine whether a kernel with certain abilities fits the requirements of an application, e.g., functionality and API compatibility and is accomplished by introducing attributes that express the requirements and abilities.
+
+As mentioned in the introduction, kernels can make use of specific CPU instruction set extensions, e.g. SSE* instructions, and hence are dependent on the CPUmodel. In such a case, one can annotate an implementation with the cpu features attribute and the DLS runtime system has to check the hardware before such a kernel can be used.
+// going deep into hardware in detail looking for hardware specs from user
+
+// Programmar defined implementations are only concerned in our research since a framework is only the primary objective of this research. Users of the framework can implement code best fit their deployent environment.
+
+So, the programmer can annotate the implementation with the attribute psize to e.g. express a safe lower bound for the minimum problem size from where a GPU could possibly be beneficial. With such information, the overhead of the history-based selector can be greatly reduced, as evaluating slow implementations can be avoided.
+// expect programmer to define the boundary points
+
+In the current state of DLS, the programmer is responsible for the declaration of attributes. Some attributes like the signature could be generated automatically by a compiler.
+// mostly rely on programmar and increase his work
+
+Instead of evaluating the performance of common implementations for every application individually, the measured values are stored in the performance database to share this information with other applications using the same implementations.
+// Since implementations of computation models are application specific in solution, the boundary points are varying for applications and hence stored separately.
+
+########Methodology
+Finding a suitable unit based on an analytical method is a very complex problem, as this requires to not only consider the properties of the accelerators but also the system’s current state that influences their benefit significantly, e.g., contention.
+In contrast, our solution is compiler-independent and allows varying amounts and values of attributes. An evaluation of their methods is completely missing.
+To quickly find libraries, we propose the concept of an implementation repository
+The implementations of processors are not statically bound to a function executing on a certain processing unit but using a computational model class functions[].
+"In the given example, we used the C language to define the function signature. As call conventions can differ between different languages and compilers, a comprehensive formal specification is required that defines the types and correct order of the function parameters. However, developing such a specification is beyond the scope of this paper and left aside for future work."
+#new idea to intake: For organizational purposes, one can use the or attributes to manually target pmodel specify the processing unit type or the employed programming model of the implementation.
+
+In the first, we use the approach to define the #pragma required functionality and a precision attribute.
+// They used pragma to get the attributes.
+// second option: using a low-level API approach
+
+To maintain the data in a light-weight manner, we designed the database as files in a dedicated directory.
+As the data for every implementation is stored in its own file, we keep time consumption for accessing and storing measured values low.
+
+For example, if we are looking for an implementation of a matrix multiplication (functionality mm), we look amongst others for the following symbols: mm_CPU, mm_OpenMP, and mm_CUDA. If the function shown in Listing 2 is included, the DLS runtime system finds the symbol mm_CPU. Next, it looks for a symbol with a further _attr suffix and finds the attributes referenced by the symbol mm_attr_CPU.
+// to discuss and select our idea
+
+predict values [Kicherer et al. 2011] using the runtimes from other problem sizes. If that is not possible, it chooses the unevaluated implementation and measures its runtime to update the database afterwards.
+this has some impact on the execution time, but as has been shown [Kicherer et al. 2011], benefit can be obtained when more accurate decisions can be made for further runs. Additionally, in certain intervals, measuring is activated nonetheless to verify the values.
+// to discuss and select our idea
+
+Then we integrate our solution in the Rodinia benchmark suite in order to prove the applicability in a real-world example.
+// to discuss and select our idea
+
+We apply our mechanism to applications of the Rodinia bench mark suite [Che et al. 2009]. Rodinia applications have their origin among others in medical imaging, data mining and simulations. For every benchmark, an OpenMP and a CUDA version exists.
+
+===========Niro==========
+
+------ related work-------
+
+This paper propose to choose to run the code either on GPU, CPU or any other accelerator based on previous executions on the same hardware. While being an interesting approach, it only consider functions defined defaulty with hardware drivers.
+
+--------methodology------
+Based on this research can be able to choose to run the code either on GPU, CPU or any other accelerator based on previous executions on the same hardware.
+
